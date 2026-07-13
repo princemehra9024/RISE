@@ -45,6 +45,126 @@ header p{
     font-size:18px;
 }
 
+.dashboard-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    text-align: left;
+}
+
+.header-titles h1 {
+    font-size: 2.5rem;
+    margin-bottom: 5px;
+}
+
+.user-profile {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: #ffffff;
+    padding: 10px 20px;
+    border-radius: 50px;
+    box-shadow: 0 4px 15px rgba(0,0,0,.05);
+}
+
+.profile-img {
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.profile-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.profile-info span {
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.signout-btn {
+    background: transparent;
+    color: #ef4444;
+    border: none;
+    padding: 0;
+    margin-top: 2px;
+    font-size: 13px;
+    cursor: pointer;
+    text-align: left;
+    width: auto;
+}
+.signout-btn:hover {
+    background: transparent;
+    text-decoration: underline;
+    color: #dc2626;
+}
+
+/* ==========================
+   LOGIN SCREEN
+========================== */
+
+.login-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: #f8fafc;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.login-box {
+    background: #ffffff;
+    padding: 40px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,.1);
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+}
+
+.login-box h1 {
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.login-box p {
+    color: #64748b;
+    margin-bottom: 30px;
+}
+
+.firebase-login-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    background: #ffffff;
+    border: 1px solid #dadce0;
+    color: #3c4043;
+    padding: 12px 24px;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    width: 100%;
+    transition: background-color 0.2s;
+    box-shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
+}
+
+.firebase-login-btn:hover {
+    background-color: #f8f9fa;
+}
+
+.firebase-login-btn img {
+    width: 18px;
+    height: 18px;
+}
+
 /* ==========================
    OVERALL PROGRESS
 ========================== */

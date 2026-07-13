@@ -1,4 +1,4 @@
-const syllabus = {
+export const syllabus = {
     semester: "IMCA Semester 2",
 
     subjects: [

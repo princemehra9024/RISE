@@ -12,15 +12,37 @@
 
 <body>
 
-    <div class="container">
+    <!-- ================= LOGIN SCREEN ================= -->
+    <div id="loginScreen" class="login-screen">
+        <div class="login-box">
+            <h1>📚 Student Dashboard</h1>
+            <p>Please sign in to track your individual progress.</p>
+            <button id="firebaseLoginBtn" class="firebase-login-btn">
+                <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo">
+                Sign in with Google
+            </button>
+        </div>
+    </div>
+
+    <!-- ================= DASHBOARD ================= -->
+    <div id="dashboard" class="container hidden">
 
         <!-- ================= HEADER ================= -->
 
-        <header>
+        <header class="dashboard-header">
+            
+            <div class="header-titles">
+                <h1>📚 Student Dashboard</h1>
+                <p>IMCA Semester 2 Progress Tracker</p>
+            </div>
 
-            <h1>📚 Student Dashboard</h1>
-
-            <p>IMCA Semester 2 Progress Tracker</p>
+            <div id="userProfile" class="user-profile">
+                <img id="profileImage" src="" alt="Profile Picture" class="profile-img">
+                <div class="profile-info">
+                    <span id="profileName">User Name</span>
+                    <button id="signOutBtn" class="signout-btn">Sign Out</button>
+                </div>
+            </div>
 
         </header>
 
@@ -121,9 +143,7 @@
 
     <!-- ================= JAVASCRIPT ================= -->
 
-    <script src="syllabus.js"></script>
-
-    <script src="script.js"></script>
+    <script type="module" src="script.js"></script>
 
 </body>
 

@@ -3,17 +3,33 @@
 // script.js
 // ========================================
 
-// ---------- Local Storage ----------
+import { syllabus } from "./syllabus.js";
+import { auth, db, provider } from "./firebase-config.js";
+import { signInWithPopup, signOut as firebaseSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-function getSavedData() {
-    return JSON.parse(localStorage.getItem("studyProgress")) || {};
+// ---------- Auth & User State ----------
+
+let currentUser = null;
+let progressData = {};
+
+// ---------- Cloud Firestore Database ----------
+
+async function getSavedData() {
+    if (!currentUser) return {};
+    const docRef = doc(db, "users", currentUser.uid);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists()) {
+        return docSnap.data().progress || {};
+    }
+    return {};
 }
 
-function saveData(data) {
-    localStorage.setItem("studyProgress", JSON.stringify(data));
+async function saveData(data) {
+    if (!currentUser) return;
+    const docRef = doc(db, "users", currentUser.uid);
+    await setDoc(docRef, { progress: data }, { merge: true });
 }
-
-let progressData = getSavedData();
 
 // ---------- Elements ----------
 
@@ -29,13 +45,63 @@ const overallProgress = document.getElementById("overallProgress");
 const totalSubjects = document.getElementById("totalSubjects");
 const backBtn = document.getElementById("backBtn");
 
+// Auth Elements
+const loginScreen = document.getElementById("loginScreen");
+const dashboard = document.getElementById("dashboard");
+const profileName = document.getElementById("profileName");
+const profileImage = document.getElementById("profileImage");
+const signOutBtn = document.getElementById("signOutBtn");
+const firebaseLoginBtn = document.getElementById("firebaseLoginBtn");
+
+// ========================================
+// AUTHENTICATION
+// ========================================
+
+firebaseLoginBtn.addEventListener("click", async () => {
+    try {
+        await signInWithPopup(auth, provider);
+    } catch (error) {
+        console.error("Login Failed:", error);
+        alert("Login failed! Did you add your Firebase keys in firebase-config.js?");
+    }
+});
+
+signOutBtn.addEventListener("click", async () => {
+    await firebaseSignOut(auth);
+});
+
+onAuthStateChanged(auth, async (user) => {
+    if (user) {
+        currentUser = user;
+        
+        // Update Profile UI
+        profileName.textContent = currentUser.displayName || currentUser.email;
+        profileImage.src = currentUser.photoURL || "";
+
+        // Hide Login, Show Dashboard
+        loginScreen.classList.add("hidden");
+        dashboard.classList.remove("hidden");
+
+        // Load User Data from Firestore
+        progressData = await getSavedData();
+        createSubjectCards();
+        updateDashboard();
+    } else {
+        // Clear user state
+        currentUser = null;
+        progressData = {};
+        
+        // Hide Dashboard, Show Login
+        dashboard.classList.add("hidden");
+        loginScreen.classList.remove("hidden");
+    }
+});
+
 // ========================================
 // INITIAL LOAD
 // ========================================
 
-createSubjectCards();
-
-updateDashboard();
+// Note: createSubjectCards and updateDashboard are called after Firebase loads data.
 
 backBtn.addEventListener("click", () => {
 
