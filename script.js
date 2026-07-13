@@ -1,17 +1,13 @@
-// ========================================
-// STUDENT DASHBOARD
-// script.js
-// ========================================
-
 import { syllabus } from "./syllabus.js";
 import { auth, db, provider } from "./firebase-config.js";
 import { signInWithPopup, signOut as firebaseSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { doc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // ---------- Auth & User State ----------
 
 let currentUser = null;
 let progressData = {};
+let studentProfile = null;
 
 // ---------- Cloud Firestore Database ----------
 
@@ -29,6 +25,22 @@ async function saveData(data) {
     if (!currentUser) return;
     const docRef = doc(db, "users", currentUser.uid);
     await setDoc(docRef, { progress: data }, { merge: true });
+}
+
+async function getStudentProfile() {
+    if (!currentUser) return null;
+    const docRef = doc(db, "users", currentUser.uid);
+    const docSnap = await getDoc(docRef);
+    if (docSnap.exists() && docSnap.data().profile) {
+        return docSnap.data().profile;
+    }
+    return null;
+}
+
+async function saveStudentProfile(profile) {
+    if (!currentUser) return;
+    const docRef = doc(db, "users", currentUser.uid);
+    await setDoc(docRef, { profile }, { merge: true });
 }
 
 // ---------- Elements ----------
@@ -53,6 +65,18 @@ const profileImage = document.getElementById("profileImage");
 const signOutBtn = document.getElementById("signOutBtn");
 const firebaseLoginBtn = document.getElementById("firebaseLoginBtn");
 
+// Profile Setup Elements
+const profileSetupScreen = document.getElementById("profileSetupScreen");
+const profileSetupForm = document.getElementById("profileSetupForm");
+const inputStudentName = document.getElementById("inputStudentName");
+const inputRollNumber = document.getElementById("inputRollNumber");
+const inputBranch = document.getElementById("inputBranch");
+const inputSemester = document.getElementById("inputSemester");
+const inputCollege = document.getElementById("inputCollege");
+const inputGoal = document.getElementById("inputGoal");
+const profileSemBadge = document.getElementById("profileSemBadge");
+const viewProfileBtn = document.getElementById("viewProfileBtn");
+
 // ========================================
 // AUTHENTICATION
 // ========================================
@@ -73,33 +97,121 @@ signOutBtn.addEventListener("click", async () => {
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         currentUser = user;
-        
-        // Update Profile UI
+
+        // Update Google Profile UI
         profileName.textContent = currentUser.displayName || currentUser.email;
         profileImage.src = currentUser.photoURL || "";
 
-        // Hide Login, Show Dashboard
+        // Hide Login
         loginScreen.classList.add("hidden");
-        dashboard.classList.remove("hidden");
 
-        // Load User Data from Firestore
-        progressData = await getSavedData();
-        createSubjectCards();
-        updateDashboard();
+        // Load Student Profile from Firestore
+        studentProfile = await getStudentProfile();
+
+        if (!studentProfile) {
+            // First time user: show profile setup
+            dashboard.classList.add("hidden");
+            profileSetupScreen.classList.remove("hidden");
+        } else {
+            // Returning user: show dashboard
+            updateHeaderBadge(studentProfile);
+
+            // Check if editing
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('edit') === '1') {
+                dashboard.classList.add("hidden");
+                profileSetupScreen.classList.remove("hidden");
+                
+                inputStudentName.value = studentProfile.studentName || "";
+                inputRollNumber.value = studentProfile.rollNumber || "";
+                inputBranch.value = studentProfile.branch || "";
+                inputSemester.value = studentProfile.semester || "";
+                inputCollege.value = studentProfile.college || "";
+                inputGoal.value = studentProfile.goal || "";
+            } else {
+                profileSetupScreen.classList.add("hidden");
+                dashboard.classList.remove("hidden");
+            }
+
+            // Load Progress Data from Firestore
+            progressData = await getSavedData();
+            createSubjectCards();
+            updateDashboard();
+        }
     } else {
         // Clear user state
         currentUser = null;
         progressData = {};
-        
-        // Hide Dashboard, Show Login
+        studentProfile = null;
+
+        // Hide Dashboard & Setup, Show Login
         dashboard.classList.add("hidden");
+        profileSetupScreen.classList.add("hidden");
         loginScreen.classList.remove("hidden");
     }
 });
 
 // ========================================
+// PROFILE SETUP FORM
+// ========================================
+
+profileSetupForm.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const saveBtn = document.getElementById("saveProfileBtn");
+    saveBtn.textContent = "Saving...";
+    saveBtn.disabled = true;
+
+    const profile = {
+        studentName: inputStudentName.value.trim(),
+        rollNumber: inputRollNumber.value.trim(),
+        branch: inputBranch.value,
+        semester: inputSemester.value,
+        college: inputCollege.value.trim(),
+        goal: inputGoal.value.trim() || "Study hard & excel!",
+    };
+
+    await saveStudentProfile(profile);
+    studentProfile = profile;
+
+    updateHeaderBadge(profile);
+
+    // Remove edit param if it was there
+    window.history.replaceState({}, document.title, window.location.pathname);
+
+    // Show dashboard
+    profileSetupScreen.classList.add("hidden");
+    dashboard.classList.remove("hidden");
+
+    // Load Progress
+    progressData = await getSavedData();
+    createSubjectCards();
+    updateDashboard();
+
+    saveBtn.textContent = "Create My Profile";
+    saveBtn.disabled = false;
+});
+
+// ========================================
+// HEADER BADGE
+// ========================================
+
+function updateHeaderBadge(profile) {
+    if (profileSemBadge && profile) {
+        profileSemBadge.textContent = `${profile.branch} - Sem ${profile.semester}`;
+    }
+    if (profileName && profile) {
+        profileName.textContent = profile.studentName || currentUser?.displayName || "Student";
+    }
+}
+
+// ========================================
 // INITIAL LOAD
 // ========================================
+
+viewProfileBtn.addEventListener("click", () => {
+    window.location.href = "profile.html";
+});
 
 // Note: createSubjectCards and updateDashboard are called after Firebase loads data.
 
@@ -129,7 +241,7 @@ function createSubjectCards() {
 
         card.innerHTML = `
         
-            <h2>${subject.icon} ${subject.name}</h2>
+            <h2>${subject.name}</h2>
 
             <div class="mini-progress">
 
@@ -180,7 +292,7 @@ function openSubject(subjectId) {
 
     subjectView.classList.remove("hidden");
 
-    subjectTitle.innerHTML = `${subject.icon} ${subject.name}`;
+    subjectTitle.innerHTML = `${subject.name}`;
 
     unitsContainer.innerHTML = "";
 
@@ -223,7 +335,7 @@ function openSubject(subjectId) {
 
                 <h3>${unit.name}</h3>
 
-                <span>▼</span>
+                <span>&#9660;</span>
 
             </div>
 

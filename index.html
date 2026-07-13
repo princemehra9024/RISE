@@ -6,6 +6,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Student Dashboard</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="style.css">
 </head>
@@ -15,7 +18,7 @@
     <!-- ================= LOGIN SCREEN ================= -->
     <div id="loginScreen" class="login-screen">
         <div class="login-box">
-            <h1>📚 Student Dashboard</h1>
+            <h1>Student Dashboard</h1>
             <p>Please sign in to track your individual progress.</p>
             <button id="firebaseLoginBtn" class="firebase-login-btn">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo">
@@ -23,6 +26,83 @@
             </button>
         </div>
     </div>
+
+    <!-- ================= PROFILE SETUP SCREEN ================= -->
+    <div id="profileSetupScreen" class="profile-setup-screen hidden">
+        <div class="profile-setup-box">
+            <div class="setup-header">
+                <div class="setup-icon-text">PROFILE</div>
+                <h1>Complete Your Profile</h1>
+                <p>Tell us about yourself to personalize your dashboard</p>
+            </div>
+
+            <form id="profileSetupForm" class="setup-form">
+
+                <div class="form-group">
+                    <label for="inputStudentName">Full Name</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="inputStudentName" placeholder="Enter your full name" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputRollNumber">Roll Number</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="inputRollNumber" placeholder="e.g. MCA2024001" required>
+                    </div>
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="inputBranch">Course / Branch</label>
+                        <div class="input-wrapper">
+                            <select id="inputBranch" required>
+                                <option value="IMCA" selected>IMCA</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="inputSemester">Semester</label>
+                        <div class="input-wrapper">
+                            <select id="inputSemester" required>
+                                <option value="" disabled selected>Select sem</option>
+                                <option value="1">Semester 1</option>
+                                <option value="2">Semester 2</option>
+                                <option value="3">Semester 3</option>
+                                <option value="4">Semester 4</option>
+                                <option value="5">Semester 5</option>
+                                <option value="6">Semester 6</option>
+                                <option value="7">Semester 7</option>
+                                <option value="8">Semester 8</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputCollege">College / University</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="inputCollege" placeholder="Enter your college name" value="UOK" required>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="inputGoal">Study Goal</label>
+                    <div class="input-wrapper">
+                        <input type="text" id="inputGoal" placeholder="e.g. Score 90%+, Get placement..." >
+                    </div>
+                </div>
+
+                <button type="submit" id="saveProfileBtn" class="save-profile-btn">
+                    Create My Profile
+                </button>
+
+            </form>
+        </div>
+    </div>
+
+    <!-- PROFILE PAGE MOVED TO profile.html -->
 
     <!-- ================= DASHBOARD ================= -->
     <div id="dashboard" class="container hidden">
@@ -32,16 +112,18 @@
         <header class="dashboard-header">
             
             <div class="header-titles">
-                <h1>📚 Student Dashboard</h1>
+                <h1>Student Dashboard</h1>
                 <p>IMCA Semester 2 Progress Tracker</p>
             </div>
 
-            <div id="userProfile" class="user-profile">
+            <div id="userProfile" class="user-profile" style="cursor:pointer">
                 <img id="profileImage" src="" alt="Profile Picture" class="profile-img">
                 <div class="profile-info">
                     <span id="profileName">User Name</span>
-                    <button id="signOutBtn" class="signout-btn">Sign Out</button>
+                    <span id="profileSemBadge" class="header-sem-badge"></span>
                 </div>
+                <button id="viewProfileBtn" class="view-profile-btn">Profile</button>
+                <button id="signOutBtn" class="signout-btn">Sign Out</button>
             </div>
 
         </header>
@@ -101,7 +183,7 @@
 
                 <h3>Exam Goal</h3>
 
-                <p>🏆 Top Rank</p>
+                <p>Top Rank</p>
 
             </div>
 
@@ -129,7 +211,7 @@
 
             <button id="backBtn">
 
-                ⬅ Back To Dashboard
+                Back To Dashboard
 
             </button>
 

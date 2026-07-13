@@ -6,7 +6,7 @@ export const syllabus = {
         // Yahan Data Structures
         {
     id: "ds",
-    icon: "📘",
+    icon: "",
     name: "Data Structures",
 
     units: [
@@ -167,7 +167,7 @@ export const syllabus = {
         // Yahan Computer Architecture
         {
     id: "ca",
-    icon: "💻",
+    icon: "",
     name: "Computer Architecture",
 
     units: [
@@ -361,7 +361,7 @@ export const syllabus = {
 },
 {
     id: "graphics",
-    icon: "🎨",
+    icon: "",
     name: "Graphics Design & Animation",
 
     units: [
@@ -548,7 +548,7 @@ export const syllabus = {
 },
 {
     id: "graph",
-    icon: "📐",
+    icon: "",
     name: "Graph Theory & Discrete Structures",
 
     units: [
@@ -673,7 +673,7 @@ export const syllabus = {
 },
 {
     id: "english",
-    icon: "📝",
+    icon: "",
     name: "English",
 
     units: [
@@ -788,7 +788,7 @@ export const syllabus = {
 
 {
     id: "lab",
-    icon: "🧪",
+    icon: "",
     name: "Lab",
 
     units: [

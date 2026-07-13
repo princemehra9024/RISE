@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Profile</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="profile-standalone">
+
+        <!-- Top Nav -->
+        <div class="pf-topbar">
+            <a href="index.html" class="pf-back-link">&#8592; Back to Dashboard</a>
+            <h2>My Profile</h2>
+            <div></div>
+        </div>
+
+        <!-- Loading State -->
+        <div id="profileLoading" class="pf-page-loading">Loading profile...</div>
+
+        <!-- Not Logged In State -->
+        <div id="profileNotLoggedIn" class="pf-page-loading hidden">
+            You are not logged in. <a href="index.html">Go to Dashboard</a> to sign in.
+        </div>
+
+        <!-- Profile Content -->
+        <div id="profileContent" class="profile-page hidden">
+
+            <!-- SECTION A: Student Info -->
+            <div class="pf-header">
+                <img id="pfAvatar" src="" alt="Profile" class="pf-avatar">
+                <div class="pf-header-info">
+                    <h2 id="pfName">--</h2>
+                    <p id="pfEmail" class="pf-email">--</p>
+                    <div class="pf-tags">
+                        <span class="pf-tag pf-tag-blue" id="pfBranch">--</span>
+                        <span class="pf-tag pf-tag-purple" id="pfSemester">--</span>
+                        <span class="pf-tag pf-tag-dark" id="pfRollNumber">--</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="pf-college-row">
+                <span class="pf-label">College</span>
+                <span id="pfCollege" class="pf-value">--</span>
+                <span class="pf-separator">|</span>
+                <span class="pf-label">Goal</span>
+                <span id="pfGoal" class="pf-value">--</span>
+            </div>
+
+            <!-- SECTION B: Analytics Cards -->
+            <div class="pf-analytics">
+                <div class="pf-stat-card">
+                    <div class="pf-stat-label">Overall Progress</div>
+                    <div class="pf-stat-value pf-stat-primary" id="pfProgress">0%</div>
+                    <div class="pf-progress-bar"><div class="pf-progress-fill" id="pfProgressBar"></div></div>
+                </div>
+                <div class="pf-stat-card">
+                    <div class="pf-stat-label">Completed Topics</div>
+                    <div class="pf-stat-value pf-stat-green" id="pfCompleted">0</div>
+                </div>
+                <div class="pf-stat-card">
+                    <div class="pf-stat-label">Remaining Topics</div>
+                    <div class="pf-stat-value pf-stat-orange" id="pfRemaining">0</div>
+                </div>
+                <div class="pf-stat-card">
+                    <div class="pf-stat-label">Exam Readiness</div>
+                    <div class="pf-stat-value pf-stat-red" id="pfReadiness">0%</div>
+                    <div class="pf-stat-sub">If exam was today</div>
+                </div>
+            </div>
+
+            <!-- SECTION C: Rank & Leaderboard -->
+            <div class="pf-section">
+                <div class="pf-section-header">
+                    <h3>Rank & Leaderboard</h3>
+                    <div class="pf-rank-badge" id="pfRankBadge">Rank #-- / --</div>
+                </div>
+                <div id="leaderboardLoading" class="pf-loading">Loading leaderboard...</div>
+                <div class="pf-leaderboard-wrap">
+                    <table class="pf-leaderboard" id="leaderboardTable">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Student</th>
+                                <th>Progress</th>
+                                <th>Topics Done</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardBody">
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- SECTION D: Subject-wise Report -->
+            <div class="pf-section">
+                <h3>Subject-wise Report</h3>
+                <div id="subjectReportContainer" class="pf-subject-reports">
+                </div>
+            </div>
+
+            <!-- SECTION E: Actions -->
+            <div class="pf-actions">
+                <button class="edit-profile-btn" id="pfEditBtn">Edit Profile</button>
+                <button class="pf-signout-btn" id="pfSignOutBtn">Sign Out</button>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script type="module" src="profile.js"></script>
+
+</body>
+
+</html>
