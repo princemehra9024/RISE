@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Student Dashboard</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+    <div class="container">
+
+        <!-- ================= HEADER ================= -->
+
+        <header>
+
+            <h1>📚 Student Dashboard</h1>
+
+            <p>IMCA Semester 2 Progress Tracker</p>
+
+        </header>
+
+        <!-- ================= OVERALL PROGRESS ================= -->
+
+        <section class="overall-progress-card">
+
+            <div class="card-header">
+
+                <h2>Overall Semester Progress</h2>
+
+                <span id="overallPercentage">0%</span>
+
+            </div>
+
+            <div class="progress-bar">
+
+                <div
+                    class="progress-fill"
+                    id="overallProgress">
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ================= STATS ================= -->
+
+        <section class="stats-grid">
+
+            <div class="stat-card">
+
+                <h3>Completed Topics</h3>
+
+                <p id="completedTopics">0</p>
+
+            </div>
+
+            <div class="stat-card">
+
+                <h3>Remaining Topics</h3>
+
+                <p id="remainingTopics">0</p>
+
+            </div>
+
+            <div class="stat-card">
+
+                <h3>Total Subjects</h3>
+
+                <p id="totalSubjects">0</p>
+
+            </div>
+
+            <div class="stat-card">
+
+                <h3>Exam Goal</h3>
+
+                <p>🏆 Top Rank</p>
+
+            </div>
+
+        </section>
+
+        <!-- ================= SUBJECT LIST ================= -->
+
+        <h2 class="section-title">
+
+            Subjects
+
+        </h2>
+
+        <section
+            id="subjectsContainer"
+            class="subjects-grid">
+
+        </section>
+
+        <!-- ================= SUBJECT PAGE ================= -->
+
+        <section
+            id="subjectView"
+            class="hidden">
+
+            <button id="backBtn">
+
+                ⬅ Back To Dashboard
+
+            </button>
+
+            <h1 id="subjectTitle"></h1>
+
+            <div id="unitsContainer"></div>
+
+        </section>
+
+    </div>
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script src="syllabus.js"></script>
+
+    <script src="script.js"></script>
+
+</body>
+
+</html>

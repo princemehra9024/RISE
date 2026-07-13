@@ -1,0 +1,446 @@
+/* ==========================
+   RESET
+========================== */
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Segoe UI,Tahoma,Geneva,Verdana,sans-serif;
+}
+
+body{
+    background:#0f172a;
+    color:white;
+    min-height:100vh;
+}
+
+/* ==========================
+   CONTAINER
+========================== */
+
+.container{
+    width:90%;
+    max-width:1400px;
+    margin:auto;
+    padding:30px;
+}
+
+/* ==========================
+   HEADER
+========================== */
+
+header{
+    text-align:center;
+    margin-bottom:35px;
+}
+
+header h1{
+    font-size:3rem;
+    margin-bottom:10px;
+}
+
+header p{
+    color:#94a3b8;
+    font-size:18px;
+}
+
+/* ==========================
+   OVERALL PROGRESS
+========================== */
+
+.overall-progress-card{
+
+    background:#1e293b;
+
+    padding:25px;
+
+    border-radius:18px;
+
+    margin-bottom:30px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.25);
+
+}
+
+.card-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:15px;
+
+}
+
+.card-header span{
+
+    font-size:24px;
+
+    font-weight:bold;
+
+}
+
+.progress-bar{
+
+    width:100%;
+
+    height:18px;
+
+    background:#334155;
+
+    border-radius:50px;
+
+    overflow:hidden;
+
+}
+
+.progress-fill{
+
+    width:0%;
+
+    height:100%;
+
+    background:#22c55e;
+
+    transition:.4s;
+
+}
+
+/* ==========================
+   STATS
+========================== */
+
+.stats-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+
+    gap:20px;
+
+    margin-bottom:35px;
+
+}
+
+.stat-card{
+
+    background:#1e293b;
+
+    border-radius:18px;
+
+    padding:20px;
+
+    text-align:center;
+
+    transition:.3s;
+
+}
+
+.stat-card:hover{
+
+    transform:translateY(-6px);
+
+}
+
+.stat-card h3{
+
+    color:#cbd5e1;
+
+    margin-bottom:15px;
+
+}
+
+.stat-card p{
+
+    font-size:34px;
+
+    font-weight:bold;
+
+}
+
+/* ==========================
+   SUBJECT TITLE
+========================== */
+
+.section-title{
+
+    margin-bottom:20px;
+
+    font-size:28px;
+
+}
+
+/* ==========================
+   SUBJECT GRID
+========================== */
+
+.subjects-grid{
+
+    display:grid;
+
+    grid-template-columns:repeat(auto-fit,minmax(300px,1fr));
+
+    gap:20px;
+
+}
+
+/* ==========================
+   SUBJECT CARD
+========================== */
+
+.subject-card{
+
+    background:#1e293b;
+
+    border-radius:18px;
+
+    padding:20px;
+
+    transition:.3s;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.25);
+
+}
+
+.subject-card:hover{
+
+    transform:translateY(-8px);
+
+}
+
+.subject-card h2{
+
+    margin-bottom:20px;
+
+}
+
+.subject-card p{
+
+    margin-top:10px;
+
+    color:#cbd5e1;
+
+}
+
+/* ==========================
+   MINI PROGRESS
+========================== */
+
+.mini-progress{
+
+    width:100%;
+
+    height:12px;
+
+    background:#334155;
+
+    border-radius:30px;
+
+    overflow:hidden;
+
+}
+
+.mini-fill{
+
+    width:0%;
+
+    height:100%;
+
+    background:#3b82f6;
+
+    transition:.4s;
+
+}
+
+/* ==========================
+   BUTTON
+========================== */
+
+button{
+
+    width:100%;
+
+    margin-top:18px;
+
+    padding:12px;
+
+    border:none;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+    background:#3b82f6;
+
+    color:white;
+
+    font-size:16px;
+
+    transition:.3s;
+
+}
+
+button:hover{
+
+    background:#2563eb;
+
+}
+
+/* ==========================
+   SUBJECT VIEW
+========================== */
+
+.hidden{
+
+    display:none;
+
+}
+
+#subjectView{
+
+    margin-top:35px;
+
+}
+
+#subjectTitle{
+
+    margin:25px 0;
+
+}
+
+/* ==========================
+   BACK BUTTON
+========================== */
+
+#backBtn{
+
+    width:auto;
+
+    padding:12px 20px;
+
+}
+
+/* ==========================
+   UNIT CARD
+========================== */
+
+.unit-card{
+
+    background:#1e293b;
+
+    border-radius:18px;
+
+    padding:20px;
+
+    margin-bottom:20px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.25);
+
+}
+
+/* ==========================
+   UNIT HEADER
+========================== */
+
+.unit-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    cursor:pointer;
+
+    user-select:none;
+
+}
+
+.unit-header span{
+
+    font-size:22px;
+
+}
+
+/* ==========================
+   TOPIC LIST
+========================== */
+
+.topic-list{
+
+    display:none;
+
+    margin-top:20px;
+
+}
+
+/* ==========================
+   TOPIC
+========================== */
+
+.topic{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:12px;
+
+    margin:12px 0;
+
+}
+
+.topic input{
+
+    width:20px;
+
+    height:20px;
+
+    cursor:pointer;
+
+}
+
+.topic span{
+
+    font-size:17px;
+
+}
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media(max-width:768px){
+
+header h1{
+
+font-size:2rem;
+
+}
+
+.card-header{
+
+flex-direction:column;
+
+align-items:flex-start;
+
+gap:10px;
+
+}
+
+.subjects-grid{
+
+grid-template-columns:1fr;
+
+}
+
+.stats-grid{
+
+grid-template-columns:1fr;
+
+}
+
+}
