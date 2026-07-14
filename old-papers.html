@@ -1,0 +1,1184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Old Papers – Student Dashboard</title>
+    <meta name="description" content="Browse old question papers by semester and subject for IMCA course.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <style>
+        /* ===== OLD PAPERS PAGE ===== */
+        .op-page {
+            background: #F3F4F6;
+            min-height: 100vh;
+            padding-bottom: 80px;
+        }
+
+        /* Top Bar */
+        .op-topbar {
+            background: #FFFFFF;
+            border-bottom: 1px solid #E5E7EB;
+            padding: 20px 40px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .op-topbar-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .op-back-link {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #6B7280;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 14px;
+            transition: color 0.2s;
+        }
+
+        .op-back-link:hover { color: #111827; }
+
+        .op-back-link svg {
+            width: 16px;
+            height: 16px;
+        }
+
+        .op-topbar h1 {
+            font-size: 20px;
+            color: #111827;
+            margin: 0;
+            letter-spacing: -0.01em;
+        }
+
+        .op-badge {
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+            color: white;
+            font-size: 11px;
+            font-weight: 700;
+            padding: 4px 12px;
+            border-radius: 20px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        /* Filter Bar */
+        .op-filter-bar {
+            width: 92%;
+            max-width: 1200px;
+            margin: 40px auto 32px;
+        }
+
+        .op-filter-label {
+            font-size: 12px;
+            font-weight: 700;
+            color: #6B7280;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 16px;
+        }
+
+        .op-filter-controls {
+            display: flex;
+            gap: 16px;
+            flex-wrap: wrap;
+            align-items: center;
+        }
+
+        .op-select-wrapper {
+            position: relative;
+            flex: 1;
+            min-width: 180px;
+            max-width: 280px;
+        }
+
+        .op-select-wrapper::after {
+            content: '';
+            position: absolute;
+            right: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 0;
+            height: 0;
+            border-left: 5px solid transparent;
+            border-right: 5px solid transparent;
+            border-top: 6px solid #6B7280;
+            pointer-events: none;
+        }
+
+        .op-select {
+            width: 100%;
+            padding: 14px 40px 14px 18px;
+            border: 2px solid #E5E7EB;
+            border-radius: 14px;
+            font-size: 15px;
+            font-weight: 600;
+            color: #111827;
+            background: #FFFFFF;
+            appearance: none;
+            cursor: pointer;
+            transition: all 0.2s;
+            outline: none;
+        }
+
+        .op-select:focus {
+            border-color: #4F46E5;
+            box-shadow: 0 0 0 4px rgba(79,70,229,0.1);
+        }
+
+        /* Section title */
+        .op-section-header {
+            width: 92%;
+            max-width: 1200px;
+            margin: 0 auto 24px;
+            display: flex;
+            align-items: baseline;
+            gap: 12px;
+        }
+
+        .op-section-title {
+            font-size: 26px;
+            font-weight: 800;
+            color: #111827;
+            letter-spacing: -0.01em;
+        }
+
+        .op-section-count {
+            font-size: 14px;
+            color: #9CA3AF;
+            font-weight: 500;
+        }
+
+        /* Semester Grid */
+        .op-sem-grid {
+            width: 92%;
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 20px;
+        }
+
+        .op-sem-card {
+            background: #FFFFFF;
+            border: 2px solid #E5E7EB;
+            border-radius: 24px;
+            padding: 32px 28px;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.03);
+        }
+
+        .op-sem-card::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4F46E5, #7C3AED);
+            opacity: 0;
+            transition: opacity 0.3s;
+        }
+
+        .op-sem-card:hover {
+            transform: translateY(-6px);
+            border-color: #4F46E5;
+            box-shadow: 0 20px 48px rgba(79,70,229,0.12);
+        }
+
+        .op-sem-card:hover::before {
+            opacity: 1;
+        }
+
+        .op-sem-card.active-sem {
+            border-color: #4F46E5;
+            background: linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 100%);
+            box-shadow: 0 20px 48px rgba(79,70,229,0.15);
+        }
+
+        .op-sem-card.active-sem::before {
+            opacity: 1;
+        }
+
+        .op-sem-icon {
+            width: 52px;
+            height: 52px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            background: linear-gradient(135deg, #EEF2FF, #E0E7FF);
+            margin-bottom: 4px;
+        }
+
+        .op-sem-card.active-sem .op-sem-icon {
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
+        }
+
+        .op-sem-number {
+            font-size: 13px;
+            font-weight: 700;
+            color: #4F46E5;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .op-sem-title {
+            font-size: 20px;
+            font-weight: 800;
+            color: #111827;
+            letter-spacing: -0.01em;
+            line-height: 1.2;
+        }
+
+        .op-sem-meta {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            margin-top: 4px;
+        }
+
+        .op-sem-papers-count {
+            font-size: 13px;
+            color: #6B7280;
+            font-weight: 500;
+        }
+
+        .op-sem-dot {
+            width: 4px;
+            height: 4px;
+            border-radius: 50%;
+            background: #D1D5DB;
+        }
+
+        .op-sem-subjects-count {
+            font-size: 13px;
+            color: #6B7280;
+            font-weight: 500;
+        }
+
+        .op-sem-arrow {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            background: #F3F4F6;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: auto;
+            transition: all 0.2s;
+            align-self: flex-end;
+        }
+
+        .op-sem-card:hover .op-sem-arrow,
+        .op-sem-card.active-sem .op-sem-arrow {
+            background: #4F46E5;
+            color: white;
+        }
+
+        /* ===== PAPERS DETAIL VIEW ===== */
+        .op-detail-view {
+            display: none;
+            width: 92%;
+            max-width: 1200px;
+            margin: 0 auto;
+            animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1);
+        }
+
+        .op-detail-view.visible {
+            display: block;
+        }
+
+        .op-detail-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+
+        .op-detail-back {
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            color: #111827;
+            padding: 10px 18px;
+            border-radius: 12px;
+            font-weight: 600;
+            font-size: 14px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            transition: all 0.2s;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+        }
+
+        .op-detail-back:hover {
+            background: #F9FAFB;
+            border-color: #D1D5DB;
+        }
+
+        .op-detail-title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #111827;
+            letter-spacing: -0.02em;
+        }
+
+        .op-detail-subtitle {
+            font-size: 14px;
+            color: #6B7280;
+            font-weight: 500;
+        }
+
+        /* Subject Tabs */
+        .op-subject-tabs {
+            display: flex;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-bottom: 28px;
+        }
+
+        .op-tab {
+            padding: 10px 20px;
+            border-radius: 12px;
+            border: 2px solid #E5E7EB;
+            background: #FFFFFF;
+            color: #374151;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .op-tab:hover {
+            border-color: #4F46E5;
+            color: #4F46E5;
+        }
+
+        .op-tab.active {
+            background: #4F46E5;
+            border-color: #4F46E5;
+            color: white;
+        }
+
+        /* Papers List */
+        .op-papers-section {
+            display: none;
+        }
+
+        .op-papers-section.active {
+            display: block;
+            animation: fadeUp 0.3s ease;
+        }
+
+        .op-papers-section-title {
+            font-size: 18px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .op-papers-section-title span {
+            font-size: 13px;
+            color: #6B7280;
+            font-weight: 500;
+        }
+
+        .op-papers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 16px;
+            margin-bottom: 40px;
+        }
+
+        .op-paper-card {
+            background: #FFFFFF;
+            border: 1px solid #E5E7EB;
+            border-radius: 18px;
+            padding: 24px;
+            display: flex;
+            align-items: flex-start;
+            gap: 16px;
+            transition: all 0.2s;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+        }
+
+        .op-paper-card:hover {
+            transform: translateY(-3px);
+            border-color: #4F46E5;
+            box-shadow: 0 12px 28px rgba(79,70,229,0.1);
+        }
+
+        .op-paper-icon {
+            width: 44px;
+            height: 44px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, #EEF2FF, #E0E7FF);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .op-paper-info {
+            flex: 1;
+            min-width: 0;
+        }
+
+        .op-paper-year {
+            font-size: 11px;
+            font-weight: 700;
+            color: #4F46E5;
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+            margin-bottom: 4px;
+        }
+
+        .op-paper-name {
+            font-size: 15px;
+            font-weight: 700;
+            color: #111827;
+            margin-bottom: 6px;
+            line-height: 1.3;
+        }
+
+        .op-paper-meta {
+            font-size: 12px;
+            color: #9CA3AF;
+            font-weight: 500;
+        }
+
+        .op-paper-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 16px;
+        }
+
+        .op-btn-view {
+            flex: 1;
+            padding: 10px 14px;
+            background: #111827;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            text-align: center;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .op-btn-view:hover {
+            background: #000000;
+            transform: translateY(-1px);
+        }
+
+        .op-btn-download {
+            padding: 10px 14px;
+            background: #F3F4F6;
+            color: #374151;
+            border: none;
+            border-radius: 10px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            text-decoration: none;
+        }
+
+        .op-btn-download:hover {
+            background: #E5E7EB;
+        }
+
+        /* Empty state */
+        .op-empty {
+            text-align: center;
+            padding: 60px 20px;
+            color: #6B7280;
+        }
+
+        .op-empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+        }
+
+        .op-empty h3 {
+            font-size: 20px;
+            color: #374151;
+            margin-bottom: 8px;
+        }
+
+        .op-empty p {
+            font-size: 15px;
+        }
+
+        /* Upload CTA */
+        .op-upload-cta {
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+            border-radius: 20px;
+            padding: 32px 36px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 32px 0;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .op-upload-cta-text h3 {
+            color: white;
+            font-size: 20px;
+            margin-bottom: 6px;
+        }
+
+        .op-upload-cta-text p {
+            color: rgba(255,255,255,0.75);
+            font-size: 14px;
+        }
+
+        .op-upload-btn {
+            background: white;
+            color: #4F46E5;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 24px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.2s;
+            white-space: nowrap;
+        }
+
+        .op-upload-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+
+        /* Loading */
+        .op-loading {
+            text-align: center;
+            padding: 80px 20px;
+            font-size: 16px;
+            color: #6B7280;
+            font-weight: 600;
+        }
+
+        @keyframes fadeUp {
+            from { opacity: 0; transform: translateY(16px); }
+            to   { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 640px) {
+            .op-topbar { padding: 16px 20px; }
+            .op-filter-bar,
+            .op-section-header,
+            .op-sem-grid,
+            .op-detail-view { width: 95%; }
+            .op-sem-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+            .op-sem-card { padding: 20px 16px; }
+            .op-filter-controls { flex-direction: column; }
+            .op-select-wrapper { max-width: 100%; }
+        }
+    </style>
+</head>
+<body>
+<div class="op-page">
+
+    <!-- TOP BAR -->
+    <div class="op-topbar">
+        <div class="op-topbar-left">
+            <a href="index.html" class="op-back-link" id="topBackLink">
+                <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                </svg>
+                Dashboard
+            </a>
+            <h1>📄 Old Question Papers</h1>
+        </div>
+        <span class="op-badge">IMCA</span>
+    </div>
+
+    <!-- LOADING STATE -->
+    <div class="op-loading" id="opLoading">Checking authentication…</div>
+
+    <!-- MAIN CONTENT (hidden until auth) -->
+    <div id="opMain" style="display:none;">
+
+        <!-- FILTER BAR -->
+        <div class="op-filter-bar">
+            <div class="op-filter-label">Filter Papers</div>
+            <div class="op-filter-controls">
+                <div class="op-select-wrapper">
+                    <select class="op-select" id="filterCourse">
+                        <option value="IMCA">IMCA</option>
+                        <option value="BCA">BCA</option>
+                        <option value="MCA">MCA</option>
+                    </select>
+                </div>
+                <div class="op-select-wrapper">
+                    <select class="op-select" id="filterSubject">
+                        <option value="all">All Subjects</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <!-- SEMESTER GRID VIEW -->
+        <div id="opSemGridView">
+            <div class="op-section-header">
+                <div class="op-section-title">All Semesters</div>
+                <div class="op-section-count" id="opSemCount"></div>
+            </div>
+            <div class="op-sem-grid" id="opSemGrid">
+                <!-- Cards injected by JS -->
+            </div>
+        </div>
+
+        <!-- PAPERS DETAIL VIEW (per semester) -->
+        <div class="op-detail-view" id="opDetailView">
+            <div class="op-detail-header">
+                <button class="op-detail-back" id="opDetailBackBtn">
+                    <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                    All Semesters
+                </button>
+                <div>
+                    <div class="op-detail-title" id="opDetailTitle">Semester 1</div>
+                    <div class="op-detail-subtitle" id="opDetailSubtitle">Select a subject to browse papers</div>
+                </div>
+            </div>
+
+            <!-- Subject Tabs -->
+            <div class="op-subject-tabs" id="opSubjectTabs"></div>
+
+            <!-- Papers Content -->
+            <div id="opPapersContent"></div>
+
+            <!-- Upload CTA -->
+            <div class="op-upload-cta">
+                <div class="op-upload-cta-text">
+                    <h3>📤 Have a paper to share?</h3>
+                    <p>Help your classmates by contributing old question papers to the community.</p>
+                </div>
+                <button class="op-upload-btn" onclick="alert('Upload feature coming soon! Contact your class representative.')">Contribute a Paper</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script type="module">
+import { auth, db } from "./firebase-config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+// ========================================
+// OLD PAPERS DATA
+// Each semester has subjects with papers array
+// Add real Google Drive / PDF links in the `url` field
+// ========================================
+const oldPapersDB = {
+    IMCA: {
+        1: {
+            semLabel: "Semester 1",
+            subjects: [
+                {
+                    name: "Computer Fundamentals",
+                    id: "cf",
+                    papers: [
+                        { year: "2023", title: "Computer Fundamentals – Nov 2023", type: "End Sem", url: "" },
+                        { year: "2022", title: "Computer Fundamentals – Nov 2022", type: "End Sem", url: "" },
+                        { year: "2021", title: "Computer Fundamentals – Nov 2021", type: "End Sem", url: "" },
+                    ]
+                },
+                {
+                    name: "Mathematics – I",
+                    id: "math1",
+                    papers: [
+                        { year: "2023", title: "Mathematics I – Nov 2023", type: "End Sem", url: "" },
+                        { year: "2022", title: "Mathematics I – Nov 2022", type: "End Sem", url: "" },
+                    ]
+                },
+                {
+                    name: "Programming in C",
+                    id: "c1",
+                    papers: [
+                        { year: "2023", title: "Programming in C – Nov 2023", type: "End Sem", url: "" },
+                        { year: "2022", title: "Programming in C – Nov 2022", type: "End Sem", url: "" },
+                    ]
+                },
+                {
+                    name: "Business Communication",
+                    id: "bc1",
+                    papers: [
+                        { year: "2023", title: "Business Communication – Nov 2023", type: "End Sem", url: "" },
+                    ]
+                },
+            ]
+        },
+        2: {
+            semLabel: "Semester 2",
+            subjects: [
+                {
+                    name: "Data Structures",
+                    id: "ds2",
+                    papers: [
+                        { year: "2024", title: "Data Structures – May 2024", type: "End Sem", url: "" },
+                        { year: "2023", title: "Data Structures – May 2023", type: "End Sem", url: "" },
+                        { year: "2022", title: "Data Structures – May 2022", type: "End Sem", url: "" },
+                    ]
+                },
+                {
+                    name: "Computer Architecture",
+                    id: "ca2",
+                    papers: [
+                        { year: "2024", title: "Computer Architecture – May 2024", type: "End Sem", url: "" },
+                        { year: "2023", title: "Computer Architecture – May 2023", type: "End Sem", url: "" },
+                    ]
+                },
+                {
+                    name: "Graphics Design & Animation",
+                    id: "gda2",
+                    papers: [
+                        { year: "2024", title: "Graphics Design & Animation – May 2024", type: "End Sem", url: "" },
+                        { year: "2023", title: "Graphics Design & Animation – May 2023", type: "End Sem", url: "" },
+                    ]
+                },
+                {
+                    name: "Graph Theory & Discrete Structures",
+                    id: "gtds2",
+                    papers: [
+                        { year: "2024", title: "Graph Theory & Discrete Structures – May 2024", type: "End Sem", url: "" },
+                        { year: "2023", title: "Graph Theory & Discrete Structures – May 2023", type: "End Sem", url: "" },
+                    ]
+                },
+                {
+                    name: "English",
+                    id: "eng2",
+                    papers: [
+                        { year: "2024", title: "English – May 2024", type: "End Sem", url: "" },
+                    ]
+                },
+            ]
+        },
+        3: {
+            semLabel: "Semester 3",
+            subjects: [
+                {
+                    name: "Operating Systems",
+                    id: "os3",
+                    papers: [
+                        { year: "2023", title: "Operating Systems – Nov 2023", type: "End Sem", url: "" },
+                        { year: "2022", title: "Operating Systems – Nov 2022", type: "End Sem", url: "" },
+                    ]
+                },
+                {
+                    name: "Database Management",
+                    id: "dbms3",
+                    papers: [
+                        { year: "2023", title: "DBMS – Nov 2023", type: "End Sem", url: "" },
+                        { year: "2022", title: "DBMS – Nov 2022", type: "End Sem", url: "" },
+                    ]
+                },
+                {
+                    name: "Java Programming",
+                    id: "java3",
+                    papers: [
+                        { year: "2023", title: "Java Programming – Nov 2023", type: "End Sem", url: "" },
+                    ]
+                },
+            ]
+        },
+        4: {
+            semLabel: "Semester 4",
+            subjects: [
+                {
+                    name: "Web Technology",
+                    id: "web4",
+                    papers: [
+                        { year: "2023", title: "Web Technology – May 2023", type: "End Sem", url: "" },
+                        { year: "2022", title: "Web Technology – May 2022", type: "End Sem", url: "" },
+                    ]
+                },
+                {
+                    name: "Software Engineering",
+                    id: "se4",
+                    papers: [
+                        { year: "2023", title: "Software Engineering – May 2023", type: "End Sem", url: "" },
+                    ]
+                },
+                {
+                    name: "Computer Networks",
+                    id: "cn4",
+                    papers: [
+                        { year: "2023", title: "Computer Networks – May 2023", type: "End Sem", url: "" },
+                    ]
+                },
+            ]
+        },
+        5: {
+            semLabel: "Semester 5",
+            subjects: [
+                {
+                    name: "Advanced Java",
+                    id: "aj5",
+                    papers: [
+                        { year: "2023", title: "Advanced Java – Nov 2023", type: "End Sem", url: "" },
+                    ]
+                },
+                {
+                    name: "Mobile Computing",
+                    id: "mc5",
+                    papers: [
+                        { year: "2023", title: "Mobile Computing – Nov 2023", type: "End Sem", url: "" },
+                    ]
+                },
+            ]
+        },
+        6: {
+            semLabel: "Semester 6",
+            subjects: [
+                {
+                    name: "Cloud Computing",
+                    id: "cc6",
+                    papers: [
+                        { year: "2023", title: "Cloud Computing – May 2023", type: "End Sem", url: "" },
+                    ]
+                },
+                {
+                    name: "Machine Learning",
+                    id: "ml6",
+                    papers: [
+                        { year: "2023", title: "Machine Learning – May 2023", type: "End Sem", url: "" },
+                    ]
+                },
+            ]
+        },
+        7: {
+            semLabel: "Semester 7",
+            subjects: [
+                {
+                    name: "Artificial Intelligence",
+                    id: "ai7",
+                    papers: [
+                        { year: "2022", title: "Artificial Intelligence – Nov 2022", type: "End Sem", url: "" },
+                    ]
+                },
+            ]
+        },
+        8: {
+            semLabel: "Semester 8",
+            subjects: [
+                {
+                    name: "Project / Dissertation",
+                    id: "proj8",
+                    papers: [
+                        { year: "2022", title: "Project Guidelines – 2022", type: "Reference", url: "" },
+                    ]
+                },
+            ]
+        },
+    }
+};
+
+const semIcons = ["📘","📗","📙","📕","📒","📔","📓","🗂️"];
+
+// ========================================
+// STATE
+// ========================================
+let selectedCourse = "IMCA";
+let selectedSem    = null;
+let activeTabId    = null;
+
+// ========================================
+// DOM refs
+// ========================================
+const opLoading       = document.getElementById("opLoading");
+const opMain          = document.getElementById("opMain");
+const opSemGridView   = document.getElementById("opSemGridView");
+const opDetailView    = document.getElementById("opDetailView");
+const opSemGrid       = document.getElementById("opSemGrid");
+const opSemCount      = document.getElementById("opSemCount");
+const opDetailTitle   = document.getElementById("opDetailTitle");
+const opDetailSubtitle= document.getElementById("opDetailSubtitle");
+const opSubjectTabs   = document.getElementById("opSubjectTabs");
+const opPapersContent = document.getElementById("opPapersContent");
+const filterCourse    = document.getElementById("filterCourse");
+const filterSubject   = document.getElementById("filterSubject");
+const opDetailBackBtn = document.getElementById("opDetailBackBtn");
+const topBackLink     = document.getElementById("topBackLink");
+
+// ========================================
+// AUTH GUARD
+// ========================================
+onAuthStateChanged(auth, (user) => {
+    if (user) {
+        opLoading.style.display = "none";
+        opMain.style.display    = "block";
+        renderSemGrid();
+    } else {
+        window.location.href = "index.html";
+    }
+});
+
+// ========================================
+// RENDER SEMESTER GRID
+// ========================================
+function renderSemGrid() {
+    const courseData = oldPapersDB[selectedCourse];
+    if (!courseData) return;
+
+    opSemGrid.innerHTML = "";
+    const sems = Object.keys(courseData);
+    opSemCount.textContent = `${sems.length} semesters`;
+
+    sems.forEach((semNum, idx) => {
+        const semData   = courseData[semNum];
+        const totalPapers = semData.subjects.reduce((s, sub) => s + sub.papers.length, 0);
+        const card = document.createElement("div");
+        card.className = "op-sem-card";
+        card.dataset.sem = semNum;
+        card.innerHTML = `
+            <div class="op-sem-icon">${semIcons[idx] || "📄"}</div>
+            <div class="op-sem-number">Semester ${semNum}</div>
+            <div class="op-sem-title">${semData.semLabel}</div>
+            <div class="op-sem-meta">
+                <span class="op-sem-papers-count">📄 ${totalPapers} papers</span>
+                <span class="op-sem-dot"></span>
+                <span class="op-sem-subjects-count">📚 ${semData.subjects.length} subjects</span>
+            </div>
+            <div class="op-sem-arrow">
+                <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"/>
+                </svg>
+            </div>
+        `;
+        card.addEventListener("click", () => openSemester(semNum));
+        opSemGrid.appendChild(card);
+    });
+
+    populateSubjectFilter();
+}
+
+// ========================================
+// POPULATE SUBJECT FILTER DROPDOWN
+// ========================================
+function populateSubjectFilter() {
+    const courseData = oldPapersDB[selectedCourse];
+    const subjectSet = new Set();
+    Object.values(courseData).forEach(semData => {
+        semData.subjects.forEach(sub => subjectSet.add(sub.name));
+    });
+
+    filterSubject.innerHTML = `<option value="all">All Subjects</option>`;
+    subjectSet.forEach(name => {
+        const opt = document.createElement("option");
+        opt.value = name;
+        opt.textContent = name;
+        filterSubject.appendChild(opt);
+    });
+}
+
+// ========================================
+// OPEN A SEMESTER
+// ========================================
+function openSemester(semNum) {
+    selectedSem = semNum;
+    const semData = oldPapersDB[selectedCourse][semNum];
+    if (!semData) return;
+
+    // Update active card
+    document.querySelectorAll(".op-sem-card").forEach(c => c.classList.remove("active-sem"));
+    const activeCard = document.querySelector(`.op-sem-card[data-sem="${semNum}"]`);
+    if (activeCard) activeCard.classList.add("active-sem");
+
+    // Switch views
+    opSemGridView.style.display  = "none";
+    opDetailView.classList.add("visible");
+
+    // Detail header
+    opDetailTitle.textContent   = semData.semLabel;
+    opDetailSubtitle.textContent = `${semData.subjects.length} subjects · ${semData.subjects.reduce((s,sub)=>s+sub.papers.length,0)} papers`;
+
+    // Build subject tabs
+    renderSubjectTabs(semData);
+
+    // Activate first tab
+    if (semData.subjects.length > 0) {
+        activateTab(semData.subjects[0].id, semData);
+    }
+}
+
+// ========================================
+// RENDER SUBJECT TABS
+// ========================================
+function renderSubjectTabs(semData) {
+    opSubjectTabs.innerHTML = "";
+
+    // Add "All" tab
+    const allTab = document.createElement("button");
+    allTab.className = "op-tab";
+    allTab.dataset.tabId = "all";
+    allTab.textContent = "All Papers";
+    allTab.addEventListener("click", () => activateTab("all", semData));
+    opSubjectTabs.appendChild(allTab);
+
+    semData.subjects.forEach(sub => {
+        const tab = document.createElement("button");
+        tab.className = "op-tab";
+        tab.dataset.tabId = sub.id;
+        tab.textContent = sub.name;
+        tab.addEventListener("click", () => activateTab(sub.id, semData));
+        opSubjectTabs.appendChild(tab);
+    });
+}
+
+// ========================================
+// ACTIVATE A TAB
+// ========================================
+function activateTab(tabId, semData) {
+    activeTabId = tabId;
+
+    // Update tab styles
+    document.querySelectorAll(".op-tab").forEach(t => t.classList.remove("active"));
+    const activeTab = document.querySelector(`.op-tab[data-tab-id="${tabId}"]`);
+    if (activeTab) activeTab.classList.add("active");
+
+    // Render papers
+    opPapersContent.innerHTML = "";
+
+    const subjectsToShow = tabId === "all"
+        ? semData.subjects
+        : semData.subjects.filter(s => s.id === tabId);
+
+    subjectsToShow.forEach(sub => {
+        const section = document.createElement("div");
+        section.innerHTML = `<div class="op-papers-section-title">${sub.name} <span>${sub.papers.length} papers</span></div>`;
+
+        if (sub.papers.length === 0) {
+            section.innerHTML += `<div class="op-empty" style="text-align:left;padding:20px 0">
+                <p style="color:#9CA3AF;font-size:14px;">No papers uploaded yet for this subject.</p></div>`;
+        } else {
+            const grid = document.createElement("div");
+            grid.className = "op-papers-grid";
+
+            sub.papers.forEach(paper => {
+                const card = document.createElement("div");
+                card.className = "op-paper-card";
+                card.innerHTML = `
+                    <div class="op-paper-icon">📄</div>
+                    <div class="op-paper-info">
+                        <div class="op-paper-year">${paper.year} · ${paper.type}</div>
+                        <div class="op-paper-name">${paper.title}</div>
+                        <div class="op-paper-meta">Question Paper · PDF</div>
+                        <div class="op-paper-actions">
+                            ${paper.url
+                                ? `<a href="${paper.url}" target="_blank" class="op-btn-view">👁 View</a>
+                                   <a href="${paper.url}" download class="op-btn-download">⬇</a>`
+                                : `<button class="op-btn-view" onclick="alert('Paper link coming soon! Ask your teacher or class representative.')">👁 View</button>
+                                   <button class="op-btn-download" onclick="alert('Download link coming soon!')">⬇</button>`
+                            }
+                        </div>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+
+            section.appendChild(grid);
+        }
+
+        opPapersContent.appendChild(section);
+    });
+
+    if (subjectsToShow.length === 0) {
+        opPapersContent.innerHTML = `
+            <div class="op-empty">
+                <div class="op-empty-icon">🔍</div>
+                <h3>No papers found</h3>
+                <p>No papers available for this selection.</p>
+            </div>
+        `;
+    }
+}
+
+// ========================================
+// BACK BUTTON – detail → grid
+// ========================================
+opDetailBackBtn.addEventListener("click", () => {
+    opDetailView.classList.remove("visible");
+    opSemGridView.style.display = "block";
+    document.querySelectorAll(".op-sem-card").forEach(c => c.classList.remove("active-sem"));
+    selectedSem = null;
+});
+
+// ========================================
+// TOP BACK LINK – handle detail view
+// ========================================
+topBackLink.addEventListener("click", (e) => {
+    if (opDetailView.classList.contains("visible")) {
+        e.preventDefault();
+        opDetailView.classList.remove("visible");
+        opSemGridView.style.display = "block";
+        document.querySelectorAll(".op-sem-card").forEach(c => c.classList.remove("active-sem"));
+    }
+});
+
+// ========================================
+// FILTER CHANGE – Course
+// ========================================
+filterCourse.addEventListener("change", () => {
+    selectedCourse = filterCourse.value;
+    opDetailView.classList.remove("visible");
+    opSemGridView.style.display = "block";
+    renderSemGrid();
+});
+
+// ========================================
+// FILTER CHANGE – Subject (highlights sems)
+// ========================================
+filterSubject.addEventListener("change", () => {
+    const val = filterSubject.value;
+    document.querySelectorAll(".op-sem-card").forEach(card => {
+        if (val === "all") {
+            card.style.opacity = "1";
+            card.style.pointerEvents = "auto";
+            return;
+        }
+        const semNum = card.dataset.sem;
+        const semData = oldPapersDB[selectedCourse][semNum];
+        const hasSubject = semData && semData.subjects.some(s => s.name === val);
+        card.style.opacity = hasSubject ? "1" : "0.35";
+        card.style.pointerEvents = hasSubject ? "auto" : "none";
+    });
+});
+</script>
+</body>
+</html>

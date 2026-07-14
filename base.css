@@ -1,0 +1,10 @@
+/* ==========================
+   BASE.CSS — Minimal shared tokens
+   Each page has its own full CSS file.
+========================== */
+
+/* Shared animation used by multiple pages */
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+}

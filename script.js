@@ -56,6 +56,8 @@ const overallPercentage = document.getElementById("overallPercentage");
 const overallProgress = document.getElementById("overallProgress");
 const totalSubjects = document.getElementById("totalSubjects");
 const backBtn = document.getElementById("backBtn");
+const circleProgress = document.getElementById("circleProgress");
+const heroName = document.getElementById("heroName");
 
 // Auth Elements
 const loginScreen = document.getElementById("loginScreen");
@@ -198,11 +200,11 @@ profileSetupForm.addEventListener("submit", async (e) => {
 
 function updateHeaderBadge(profile) {
     if (profileSemBadge && profile) {
-        profileSemBadge.textContent = `${profile.branch} - Sem ${profile.semester}`;
+        profileSemBadge.textContent = `${profile.branch} · Sem ${profile.semester}`;
     }
-    if (profileName && profile) {
-        profileName.textContent = profile.studentName || currentUser?.displayName || "Student";
-    }
+    const name = profile?.studentName || currentUser?.displayName || "Student";
+    if (profileName) profileName.textContent = name;
+    if (heroName)    heroName.textContent = name + "!";
 }
 
 // ========================================
@@ -211,6 +213,17 @@ function updateHeaderBadge(profile) {
 
 viewProfileBtn.addEventListener("click", () => {
     window.location.href = "profile.html";
+});
+
+document.getElementById("oldPapersBtn").addEventListener("click", () => {
+    window.location.href = "old-papers.html";
+});
+
+// Highlight active sidebar nav
+document.getElementById("navDashboard")?.addEventListener("click", (e) => {
+    e.preventDefault();
+    subjectView.classList.add("hidden");
+    subjectsContainer.style.display = "grid";
 });
 
 // Note: createSubjectCards and updateDashboard are called after Firebase loads data.
@@ -478,5 +491,12 @@ function updateDashboard() {
     overallPercentage.textContent = overall + "%";
 
     overallProgress.style.width = overall + "%";
+
+    // Drive circular SVG ring (circumference = 2π × 52 ≈ 326.73)
+    if (circleProgress) {
+        const circumference = 326.73;
+        const offset = circumference - (overall / 100) * circumference;
+        circleProgress.style.strokeDashoffset = offset;
+    }
 
 }

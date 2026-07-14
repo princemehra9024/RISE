@@ -4,40 +4,57 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RISE — Student Dashboard</title>
+    <meta name="description" content="RISE Student Dashboard — Track your semester progress, subjects and exam goals.">
 
-    <title>Student Dashboard</title>
+    <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Inter:wght@400;500;600;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="index.css">
 </head>
 
 <body>
 
     <!-- ================= LOGIN SCREEN ================= -->
     <div id="loginScreen" class="login-screen">
+        <!-- Decorative blobs -->
+        <div class="login-blob login-blob-1"></div>
+        <div class="login-blob login-blob-2"></div>
+        <div class="login-blob login-blob-3"></div>
+
         <div class="login-box">
-            <h1>Student Dashboard</h1>
-            <p>Please sign in to track your individual progress.</p>
+            <div class="login-brand">
+                <span class="login-rise">RISE</span>
+                <span class="login-star">✦</span>
+            </div>
+            <h1>Welcome Back!</h1>
+            <p>Sign in to track your semester progress and crush your goals.</p>
             <button id="firebaseLoginBtn" class="firebase-login-btn">
                 <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google Logo">
-                Sign in with Google
+                Continue with Google
             </button>
+            <div class="login-tagline">
+                <span class="script-accent">Let's rise together ♡</span>
+            </div>
         </div>
     </div>
 
     <!-- ================= PROFILE SETUP SCREEN ================= -->
     <div id="profileSetupScreen" class="profile-setup-screen hidden">
+        <div class="login-blob login-blob-1"></div>
+        <div class="login-blob login-blob-2"></div>
+
         <div class="profile-setup-box">
             <div class="setup-header">
-                <div class="setup-icon-text">PROFILE</div>
-                <h1>Complete Your Profile</h1>
-                <p>Tell us about yourself to personalize your dashboard</p>
+                <div class="setup-icon-text">✦ PROFILE SETUP ✦</div>
+                <h1>Tell Us About You</h1>
+                <p>Personalize your RISE dashboard</p>
             </div>
 
             <form id="profileSetupForm" class="setup-form">
-
                 <div class="form-group">
                     <label for="inputStudentName">Full Name</label>
                     <div class="input-wrapper">
@@ -54,7 +71,7 @@
 
                 <div class="form-row">
                     <div class="form-group">
-                        <label for="inputBranch">Course / Branch</label>
+                        <label for="inputBranch">Course</label>
                         <div class="input-wrapper">
                             <select id="inputBranch" required>
                                 <option value="IMCA" selected>IMCA</option>
@@ -90,143 +107,144 @@
                 <div class="form-group">
                     <label for="inputGoal">Study Goal</label>
                     <div class="input-wrapper">
-                        <input type="text" id="inputGoal" placeholder="e.g. Score 90%+, Get placement..." >
+                        <input type="text" id="inputGoal" placeholder="e.g. Score 90%+, Get placement...">
                     </div>
                 </div>
 
                 <button type="submit" id="saveProfileBtn" class="save-profile-btn">
-                    Create My Profile
+                    Create My Profile ✦
                 </button>
-
             </form>
         </div>
     </div>
 
-    <!-- PROFILE PAGE MOVED TO profile.html -->
-
     <!-- ================= DASHBOARD ================= -->
-    <div id="dashboard" class="container hidden">
+    <div id="dashboard" class="dash-wrap hidden">
 
-        <!-- ================= HEADER ================= -->
-
-        <header class="dashboard-header">
-            
-            <div class="header-titles">
-                <h1>Student Dashboard</h1>
-                <p>IMCA Semester 2 Progress Tracker</p>
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <span class="sb-rise">RISE</span>
+                <span class="sb-star">✦</span>
             </div>
 
-            <div id="userProfile" class="user-profile" style="cursor:pointer">
-                <img id="profileImage" src="" alt="Profile Picture" class="profile-img">
-                <div class="profile-info">
-                    <span id="profileName">User Name</span>
-                    <span id="profileSemBadge" class="header-sem-badge"></span>
+            <nav class="sidebar-nav">
+                <a href="#" class="sb-nav-item active" id="navDashboard">
+                    <span class="sb-icon">🏠</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="old-papers.html" class="sb-nav-item">
+                    <span class="sb-icon">📄</span>
+                    <span>Old Papers</span>
+                </a>
+                <a href="profile.html" class="sb-nav-item">
+                    <span class="sb-icon">👤</span>
+                    <span>Profile</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-user">
+                <img id="profileImage" src="" alt="Profile" class="sb-avatar">
+                <div class="sb-user-info">
+                    <span id="profileName" class="sb-name">Student</span>
+                    <span id="profileSemBadge" class="sb-badge"></span>
                 </div>
-                <button id="viewProfileBtn" class="view-profile-btn">Profile</button>
-                <button id="signOutBtn" class="signout-btn">Sign Out</button>
+                <button id="signOutBtn" class="sb-signout" title="Sign Out">↩</button>
             </div>
+        </aside>
 
-        </header>
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="dash-main">
 
-        <!-- ================= OVERALL PROGRESS ================= -->
+            <!-- Decorative floating shapes -->
+            <div class="deco-star deco-1">✦</div>
+            <div class="deco-star deco-2">✦</div>
+            <div class="deco-blob deco-blob-1"></div>
+            <div class="deco-blob deco-blob-2"></div>
 
-        <section class="overall-progress-card">
+            <!-- ===== HERO HEADER ===== -->
+            <header class="dash-hero">
+                <div class="hero-left">
+                    <div class="hero-eyebrow">✦ RISE Student Platform</div>
+                    <h1 class="hero-title">
+                        Hello, <span class="hero-name" id="heroName">Student!</span>
+                    </h1>
+                    <p class="hero-script">Let's make progress today ♡</p>
+                    <p class="hero-sub">Track your semester, crush your subjects, achieve your goals.</p>
 
-            <div class="card-header">
-
-                <h2>Overall Semester Progress</h2>
-
-                <span id="overallPercentage">0%</span>
-
-            </div>
-
-            <div class="progress-bar">
-
-                <div
-                    class="progress-fill"
-                    id="overallProgress">
+                    <div class="hero-actions">
+                        <button id="viewProfileBtn" class="hero-btn hero-btn-primary">
+                            View Profile ↗
+                        </button>
+                        <button id="oldPapersBtn" class="hero-btn hero-btn-secondary">
+                            Old Papers ↗
+                        </button>
+                    </div>
                 </div>
 
+                <div class="hero-right">
+                    <div class="hero-progress-circle">
+                        <svg viewBox="0 0 120 120" class="circle-svg">
+                            <circle cx="60" cy="60" r="52" class="circle-track"/>
+                            <circle cx="60" cy="60" r="52" class="circle-fill" id="circleProgress"/>
+                        </svg>
+                        <div class="circle-center">
+                            <span class="circle-pct" id="overallPercentage">0%</span>
+                            <span class="circle-label">Progress</span>
+                        </div>
+                    </div>
+                    <div class="hero-progress-bar-wrap">
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="overallProgress"></div>
+                        </div>
+                        <p class="hero-bar-label">Semester Progress</p>
+                    </div>
+                </div>
+            </header>
+
+            <!-- ===== STATS ROW ===== -->
+            <section class="stats-grid">
+                <div class="stat-card stat-coral">
+                    <div class="stat-icon">✅</div>
+                    <p id="completedTopics" class="stat-num">0</p>
+                    <h3>Completed</h3>
+                </div>
+                <div class="stat-card stat-teal">
+                    <div class="stat-icon">📚</div>
+                    <p id="remainingTopics" class="stat-num">0</p>
+                    <h3>Remaining</h3>
+                </div>
+                <div class="stat-card stat-yellow">
+                    <div class="stat-icon">🎯</div>
+                    <p id="totalSubjects" class="stat-num">0</p>
+                    <h3>Subjects</h3>
+                </div>
+                <div class="stat-card stat-mint">
+                    <div class="stat-icon">🏆</div>
+                    <p class="stat-num">Top</p>
+                    <h3>Exam Goal</h3>
+                </div>
+            </section>
+
+            <!-- ===== SUBJECTS ===== -->
+            <div class="subjects-section-header">
+                <h2 class="section-title">My Subjects <span class="section-star">✦</span></h2>
+                <p class="section-sub">Click a subject to track topics</p>
             </div>
 
-        </section>
+            <section id="subjectsContainer" class="subjects-grid"></section>
 
-        <!-- ================= STATS ================= -->
+            <!-- ===== SUBJECT VIEW ===== -->
+            <section id="subjectView" class="subject-view hidden">
+                <button id="backBtn" class="back-btn">← Back</button>
+                <h1 id="subjectTitle" class="sv-title"></h1>
+                <div id="unitsContainer" class="units-container"></div>
+            </section>
 
-        <section class="stats-grid">
-
-            <div class="stat-card">
-
-                <h3>Completed Topics</h3>
-
-                <p id="completedTopics">0</p>
-
-            </div>
-
-            <div class="stat-card">
-
-                <h3>Remaining Topics</h3>
-
-                <p id="remainingTopics">0</p>
-
-            </div>
-
-            <div class="stat-card">
-
-                <h3>Total Subjects</h3>
-
-                <p id="totalSubjects">0</p>
-
-            </div>
-
-            <div class="stat-card">
-
-                <h3>Exam Goal</h3>
-
-                <p>Top Rank</p>
-
-            </div>
-
-        </section>
-
-        <!-- ================= SUBJECT LIST ================= -->
-
-        <h2 class="section-title">
-
-            Subjects
-
-        </h2>
-
-        <section
-            id="subjectsContainer"
-            class="subjects-grid">
-
-        </section>
-
-        <!-- ================= SUBJECT PAGE ================= -->
-
-        <section
-            id="subjectView"
-            class="hidden">
-
-            <button id="backBtn">
-
-                Back To Dashboard
-
-            </button>
-
-            <h1 id="subjectTitle"></h1>
-
-            <div id="unitsContainer"></div>
-
-        </section>
-
+        </main>
     </div>
 
-    <!-- ================= JAVASCRIPT ================= -->
-
     <script type="module" src="script.js"></script>
-
 </body>
 
 </html>

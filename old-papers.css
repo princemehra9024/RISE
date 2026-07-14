@@ -1,0 +1,638 @@
+/* ==========================
+   OLD-PAPERS.CSS — Old Papers page (old-papers.html)
+   Imports: base.css
+========================== */
+
+/* ==========================
+   PAGE SHELL
+========================== */
+
+.op-page {
+    background: #F3F4F6;
+    min-height: 100vh;
+    padding-bottom: 80px;
+}
+
+/* ==========================
+   TOP BAR
+========================== */
+
+.op-topbar {
+    background: #FFFFFF;
+    border-bottom: 1px solid #E5E7EB;
+    padding: 20px 40px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+}
+
+.op-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.op-back-link {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #6B7280;
+    text-decoration: none;
+    font-weight: 600;
+    font-size: 14px;
+    transition: color 0.2s;
+}
+
+.op-back-link:hover { color: #111827; }
+
+.op-back-link svg {
+    width: 16px;
+    height: 16px;
+}
+
+.op-topbar h1 {
+    font-size: 20px;
+    color: #111827;
+    margin: 0;
+    letter-spacing: -0.01em;
+}
+
+.op-badge {
+    background: linear-gradient(135deg, #4F46E5, #7C3AED);
+    color: white;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 4px 12px;
+    border-radius: 20px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+}
+
+/* ==========================
+   FILTER BAR
+========================== */
+
+.op-filter-bar {
+    width: 92%;
+    max-width: 1200px;
+    margin: 40px auto 32px;
+}
+
+.op-filter-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #6B7280;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 16px;
+}
+
+.op-filter-controls {
+    display: flex;
+    gap: 16px;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.op-select-wrapper {
+    position: relative;
+    flex: 1;
+    min-width: 180px;
+    max-width: 280px;
+}
+
+.op-select-wrapper::after {
+    content: '';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #6B7280;
+    pointer-events: none;
+}
+
+.op-select {
+    width: 100%;
+    padding: 14px 40px 14px 18px;
+    border: 2px solid #E5E7EB;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 600;
+    color: #111827;
+    background: #FFFFFF;
+    appearance: none;
+    cursor: pointer;
+    transition: all 0.2s;
+    outline: none;
+}
+
+.op-select:focus {
+    border-color: #4F46E5;
+    box-shadow: 0 0 0 4px rgba(79,70,229,0.1);
+}
+
+/* ==========================
+   SECTION HEADER
+========================== */
+
+.op-section-header {
+    width: 92%;
+    max-width: 1200px;
+    margin: 0 auto 24px;
+    display: flex;
+    align-items: baseline;
+    gap: 12px;
+}
+
+.op-section-title {
+    font-size: 26px;
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: -0.01em;
+}
+
+.op-section-count {
+    font-size: 14px;
+    color: #9CA3AF;
+    font-weight: 500;
+}
+
+/* ==========================
+   SEMESTER GRID
+========================== */
+
+.op-sem-grid {
+    width: 92%;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+    gap: 20px;
+}
+
+.op-sem-card {
+    background: #FFFFFF;
+    border: 2px solid #E5E7EB;
+    border-radius: 24px;
+    padding: 32px 28px;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
+    position: relative;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.03);
+}
+
+.op-sem-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #4F46E5, #7C3AED);
+    opacity: 0;
+    transition: opacity 0.3s;
+}
+
+.op-sem-card:hover {
+    transform: translateY(-6px);
+    border-color: #4F46E5;
+    box-shadow: 0 20px 48px rgba(79,70,229,0.12);
+}
+
+.op-sem-card:hover::before {
+    opacity: 1;
+}
+
+.op-sem-card.active-sem {
+    border-color: #4F46E5;
+    background: linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 100%);
+    box-shadow: 0 20px 48px rgba(79,70,229,0.15);
+}
+
+.op-sem-card.active-sem::before {
+    opacity: 1;
+}
+
+.op-sem-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    background: linear-gradient(135deg, #EEF2FF, #E0E7FF);
+    margin-bottom: 4px;
+}
+
+.op-sem-card.active-sem .op-sem-icon {
+    background: linear-gradient(135deg, #4F46E5, #7C3AED);
+}
+
+.op-sem-number {
+    font-size: 13px;
+    font-weight: 700;
+    color: #4F46E5;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.op-sem-title {
+    font-size: 20px;
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: -0.01em;
+    line-height: 1.2;
+}
+
+.op-sem-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 4px;
+}
+
+.op-sem-papers-count,
+.op-sem-subjects-count {
+    font-size: 13px;
+    color: #6B7280;
+    font-weight: 500;
+}
+
+.op-sem-dot {
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: #D1D5DB;
+}
+
+.op-sem-arrow {
+    width: 32px;
+    height: 32px;
+    border-radius: 10px;
+    background: #F3F4F6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: auto;
+    align-self: flex-end;
+    transition: all 0.2s;
+}
+
+.op-sem-card:hover .op-sem-arrow,
+.op-sem-card.active-sem .op-sem-arrow {
+    background: #4F46E5;
+    color: white;
+}
+
+/* ==========================
+   PAPERS DETAIL VIEW
+========================== */
+
+.op-detail-view {
+    display: none;
+    width: 92%;
+    max-width: 1200px;
+    margin: 0 auto;
+    animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1);
+}
+
+.op-detail-view.visible {
+    display: block;
+}
+
+.op-detail-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.op-detail-back {
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    color: #111827;
+    padding: 10px 18px;
+    border-radius: 12px;
+    font-weight: 600;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.04);
+}
+
+.op-detail-back:hover {
+    background: #F9FAFB;
+    border-color: #D1D5DB;
+}
+
+.op-detail-title {
+    font-size: 28px;
+    font-weight: 800;
+    color: #111827;
+    letter-spacing: -0.02em;
+}
+
+.op-detail-subtitle {
+    font-size: 14px;
+    color: #6B7280;
+    font-weight: 500;
+}
+
+/* ==========================
+   SUBJECT TABS
+========================== */
+
+.op-subject-tabs {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 28px;
+}
+
+.op-tab {
+    padding: 10px 20px;
+    border-radius: 12px;
+    border: 2px solid #E5E7EB;
+    background: #FFFFFF;
+    color: #374151;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.op-tab:hover {
+    border-color: #4F46E5;
+    color: #4F46E5;
+}
+
+.op-tab.active {
+    background: #4F46E5;
+    border-color: #4F46E5;
+    color: white;
+}
+
+/* ==========================
+   PAPERS LIST
+========================== */
+
+.op-papers-section {
+    display: none;
+}
+
+.op-papers-section.active {
+    display: block;
+    animation: fadeUp 0.3s ease;
+}
+
+.op-papers-section-title {
+    font-size: 18px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.op-papers-section-title span {
+    font-size: 13px;
+    color: #6B7280;
+    font-weight: 500;
+}
+
+.op-papers-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+}
+
+.op-paper-card {
+    background: #FFFFFF;
+    border: 1px solid #E5E7EB;
+    border-radius: 18px;
+    padding: 24px;
+    display: flex;
+    align-items: flex-start;
+    gap: 16px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.02);
+}
+
+.op-paper-card:hover {
+    transform: translateY(-3px);
+    border-color: #4F46E5;
+    box-shadow: 0 12px 28px rgba(79,70,229,0.1);
+}
+
+.op-paper-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #EEF2FF, #E0E7FF);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+    flex-shrink: 0;
+}
+
+.op-paper-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.op-paper-year {
+    font-size: 11px;
+    font-weight: 700;
+    color: #4F46E5;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+}
+
+.op-paper-name {
+    font-size: 15px;
+    font-weight: 700;
+    color: #111827;
+    margin-bottom: 6px;
+    line-height: 1.3;
+}
+
+.op-paper-meta {
+    font-size: 12px;
+    color: #9CA3AF;
+    font-weight: 500;
+}
+
+.op-paper-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+}
+
+.op-btn-view {
+    flex: 1;
+    padding: 10px 14px;
+    background: #111827;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    text-align: center;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+}
+
+.op-btn-view:hover {
+    background: #000000;
+    transform: translateY(-1px);
+}
+
+.op-btn-download {
+    padding: 10px 14px;
+    background: #F3F4F6;
+    color: #374151;
+    border: none;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-decoration: none;
+}
+
+.op-btn-download:hover {
+    background: #E5E7EB;
+}
+
+/* ==========================
+   EMPTY STATE
+========================== */
+
+.op-empty {
+    text-align: center;
+    padding: 60px 20px;
+    color: #6B7280;
+}
+
+.op-empty-icon {
+    font-size: 48px;
+    margin-bottom: 16px;
+}
+
+.op-empty h3 {
+    font-size: 20px;
+    color: #374151;
+    margin-bottom: 8px;
+}
+
+.op-empty p {
+    font-size: 15px;
+}
+
+/* ==========================
+   UPLOAD CTA BANNER
+========================== */
+
+.op-upload-cta {
+    background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
+    border-radius: 20px;
+    padding: 32px 36px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin: 32px 0;
+    gap: 20px;
+    flex-wrap: wrap;
+}
+
+.op-upload-cta-text h3 {
+    color: white;
+    font-size: 20px;
+    margin-bottom: 6px;
+}
+
+.op-upload-cta-text p {
+    color: rgba(255,255,255,0.75);
+    font-size: 14px;
+}
+
+.op-upload-btn {
+    background: white;
+    color: #4F46E5;
+    border: none;
+    border-radius: 12px;
+    padding: 14px 24px;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    white-space: nowrap;
+}
+
+.op-upload-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+}
+
+/* ==========================
+   LOADING STATE
+========================== */
+
+.op-loading {
+    text-align: center;
+    padding: 80px 20px;
+    font-size: 16px;
+    color: #6B7280;
+    font-weight: 600;
+}
+
+/* ==========================
+   ANIMATION
+========================== */
+
+@keyframes fadeUp {
+    from { opacity: 0; transform: translateY(16px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ==========================
+   RESPONSIVE
+========================== */
+
+@media (max-width: 640px) {
+    .op-topbar { padding: 16px 20px; }
+    .op-filter-bar,
+    .op-section-header,
+    .op-sem-grid,
+    .op-detail-view { width: 95%; }
+    .op-sem-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
+    .op-sem-card { padding: 20px 16px; }
+    .op-filter-controls { flex-direction: column; }
+    .op-select-wrapper { max-width: 100%; }
+}
