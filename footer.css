@@ -13,16 +13,8 @@
    FOOTER ROOT
    ============================================================ */
 .rise-footer {
-    background:
-        radial-gradient(circle, rgba(255,255,255,0.025) 1px, transparent 1px),
-        linear-gradient(165deg,
-            #080F0B 0%,
-            #0D1F17 20%,
-            #1C3D35 55%,
-            #2D5A4A 85%,
-            #1C3D35 100%
-        );
-    background-size: 24px 24px, 100% 100%;
+    background: #111827;
+    background-size: auto;
     color: #fff;
     padding: 0;
     margin-top: 0;
@@ -39,20 +31,17 @@
     filter: blur(80px);
     opacity: 0.55;
 }
-.rf-blob-1 {
-    width: 500px; height: 500px;
-    top: -120px; right: -100px;
-    background: radial-gradient(circle, rgba(168,213,191,0.18) 0%, transparent 70%);
+.rf-glow-1 {
+    background: transparent;
+    top: -150px; right: -100px;
 }
-.rf-blob-2 {
-    width: 400px; height: 400px;
-    bottom: -80px; left: -80px;
-    background: radial-gradient(circle, rgba(232,133,106,0.14) 0%, transparent 70%);
+.rf-glow-2 {
+    background: transparent;
+    bottom: -150px; left: -100px;
 }
-.rf-blob-3 {
-    width: 300px; height: 300px;
-    top: 40%; left: 35%;
-    background: radial-gradient(circle, rgba(245,200,66,0.05) 0%, transparent 70%);
+.rf-glow-3 {
+    background: transparent;
+    top: 30%; left: 40%;
 }
 
 /* ============================================================
@@ -82,10 +71,7 @@
     font-size: 1.7rem;
     font-weight: 800;
     line-height: 1;
-    background: linear-gradient(135deg, #E8856A 0%, #F5C842 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+    color: #E8856A;
 }
 
 .rf-acr-word {
@@ -101,12 +87,7 @@
     max-width: 1100px;
     margin: 24px auto 0;
     height: 1px;
-    background: linear-gradient(90deg,
-        transparent 0%,
-        rgba(168,213,191,0.15) 30%,
-        rgba(232,133,106,0.15) 70%,
-        transparent 100%
-    );
+    background: rgba(255,255,255,0.1);
     position: relative;
     z-index: 2;
 }
@@ -140,17 +121,7 @@
     font-size: 2.2rem;
     font-weight: 800;
     letter-spacing: 4px;
-    background: linear-gradient(135deg, #ffffff 0%, #A8D5BF 50%, #ffffff 100%);
-    background-size: 200% auto;
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
-    animation: rf-shimmer 4s linear infinite;
-}
-
-@keyframes rf-shimmer {
-    0%   { background-position: 0% center; }
-    100% { background-position: 200% center; }
+    color: #A8D5BF;
 }
 
 .rf-logo-star {
@@ -257,7 +228,7 @@
     position: absolute;
     left: 0; bottom: 0;
     width: 28px; height: 2px;
-    background: linear-gradient(90deg, #E8856A, transparent);
+    background: #E8856A;
     border-radius: 1px;
 }
 
@@ -314,7 +285,7 @@
     position: absolute;
     left: 0; bottom: 0;
     width: 28px; height: 2px;
-    background: linear-gradient(90deg, #E8856A, transparent);
+    background: #E8856A;
     border-radius: 1px;
 }
 
@@ -353,11 +324,11 @@
 
 /* Founder gets a warm highlight */
 .rf-credit-item.is-founder {
-    background: linear-gradient(135deg, rgba(232,133,106,0.1), rgba(245,200,66,0.05));
+    background: rgba(232,133,106,0.1);
     border-color: rgba(232,133,106,0.22);
 }
 .rf-credit-item.is-founder:hover {
-    background: linear-gradient(135deg, rgba(232,133,106,0.18), rgba(245,200,66,0.1));
+    background: rgba(232,133,106,0.2);
     border-color: rgba(232,133,106,0.4);
 }
 
