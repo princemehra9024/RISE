@@ -7,8 +7,9 @@
     <meta name="description" content="Browse old question papers by semester and subject for IMCA course.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Dancing+Script:wght@700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="footer.css">
     <style>
         /* ===== OLD PAPERS PAGE ===== */
         .op-page {
@@ -623,7 +624,10 @@
             </a>
             <h1>📄 Old Question Papers</h1>
         </div>
-        <span class="op-badge">IMCA</span>
+        <div style="display:flex;align-items:center;gap:12px;">
+            <a href="upload-paper.html" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;font-size:13px;font-weight:700;padding:8px 16px;border-radius:20px;text-decoration:none;transition:all 0.2s;box-shadow:0 4px 12px rgba(79,70,229,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">📤 Upload Paper</a>
+            <span class="op-badge">IMCA</span>
+        </div>
     </div>
 
     <!-- LOADING STATE -->
@@ -646,6 +650,11 @@
                 <div class="op-select-wrapper">
                     <select class="op-select" id="filterSubject">
                         <option value="all">All Subjects</option>
+                    </select>
+                </div>
+                <div class="op-select-wrapper" id="mySemFilterWrapper" style="display:none;">
+                    <select class="op-select" id="filterMySem" title="Filter by your semester's subjects">
+                        <option value="all">📚 My Sem Subjects</option>
                     </select>
                 </div>
             </div>
@@ -699,6 +708,8 @@
 <script type="module">
 import { auth, db } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getSyllabus } from "./syllabus.js";
 
 // ========================================
 // OLD PAPERS DATA
@@ -933,17 +944,31 @@ const opSubjectTabs   = document.getElementById("opSubjectTabs");
 const opPapersContent = document.getElementById("opPapersContent");
 const filterCourse    = document.getElementById("filterCourse");
 const filterSubject   = document.getElementById("filterSubject");
+const filterMySem     = document.getElementById("filterMySem");
+const mySemFilterWrapper = document.getElementById("mySemFilterWrapper");
 const opDetailBackBtn = document.getElementById("opDetailBackBtn");
 const topBackLink     = document.getElementById("topBackLink");
 
 // ========================================
 // AUTH GUARD
 // ========================================
-onAuthStateChanged(auth, (user) => {
+onAuthStateChanged(auth, async (user) => {
     if (user) {
         opLoading.style.display = "none";
         opMain.style.display    = "block";
         renderSemGrid();
+
+        // Load student profile to populate My Semester dropdown
+        try {
+            const docRef  = doc(db, "users", user.uid);
+            const docSnap = await getDoc(docRef);
+            if (docSnap.exists() && docSnap.data().profile) {
+                const profile = docSnap.data().profile;
+                populateMySemFilter(profile);
+            }
+        } catch (e) {
+            console.warn("Could not load profile for My Sem filter:", e);
+        }
     } else {
         window.location.href = "index.html";
     }
@@ -986,6 +1011,35 @@ function renderSemGrid() {
     });
 
     populateSubjectFilter();
+}
+
+// ========================================
+// POPULATE MY SEMESTER FILTER
+// ========================================
+function populateMySemFilter(profile) {
+    const syl = getSyllabus(profile);
+    if (!syl) return;
+
+    filterMySem.innerHTML = `<option value="all">📚 My Sem Subjects</option>`;
+
+    syl.subjects.forEach(sub => {
+        const opt = document.createElement("option");
+        opt.value = sub.name;
+        opt.textContent = `${sub.icon || ''} ${sub.name}`;
+        filterMySem.appendChild(opt);
+    });
+
+    // Show the dropdown (it starts hidden)
+    mySemFilterWrapper.style.display = "block";
+
+    // Add a subtle label to differentiate
+    const label = mySemFilterWrapper.querySelector(".op-my-sem-label");
+    if (!label) {
+        const badge = document.createElement("div");
+        badge.style.cssText = "font-size:10px;font-weight:700;color:#4F46E5;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;padding-left:2px;";
+        badge.textContent = `Sem ${profile.semester} · ${profile.branch}`;
+        mySemFilterWrapper.insertBefore(badge, filterMySem);
+    }
 }
 
 // ========================================
@@ -1166,6 +1220,30 @@ filterCourse.addEventListener("change", () => {
 // ========================================
 filterSubject.addEventListener("change", () => {
     const val = filterSubject.value;
+    // Reset My Sem filter to avoid conflict
+    if (val !== "all") filterMySem.value = "all";
+
+    document.querySelectorAll(".op-sem-card").forEach(card => {
+        if (val === "all") {
+            card.style.opacity = "1";
+            card.style.pointerEvents = "auto";
+            return;
+        }
+        const semNum = card.dataset.sem;
+        const semData = oldPapersDB[selectedCourse][semNum];
+        const hasSubject = semData && semData.subjects.some(s => s.name === val);
+        card.style.opacity = hasSubject ? "1" : "0.35";
+        card.style.pointerEvents = hasSubject ? "auto" : "none";
+    });
+});
+// ========================================
+// FILTER CHANGE – My Semester Subject
+// ========================================
+filterMySem.addEventListener("change", () => {
+    const val = filterMySem.value;
+    // Also reset the other subject filter to avoid conflict
+    if (val !== "all") filterSubject.value = "all";
+
     document.querySelectorAll(".op-sem-card").forEach(card => {
         if (val === "all") {
             card.style.opacity = "1";
@@ -1180,5 +1258,115 @@ filterSubject.addEventListener("change", () => {
     });
 });
 </script>
+    <!-- ===== SITE FOOTER ===== -->
+    <footer class="rise-footer">
+
+        <!-- Ambient blobs -->
+        <div class="rf-blob rf-blob-1"></div>
+        <div class="rf-blob rf-blob-2"></div>
+        <div class="rf-blob rf-blob-3"></div>
+
+        <!-- RISE Acronym Strip -->
+        <div class="rf-acronym-strip">
+            <div class="rf-acronym-item">
+                <span class="rf-acr-letter">R</span>
+                <span class="rf-acr-word">Review</span>
+            </div>
+            <div class="rf-acronym-item">
+                <span class="rf-acr-letter">I</span>
+                <span class="rf-acr-word">Improve</span>
+            </div>
+            <div class="rf-acronym-item">
+                <span class="rf-acr-letter">S</span>
+                <span class="rf-acr-word">Study</span>
+            </div>
+            <div class="rf-acronym-item">
+                <span class="rf-acr-letter">E</span>
+                <span class="rf-acr-word">Excel</span>
+            </div>
+        </div>
+        <div class="rf-acronym-rule"></div>
+
+        <!-- Main Grid -->
+        <div class="rise-footer-inner">
+
+            <!-- Brand -->
+            <div class="rf-brand-col">
+                <div class="rf-logo">
+                    <span class="rf-logo-rise">RISE</span>
+                    <span class="rf-logo-star">✦</span>
+                </div>
+                <p class="rf-tagline">Let's rise together ♡</p>
+                <p class="rf-sub-desc">
+                    A student-first platform built to track progress, access resources
+                    and achieve academic excellence.
+                </p>
+                <div class="rf-powered">
+                    <span class="rf-powered-dot"></span>
+                    <span class="rf-powered-label">Powered by</span>
+                    <span class="rf-powered-name">Educant</span>
+                </div>
+                <p class="rf-copyright">© 2025 RISE Platform · All rights reserved</p>
+            </div>
+
+            <!-- Navigate -->
+            <div class="rf-links-col">
+                <span class="rf-col-heading">Navigate</span>
+                <a href="index.html">Dashboard</a>
+                <a href="old-papers.html">Old Papers</a>
+                <a href="profile.html">My Profile</a>
+                <a href="contributors.html">Contributors</a>
+            </div>
+
+            <!-- Project -->
+            <div class="rf-links-col">
+                <span class="rf-col-heading">Project</span>
+                <a href="contributors.html">Meet the Team</a>
+                <a href="#">Report a Bug</a>
+                <a href="#">Suggest a Feature</a>
+                <a href="#">Changelog</a>
+            </div>
+
+            <!-- Made with ♡ — Presently -->
+            <div class="rf-credits-col">
+                <span class="rf-made-label">Made with ♡ — Presently</span>
+                <p class="rf-made-love">Crafted with <strong>♡</strong> by our passionate team</p>
+
+                <div class="rf-credit-item is-founder">
+                    <span class="rf-credit-av" style="background:linear-gradient(135deg,#E8856A,#F5C842)">P</span>
+                    <div class="rf-credit-info">
+                        <span class="rf-credit-name">Priyanshu</span>
+                        <span class="rf-credit-role">Founder &amp; Visionary</span>
+                    </div>
+                </div>
+                <div class="rf-credit-item">
+                    <span class="rf-credit-av" style="background:linear-gradient(135deg,#E8856A,#c96b50)">P</span>
+                    <div class="rf-credit-info">
+                        <span class="rf-credit-name">Prince Mehra</span>
+                        <span class="rf-credit-role">Lead Developer</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="rf-bottom-bar">
+            <div class="rf-bottom-left">
+                <span class="rf-bottom-copy">© 2025 RISE &nbsp;·&nbsp; Review · Improve · Study · Excel</span>
+                <div class="rf-bottom-pills">
+                    <span class="rf-bottom-pill">IMCA</span>
+                    <span class="rf-bottom-pill">Open Platform</span>
+                    <span class="rf-bottom-pill">Student First</span>
+                </div>
+            </div>
+            <div class="rf-bottom-right">
+                <span class="rf-bottom-heart">♡</span>
+                <a href="contributors.html" class="rf-bottom-link">View all contributors ↗</a>
+            </div>
+        </div>
+
+    </footer>
+
 </body>
 </html>

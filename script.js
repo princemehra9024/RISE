@@ -1,4 +1,4 @@
-import { syllabus } from "./syllabus.js";
+import { getSyllabus, syllabus as defaultSyllabus } from "./syllabus.js";
 import { auth, db, provider } from "./firebase-config.js";
 import { signInWithPopup, signOut as firebaseSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -8,6 +8,7 @@ import { doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.co
 let currentUser = null;
 let progressData = {};
 let studentProfile = null;
+let syllabus = defaultSyllabus; // resolved per-profile after login
 
 // ---------- Cloud Firestore Database ----------
 
@@ -135,6 +136,9 @@ onAuthStateChanged(auth, async (user) => {
                 dashboard.classList.remove("hidden");
             }
 
+            // Resolve correct syllabus for this student's semester
+            syllabus = getSyllabus(studentProfile) || defaultSyllabus;
+
             // Load Progress Data from Firestore
             progressData = await getSavedData();
             createSubjectCards();
@@ -184,6 +188,9 @@ profileSetupForm.addEventListener("submit", async (e) => {
     // Show dashboard
     profileSetupScreen.classList.add("hidden");
     dashboard.classList.remove("hidden");
+
+    // Resolve correct syllabus for this student's semester
+    syllabus = getSyllabus(studentProfile) || defaultSyllabus;
 
     // Load Progress
     progressData = await getSavedData();

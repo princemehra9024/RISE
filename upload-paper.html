@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload Paper – RISE</title>
+    <meta name="description" content="Contribute old question papers to RISE and earn stars for your community.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="footer.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --indigo:   #4F46E5;
+            --violet:   #7C3AED;
+            --amber:    #F59E0B;
+            --gold:     #FBBF24;
+            --emerald:  #10B981;
+            --rose:     #F43F5E;
+            --bg:       #0F0F1A;
+            --surface:  #16162A;
+            --card:     #1E1E35;
+            --border:   rgba(255,255,255,0.08);
+            --text:     #F1F0FF;
+            --muted:    #9896B8;
+        }
+
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        .up-blob { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; opacity: 0.18; }
+        .up-blob-1 { width: 600px; height: 600px; background: var(--indigo); top: -200px; left: -200px; }
+        .up-blob-2 { width: 500px; height: 500px; background: var(--violet); bottom: -100px; right: -200px; }
+        .up-blob-3 { width: 300px; height: 300px; background: var(--amber);  top: 40%; right: 10%; }
+
+        /* TOPBAR */
+        .up-topbar {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(15,15,26,0.85); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 18px 40px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .up-back { display: flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 600; transition: color 0.2s; }
+        .up-back:hover { color: var(--text); }
+        .up-topbar-brand { font-size: 18px; font-weight: 800; background: linear-gradient(135deg, var(--indigo), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .up-topbar-badge { background: linear-gradient(135deg, var(--indigo), var(--violet)); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.08em; }
+
+        /* HERO */
+        .up-hero { text-align: center; padding: 64px 20px 40px; position: relative; z-index: 1; }
+        .up-hero-icon { font-size: 56px; margin-bottom: 16px; display: block; animation: float 3s ease-in-out infinite; }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        .up-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(28px,5vw,42px); font-weight: 800; background: linear-gradient(135deg,#fff 30%,var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom: 12px; }
+        .up-hero p { color: var(--muted); font-size: 16px; max-width: 500px; margin: 0 auto 24px; line-height: 1.6; }
+        .up-reward-pill { display: inline-flex; align-items: center; gap: 8px; background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.3); color: var(--gold); font-size: 13px; font-weight: 700; padding: 8px 20px; border-radius: 50px; animation: pulse-glow 2s ease-in-out infinite; }
+        @keyframes pulse-glow { 0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,0.15)} 50%{box-shadow:0 0 20px 4px rgba(251,191,36,0.15)} }
+
+        /* MAIN LAYOUT */
+        .up-main { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 20px 100px; display: grid; grid-template-columns: 1fr 340px; gap: 28px; align-items: start; }
+        @media (max-width: 768px) { .up-main { grid-template-columns: 1fr; } }
+
+        /* FORM CARD */
+        .up-form-card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 36px; }
+        .up-form-title { font-size: 18px; font-weight: 800; margin-bottom: 28px; }
+        .up-form-title span { background: linear-gradient(135deg,var(--indigo),var(--violet)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        .up-field { margin-bottom: 20px; }
+        .up-label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
+        .up-input, .up-select { width: 100%; padding: 14px 18px; background: rgba(255,255,255,0.04); border: 1.5px solid var(--border); border-radius: 12px; color: var(--text); font-size: 15px; font-family: 'Inter',sans-serif; font-weight: 500; outline: none; transition: all 0.2s; appearance: none; }
+        .up-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239896B8' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 44px; cursor: pointer; }
+        .up-select option { background: #1E1E35; color: var(--text); }
+        .up-input:focus, .up-select:focus { border-color: var(--indigo); background: rgba(79,70,229,0.06); box-shadow: 0 0 0 4px rgba(79,70,229,0.12); }
+        .up-input::placeholder { color: #4D4D6B; }
+        .up-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+        @media (max-width: 500px) { .up-row { grid-template-columns: 1fr; } }
+
+        /* DROPZONE */
+        .up-dropzone { border: 2px dashed rgba(79,70,229,0.4); border-radius: 16px; padding: 36px 20px; text-align: center; cursor: pointer; transition: all 0.3s; position: relative; background: rgba(79,70,229,0.03); }
+        .up-dropzone:hover, .up-dropzone.drag-over { border-color: var(--indigo); background: rgba(79,70,229,0.08); transform: scale(1.01); }
+        .up-dropzone input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
+        .up-dropzone-icon { font-size: 40px; margin-bottom: 10px; display: block; }
+        .up-dropzone-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
+        .up-dropzone-sub { font-size: 13px; color: var(--muted); }
+        .up-file-chosen { display: none; align-items: center; gap: 12px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; padding: 14px 18px; margin-top: 12px; }
+        .up-file-chosen.show { display: flex; }
+        .up-file-chosen-name { font-size: 14px; font-weight: 600; color: #10B981; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+        /* SUBMIT */
+        .up-submit-btn { width: 100%; padding: 16px; background: linear-gradient(135deg,var(--indigo),var(--violet)); border: none; border-radius: 14px; color: #fff; font-size: 16px; font-weight: 700; font-family: 'Inter',sans-serif; cursor: pointer; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s; position: relative; overflow: hidden; }
+        .up-submit-btn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,transparent 0%,rgba(255,255,255,0.1) 50%,transparent 100%); transform:translateX(-100%); transition:transform 0.6s; }
+        .up-submit-btn:hover::before { transform:translateX(100%); }
+        .up-submit-btn:hover { transform:translateY(-2px); box-shadow:0 12px 36px rgba(79,70,229,0.4); }
+        .up-submit-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+
+        /* PROGRESS */
+        .up-progress-wrap { display: none; margin-top: 12px; background: rgba(255,255,255,0.06); border-radius: 100px; height: 6px; overflow: hidden; }
+        .up-progress-fill { height: 100%; background: linear-gradient(90deg,var(--indigo),var(--violet),var(--gold)); border-radius: 100px; width: 0%; transition: width 0.3s ease; }
+
+        /* SIDE */
+        .up-side { display: flex; flex-direction: column; gap: 20px; }
+
+        /* REWARD CARD */
+        .up-reward-card { background: linear-gradient(135deg,#1A1430,#201830); border: 1px solid rgba(251,191,36,0.2); border-radius: 24px; padding: 28px; position: relative; overflow: hidden; }
+        .up-reward-card::before { content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px; background:radial-gradient(circle,rgba(251,191,36,0.12) 0%,transparent 70%); pointer-events:none; }
+        .up-reward-card-title { font-size: 13px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
+        .up-stars-row { display: flex; gap: 8px; margin-bottom: 16px; }
+        .up-star { font-size: 28px; filter: grayscale(1) brightness(0.4); transition: all 0.4s; }
+        .up-star.lit { filter: none; animation: star-pop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
+        @keyframes star-pop { 0%{transform:scale(0.4)} 100%{transform:scale(1)} }
+        .up-reward-tiers { display: flex; flex-direction: column; gap: 8px; }
+        .up-tier { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; background: rgba(255,255,255,0.03); border: 1px solid transparent; transition: all 0.2s; }
+        .up-tier.achieved { background: rgba(251,191,36,0.08); border-color: rgba(251,191,36,0.2); }
+        .up-tier-icon { font-size: 20px; }
+        .up-tier-name { font-size: 13px; font-weight: 700; color: var(--text); flex: 1; }
+        .up-tier-pts { font-size: 12px; color: var(--muted); }
+        .up-tier.achieved .up-tier-pts { color: var(--gold); }
+
+        /* HOW CARD */
+        .up-how-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 24px; }
+        .up-how-title { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
+        .up-how-step { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; }
+        .up-how-num { min-width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg,var(--indigo),var(--violet)); color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
+        .up-how-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
+        .up-how-text strong { color: var(--text); }
+
+        /* MODAL */
+        .up-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 999; display: none; align-items: center; justify-content: center; padding: 20px; }
+        .up-modal-overlay.show { display: flex; }
+        .up-modal { background: var(--card); border: 1px solid var(--border); border-radius: 28px; padding: 48px 40px; text-align: center; max-width: 420px; width: 100%; animation: modal-in 0.4s cubic-bezier(0.34,1.56,0.64,1); position: relative; overflow: hidden; }
+        .up-modal::before { content:''; position:absolute; top:-80px; left:50%; transform:translateX(-50%); width:300px; height:300px; background:radial-gradient(circle,rgba(251,191,36,0.08) 0%,transparent 70%); pointer-events:none; }
+        @keyframes modal-in { from{opacity:0;transform:scale(0.6)} to{opacity:1;transform:scale(1)} }
+        .up-modal-burst { font-size: 64px; display: block; margin-bottom: 16px; animation: spin-once 0.6s ease 0.2s both; }
+        @keyframes spin-once { from{transform:rotate(-30deg) scale(0)} to{transform:rotate(0deg) scale(1)} }
+        .up-modal h2 { font-size: 26px; font-weight: 800; background: linear-gradient(135deg,var(--gold),#fff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom: 8px; }
+        .up-modal p { color: var(--muted); font-size: 15px; margin-bottom: 24px; line-height: 1.6; }
+        .up-modal-pts { display: inline-flex; align-items: center; gap: 8px; background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.3); color: var(--gold); font-size: 20px; font-weight: 800; padding: 12px 28px; border-radius: 50px; margin-bottom: 28px; }
+        .up-modal-stars { font-size: 32px; margin-bottom: 28px; letter-spacing: 4px; }
+        .up-modal-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+        .up-modal-btn { padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; font-family: 'Inter',sans-serif; cursor: pointer; text-decoration: none; transition: all 0.2s; border: none; display: inline-block; }
+        .up-modal-btn.primary { background: linear-gradient(135deg,var(--indigo),var(--violet)); color: #fff; }
+        .up-modal-btn.secondary { background: rgba(255,255,255,0.06); color: var(--muted); border: 1px solid var(--border); }
+        .up-modal-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+        /* AUTH LOADING */
+        .up-auth-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; gap: 16px; color: var(--muted); font-size: 15px; }
+        .up-spinner { width: 40px; height: 40px; border: 3px solid rgba(79,70,229,0.2); border-top-color: var(--indigo); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to{transform:rotate(360deg)} }
+
+        /* ERROR */
+        .up-error { background: rgba(244,63,94,0.1); border: 1px solid rgba(244,63,94,0.3); color: #FF8099; border-radius: 12px; padding: 12px 16px; font-size: 14px; font-weight: 500; margin-top: 12px; display: none; }
+        .up-error.show { display: block; }
+    </style>
+</head>
+<body>
+
+<!-- Ambient blobs -->
+<div class="up-blob up-blob-1"></div>
+<div class="up-blob up-blob-2"></div>
+<div class="up-blob up-blob-3"></div>
+
+<!-- TOP BAR -->
+<div class="up-topbar">
+    <a href="old-papers.html" class="up-back">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Old Papers
+    </a>
+    <div class="up-topbar-brand">RISE ✦</div>
+    <span class="up-topbar-badge">CONTRIBUTE</span>
+</div>
+
+<!-- Auth Loading -->
+<div class="up-auth-loading" id="upAuthLoading">
+    <div class="up-spinner"></div>
+    <span>Checking authentication…</span>
+</div>
+
+<!-- Main content (shown after auth) -->
+<div id="upPageContent" style="display:none;">
+
+    <!-- HERO -->
+    <div class="up-hero">
+        <span class="up-hero-icon">📤</span>
+        <h1>Upload a Question Paper</h1>
+        <p>Help your classmates by sharing old exam papers. Every upload earns you contribution points &amp; stars!</p>
+        <div class="up-reward-pill">
+            ⭐ Earn <strong style="margin:0 4px;">+10 Points</strong> per upload · Unlock Star Badges
+        </div>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="up-main">
+
+        <!-- FORM CARD -->
+        <div class="up-form-card">
+            <div class="up-form-title"><span>📋 Paper Details</span></div>
+
+            <form id="uploadForm">
+                <div class="up-row">
+                    <div class="up-field">
+                        <label class="up-label" for="upCourse">Course</label>
+                        <select class="up-select" id="upCourse" required>
+                            <option value="">Select course</option>
+                            <option value="IMCA">IMCA</option>
+                            <option value="MCA">MCA</option>
+                            <option value="BCA">BCA</option>
+                        </select>
+                    </div>
+                    <div class="up-field">
+                        <label class="up-label" for="upSemester">Semester</label>
+                        <select class="up-select" id="upSemester" required>
+                            <option value="">Select semester</option>
+                            <option value="1">Semester 1</option>
+                            <option value="2">Semester 2</option>
+                            <option value="3">Semester 3</option>
+                            <option value="4">Semester 4</option>
+                            <option value="5">Semester 5</option>
+                            <option value="6">Semester 6</option>
+                            <option value="7">Semester 7</option>
+                            <option value="8">Semester 8</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="up-field">
+                    <label class="up-label" for="upSubject">Subject Name</label>
+                    <input class="up-input" type="text" id="upSubject" placeholder="e.g. Data Structures" required>
+                </div>
+
+                <div class="up-row">
+                    <div class="up-field">
+                        <label class="up-label" for="upYear">Exam Year</label>
+                        <input class="up-input" type="number" id="upYear" placeholder="e.g. 2024" min="2010" max="2030" required>
+                    </div>
+                    <div class="up-field">
+                        <label class="up-label" for="upType">Paper Type</label>
+                        <select class="up-select" id="upType" required>
+                            <option value="">Select type</option>
+                            <option value="End Sem">End Semester</option>
+                            <option value="Mid Sem">Mid Semester</option>
+                            <option value="Internal">Internal / Unit Test</option>
+                            <option value="Practical">Practical</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="up-field">
+                    <label class="up-label">Upload PDF / Image</label>
+                    <div class="up-dropzone" id="upDropzone">
+                        <input type="file" id="upFile" accept=".pdf,.jpg,.jpeg,.png,.webp">
+                        <span class="up-dropzone-icon">📂</span>
+                        <div class="up-dropzone-title">Click or drag &amp; drop here</div>
+                        <div class="up-dropzone-sub">PDF, JPG, PNG — Max 20 MB</div>
+                    </div>
+                    <div class="up-file-chosen" id="upFileChosen">
+                        <span>✅</span>
+                        <span class="up-file-chosen-name" id="upFileName">No file</span>
+                    </div>
+                </div>
+
+                <div class="up-error" id="upError"></div>
+
+                <button type="submit" class="up-submit-btn" id="upSubmitBtn">
+                    <span>📤</span>
+                    <span id="upBtnText">Upload &amp; Earn Stars</span>
+                </button>
+                <div class="up-progress-wrap" id="upProgressWrap">
+                    <div class="up-progress-fill" id="upProgressFill"></div>
+                </div>
+            </form>
+        </div>
+
+        <!-- SIDE PANEL -->
+        <div class="up-side">
+
+            <!-- Stars card -->
+            <div class="up-reward-card">
+                <div class="up-reward-card-title">⭐ Your Star Rank</div>
+                <div class="up-stars-row" id="upStarsRow">
+                    <span class="up-star">⭐</span>
+                    <span class="up-star">⭐</span>
+                    <span class="up-star">⭐</span>
+                    <span class="up-star">⭐</span>
+                    <span class="up-star">⭐</span>
+                </div>
+                <div style="margin-bottom:16px;">
+                    <div style="font-size:13px;color:var(--muted);margin-bottom:4px;">Total Points</div>
+                    <div id="upTotalPts" style="font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--gold),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">0 pts</div>
+                </div>
+                <div class="up-reward-tiers" id="upTierList"></div>
+            </div>
+
+            <!-- How it works -->
+            <div class="up-how-card">
+                <div class="up-how-title">💡 How it Works</div>
+                <div class="up-how-step"><div class="up-how-num">1</div><div class="up-how-text">Fill in the paper details — course, semester, subject.</div></div>
+                <div class="up-how-step"><div class="up-how-num">2</div><div class="up-how-text">Upload the PDF or image of the question paper.</div></div>
+                <div class="up-how-step"><div class="up-how-num">3</div><div class="up-how-text"><strong>+10 Points</strong> are added to your profile instantly.</div></div>
+                <div class="up-how-step"><div class="up-how-num">4</div><div class="up-how-text">Unlock <strong>⭐ Star Badges</strong> as your points grow.</div></div>
+                <div class="up-how-step" style="margin-bottom:0"><div class="up-how-num">5</div><div class="up-how-text">Your paper appears on <strong>Old Papers</strong> page for everyone!</div></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- SUCCESS MODAL -->
+<div class="up-modal-overlay" id="upModal">
+    <div class="up-modal">
+        <span class="up-modal-burst">🎉</span>
+        <h2>Paper Uploaded!</h2>
+        <p>Thank you for contributing to the RISE community. Your paper is now live for everyone!</p>
+        <div class="up-modal-pts">⭐ +10 Points Earned</div>
+        <div class="up-modal-stars" id="upModalStars">⭐</div>
+        <div class="up-modal-actions">
+            <a href="old-papers.html" class="up-modal-btn primary">View Papers</a>
+            <a href="profile.html" class="up-modal-btn secondary">My Profile</a>
+        </div>
+    </div>
+</div>
+
+<script type="module">
+import { auth, db } from "./firebase-config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, getDoc, setDoc, updateDoc, collection, addDoc, increment }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
+
+const TIERS = [
+    { name: "First Spark",    icon: "🌟", min: 1   },
+    { name: "Bronze Star",    icon: "🥉", min: 10  },
+    { name: "Silver Scholar", icon: "🥈", min: 30  },
+    { name: "Gold Guardian",  icon: "🥇", min: 60  },
+    { name: "Legend",         icon: "👑", min: 100 },
+];
+
+const PTS = 10;
+let currentUser = null;
+let userPts = 0;
+
+const $ = id => document.getElementById(id);
+const upAuthLoading  = $("upAuthLoading");
+const upPageContent  = $("upPageContent");
+const uploadForm     = $("uploadForm");
+const upDropzone     = $("upDropzone");
+const upFile         = $("upFile");
+const upFileChosen   = $("upFileChosen");
+const upFileName     = $("upFileName");
+const upSubmitBtn    = $("upSubmitBtn");
+const upBtnText      = $("upBtnText");
+const upProgressWrap = $("upProgressWrap");
+const upProgressFill = $("upProgressFill");
+const upError        = $("upError");
+const upModal        = $("upModal");
+
+onAuthStateChanged(auth, async user => {
+    if (!user) { window.location.href = "index.html"; return; }
+    currentUser = user;
+    upAuthLoading.style.display = "none";
+    upPageContent.style.display = "block";
+    await loadPts();
+});
+
+async function loadPts() {
+    try {
+        const snap = await getDoc(doc(db, "users", currentUser.uid));
+        userPts = snap.exists() ? (snap.data().contributionPoints || 0) : 0;
+    } catch { userPts = 0; }
+    renderPts(userPts);
+}
+
+function renderPts(pts) {
+    $("upTotalPts").textContent = `${pts} pts`;
+    const stars = $("upStarsRow").querySelectorAll(".up-star");
+    let lit = 0;
+    TIERS.forEach((t, i) => { if (pts >= t.min) lit = i + 1; });
+    stars.forEach((s, i) => s.classList.toggle("lit", i < lit));
+    $("upTierList").innerHTML = TIERS.map(t => `
+        <div class="up-tier ${pts >= t.min ? 'achieved' : ''}">
+            <span class="up-tier-icon">${t.icon}</span>
+            <span class="up-tier-name">${t.name}</span>
+            <span class="up-tier-pts">${t.min}+ pts</span>
+        </div>`).join("");
+}
+
+// File picker
+upFile.addEventListener("change", () => {
+    const f = upFile.files[0];
+    if (f) { upFileName.textContent = f.name; upFileChosen.classList.add("show"); }
+});
+upDropzone.addEventListener("dragover", e => { e.preventDefault(); upDropzone.classList.add("drag-over"); });
+upDropzone.addEventListener("dragleave", () => upDropzone.classList.remove("drag-over"));
+upDropzone.addEventListener("drop", e => {
+    e.preventDefault(); upDropzone.classList.remove("drag-over");
+    const f = e.dataTransfer.files[0];
+    if (f) { const dt = new DataTransfer(); dt.items.add(f); upFile.files = dt.files; upFileName.textContent = f.name; upFileChosen.classList.add("show"); }
+});
+
+// Submit
+uploadForm.addEventListener("submit", async e => {
+    e.preventDefault(); hideErr();
+    const course   = $("upCourse").value;
+    const semNum   = $("upSemester").value;
+    const subject  = $("upSubject").value.trim();
+    const year     = $("upYear").value.trim();
+    const type     = $("upType").value;
+    const file     = upFile.files[0];
+
+    if (!course || !semNum || !subject || !year || !type) return showErr("Please fill in all fields.");
+    if (!file) return showErr("Please select a PDF or image file.");
+    if (file.size > 20 * 1024 * 1024) return showErr("File too large — max 20 MB.");
+
+    setLoading(true);
+    try {
+        const storage = getStorage();
+        const storageRef = ref(storage, `papers/${course}/sem${semNum}/${Date.now()}_${file.name}`);
+        const task = uploadBytesResumable(storageRef, file);
+        upProgressWrap.style.display = "block";
+
+        await new Promise((res, rej) => task.on("state_changed",
+            snap => {
+                const p = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
+                upProgressFill.style.width = p + "%";
+                upBtnText.textContent = `Uploading… ${p}%`;
+            }, rej, res
+        ));
+
+        const url = await getDownloadURL(task.snapshot.ref);
+
+        await addDoc(collection(db, "papers"), {
+            course, semester: Number(semNum), subject, year, type,
+            title: `${subject} – ${type} ${year}`,
+            url,
+            uploadedBy: currentUser.uid,
+            uploaderName: currentUser.displayName || "Anonymous",
+            uploadedAt: new Date().toISOString(),
+        });
+
+        const userRef = doc(db, "users", currentUser.uid);
+        await updateDoc(userRef, { contributionPoints: increment(PTS), totalUploads: increment(1) })
+            .catch(() => setDoc(userRef, { contributionPoints: PTS, totalUploads: 1 }, { merge: true }));
+
+        userPts += PTS;
+        renderPts(userPts);
+
+        let tier = TIERS[0];
+        TIERS.forEach(t => { if (userPts >= t.min) tier = t; });
+        const tierIdx = TIERS.indexOf(tier);
+        $("upModalStars").textContent = TIERS.slice(0, tierIdx + 1).map(t => t.icon).join(" ");
+
+        setLoading(false);
+        upProgressWrap.style.display = "none";
+        upModal.classList.add("show");
+        uploadForm.reset();
+        upFileChosen.classList.remove("show");
+        upProgressFill.style.width = "0%";
+    } catch (err) {
+        showErr("Upload failed: " + (err.message || "Unknown error."));
+        setLoading(false);
+        upProgressWrap.style.display = "none";
+    }
+});
+
+function setLoading(on) { upSubmitBtn.disabled = on; if (!on) upBtnText.textContent = "Upload & Earn Stars"; }
+function showErr(m) { upError.textContent = m; upError.classList.add("show"); }
+function hideErr() { upError.classList.remove("show"); }
+</script>
+</body>
+</html>
