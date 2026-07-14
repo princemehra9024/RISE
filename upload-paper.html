@@ -320,12 +320,10 @@
 </div>
 
 <script type="module">
-import { auth, db, storage } from "./firebase-config.js";
+import { auth, db } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { doc, getDoc, setDoc, updateDoc, collection, addDoc, increment }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-import { ref, uploadBytesResumable, getDownloadURL }
-    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 
 const TIERS = [
     { name: "First Spark",    icon: "🌟", min: 1   },
@@ -413,24 +411,42 @@ uploadForm.addEventListener("submit", async e => {
 
     setLoading(true);
     try {
-        const storageRef = ref(storage, `papers/${course}/sem${semNum}/${Date.now()}_${file.name}`);
-        const task = uploadBytesResumable(storageRef, file);
+        const cloudName = "YOUR_CLOUDINARY_CLOUD_NAME";
+        const uploadPreset = "YOUR_UPLOAD_PRESET";
+        const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
+
         upProgressWrap.style.display = "block";
 
-        await new Promise((res, rej) => task.on("state_changed",
-            snap => {
-                const p = Math.round(snap.bytesTransferred / snap.totalBytes * 100);
-                upProgressFill.style.width = p + "%";
-                upBtnText.textContent = `Uploading… ${p}%`;
-            }, rej, res
-        ));
+        const fd = new FormData();
+        fd.append("file", file);
+        fd.append("upload_preset", uploadPreset);
 
-        const url = await getDownloadURL(task.snapshot.ref);
+        const secureUrl = await new Promise((resolve, reject) => {
+            const xhr = new XMLHttpRequest();
+            xhr.open("POST", uploadUrl, true);
+            xhr.upload.onprogress = e => {
+                if (e.lengthComputable) {
+                    const p = Math.round((e.loaded / e.total) * 100);
+                    upProgressFill.style.width = p + "%";
+                    upBtnText.textContent = `Uploading… ${p}%`;
+                }
+            };
+            xhr.onload = () => {
+                if (xhr.status === 200) {
+                    const res = JSON.parse(xhr.responseText);
+                    resolve(res.secure_url);
+                } else {
+                    reject(new Error("Cloudinary error: " + xhr.responseText));
+                }
+            };
+            xhr.onerror = () => reject(new Error("Network error during upload"));
+            xhr.send(fd);
+        });
 
         await addDoc(collection(db, "papers"), {
             course, semester: Number(semNum), subject, year, type,
             title: `${subject} – ${type} ${year}`,
-            url,
+            url: secureUrl,
             uploadedBy: currentUser.uid,
             uploaderName: currentUser.displayName || "Anonymous",
             uploadedAt: new Date().toISOString(),
