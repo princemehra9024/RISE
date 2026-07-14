@@ -322,9 +322,7 @@ body {
 .sidebar {
     width: 240px;
     min-height: 100vh;
-    background: rgba(255, 255, 255, 0.85);
-    backdrop-filter: blur(16px);
-    border-right: 1px solid rgba(0,0,0,0.08);
+    background: var(--teal);
     display: flex;
     flex-direction: column;
     padding: 36px 24px;
@@ -346,7 +344,7 @@ body {
     font-family: 'Playfair Display', serif;
     font-size: 26px;
     font-weight: 800;
-    color: #111827;
+    color: var(--white);
     letter-spacing: 0.06em;
 }
 
@@ -369,7 +367,7 @@ body {
     gap: 12px;
     padding: 13px 16px;
     border-radius: var(--radius-md);
-    color: #4B5563;
+    color: rgba(255,255,255,0.65);
     text-decoration: none;
     font-size: 15px;
     font-weight: 600;
@@ -378,14 +376,14 @@ body {
 }
 
 .sb-nav-item:hover {
-    background: rgba(0,0,0,0.05);
-    color: #111827;
+    background: rgba(255,255,255,0.1);
+    color: white;
 }
 
 .sb-nav-item.active {
-    background: #4F46E5;
+    background: var(--coral);
     color: white;
-    box-shadow: 0 6px 16px rgba(79,70,229,0.25);
+    box-shadow: 0 6px 16px rgba(232,133,106,0.35);
 }
 
 .sb-icon { font-size: 18px; }
@@ -395,8 +393,7 @@ body {
     display: flex;
     align-items: center;
     gap: 10px;
-    background: rgba(0,0,0,0.03);
-    border: 1px solid rgba(0,0,0,0.05);
+    background: rgba(255,255,255,0.08);
     border-radius: var(--radius-md);
     padding: 12px 14px;
     margin-top: auto;
@@ -418,11 +415,18 @@ body {
     flex-direction: column;
 }
 
-.sb-name { font-size: 14px; font-weight: 700; color: #111827; }
+.sb-name {
+    font-size: 13px;
+    font-weight: 700;
+    color: white;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
 
 .sb-badge {
     font-size: 11px;
-    color: #6B7280;
+    color: rgba(255,255,255,0.55);
     font-weight: 500;
     margin-top: 2px;
 }
@@ -430,7 +434,7 @@ body {
 .sb-signout {
     background: none;
     border: none;
-    color: #9CA3AF;
+    color: rgba(255,255,255,0.5);
     font-size: 18px;
     cursor: pointer;
     padding: 4px;
@@ -440,8 +444,8 @@ body {
 }
 
 .sb-signout:hover {
-    color: #EF4444;
-    background: rgba(239, 68, 68, 0.1);
+    color: var(--coral);
+    background: rgba(232,133,106,0.15);
 }
 
 /* ========================
@@ -522,7 +526,7 @@ body {
     position: absolute;
     top: 0; left: 0; right: 0;
     height: 5px;
-    background: #4F46E5;
+    background: linear-gradient(90deg, var(--coral), var(--yellow), var(--mint));
 }
 
 .hero-left { flex: 1; }
@@ -687,7 +691,7 @@ body {
 
 .progress-fill {
     height: 100%;
-    background: #4F46E5;
+    background: linear-gradient(90deg, var(--coral), var(--yellow));
     border-radius: 20px;
     transition: width 0.8s cubic-bezier(0.16,1,0.3,1);
 }

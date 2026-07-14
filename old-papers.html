@@ -1,9 +1,9 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Old Papers â€“ Student Dashboard</title>
+    <title>Old Papers – Student Dashboard</title>
     <meta name="description" content="Browse old question papers by semester and subject for IMCA course.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -64,7 +64,7 @@
         }
 
         .op-badge {
-            background: #4F46E5;
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
             color: white;
             font-size: 11px;
             font-weight: 700;
@@ -191,7 +191,7 @@
             position: absolute;
             top: 0; left: 0; right: 0;
             height: 4px;
-            background: #4F46E5;
+            background: linear-gradient(90deg, #4F46E5, #7C3AED);
             opacity: 0;
             transition: opacity 0.3s;
         }
@@ -208,7 +208,7 @@
 
         .op-sem-card.active-sem {
             border-color: #4F46E5;
-            background: #4F46E5;
+            background: linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 100%);
             box-shadow: 0 20px 48px rgba(79,70,229,0.15);
         }
 
@@ -224,12 +224,12 @@
             align-items: center;
             justify-content: center;
             font-size: 22px;
-            background: #4F46E5;
+            background: linear-gradient(135deg, #EEF2FF, #E0E7FF);
             margin-bottom: 4px;
         }
 
         .op-sem-card.active-sem .op-sem-icon {
-            background: #4F46E5;
+            background: linear-gradient(135deg, #4F46E5, #7C3AED);
         }
 
         .op-sem-number {
@@ -433,7 +433,7 @@
             width: 44px;
             height: 44px;
             border-radius: 12px;
-            background: #4F46E5;
+            background: linear-gradient(135deg, #EEF2FF, #E0E7FF);
             display: flex;
             align-items: center;
             justify-content: center;
@@ -543,7 +543,7 @@
 
         /* Upload CTA */
         .op-upload-cta {
-            background: #4F46E5;
+            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
             border-radius: 20px;
             padding: 32px 36px;
             display: flex;
@@ -622,16 +622,16 @@
                 </svg>
                 Dashboard
             </a>
-            <h1>ðŸ“„ Old Question Papers</h1>
+            <h1>📄 Old Question Papers</h1>
         </div>
         <div style="display:flex;align-items:center;gap:12px;">
-            <a href="upload-paper.html" style="display:inline-flex;align-items:center;gap:6px;background:#4F46E5;color:#fff;font-size:13px;font-weight:700;padding:8px 16px;border-radius:20px;text-decoration:none;transition:all 0.2s;box-shadow:0 4px 12px rgba(79,70,229,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">ðŸ“¤ Upload Paper</a>
+            <a href="upload-paper.html" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;font-size:13px;font-weight:700;padding:8px 16px;border-radius:20px;text-decoration:none;transition:all 0.2s;box-shadow:0 4px 12px rgba(79,70,229,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">📤 Upload Paper</a>
             <span class="op-badge">IMCA</span>
         </div>
     </div>
 
     <!-- LOADING STATE -->
-    <div class="op-loading" id="opLoading">Checking authenticationâ€¦</div>
+    <div class="op-loading" id="opLoading">Checking authentication…</div>
 
     <!-- MAIN CONTENT (hidden until auth) -->
     <div id="opMain" style="display:none;">
@@ -654,7 +654,7 @@
                 </div>
                 <div class="op-select-wrapper" id="mySemFilterWrapper" style="display:none;">
                     <select class="op-select" id="filterMySem" title="Filter by your semester's subjects">
-                        <option value="all">ðŸ“š My Sem Subjects</option>
+                        <option value="all">📚 My Sem Subjects</option>
                     </select>
                 </div>
             </div>
@@ -695,7 +695,7 @@
             <!-- Upload CTA -->
             <div class="op-upload-cta">
                 <div class="op-upload-cta-text">
-                    <h3>ðŸ“¤ Have a paper to share?</h3>
+                    <h3>📤 Have a paper to share?</h3>
                     <p>Help your classmates by contributing old question papers to the community.</p>
                 </div>
                 <button class="op-upload-btn" onclick="alert('Upload feature coming soon! Contact your class representative.')">Contribute a Paper</button>
@@ -725,41 +725,41 @@ const oldPapersDB = {
                     name: "Computer Fundamentals",
                     id: "cf",
                     papers: [
-                        { year: "2023", title: "Computer Fundamentals â€“ Nov 2023", type: "End Sem", url: "" },
-                        { year: "2022", title: "Computer Fundamentals â€“ Nov 2022", type: "End Sem", url: "" },
-                        { year: "2021", title: "Computer Fundamentals â€“ Nov 2021", type: "End Sem", url: "" },
+                        { year: "2023", title: "Computer Fundamentals – Nov 2023", type: "End Sem", url: "" },
+                        { year: "2022", title: "Computer Fundamentals – Nov 2022", type: "End Sem", url: "" },
+                        { year: "2021", title: "Computer Fundamentals – Nov 2021", type: "End Sem", url: "" },
                     ]
                 },
                 {
-                    name: "Mathematics â€“ I",
+                    name: "Mathematics – I",
                     id: "math1",
                     papers: [
-                        { year: "2023", title: "Mathematics I â€“ Nov 2023", type: "End Sem", url: "" },
-                        { year: "2022", title: "Mathematics I â€“ Nov 2022", type: "End Sem", url: "" },
+                        { year: "2023", title: "Mathematics I – Nov 2023", type: "End Sem", url: "" },
+                        { year: "2022", title: "Mathematics I – Nov 2022", type: "End Sem", url: "" },
                     ]
                 },
                 {
                     name: "Programming in C",
                     id: "c1",
                     papers: [
-                        { year: "2023", title: "Programming in C â€“ Nov 2023", type: "End Sem", url: "" },
-                        { year: "2022", title: "Programming in C â€“ Nov 2022", type: "End Sem", url: "" },
+                        { year: "2023", title: "Programming in C – Nov 2023", type: "End Sem", url: "" },
+                        { year: "2022", title: "Programming in C – Nov 2022", type: "End Sem", url: "" },
                     ]
                 },
                 {
                     name: "Business Communication",
                     id: "bc1",
                     papers: [
-                        { year: "2023", title: "Business Communication â€“ Nov 2023", type: "End Sem", url: "" },
+                        { year: "2023", title: "Business Communication – Nov 2023", type: "End Sem", url: "" },
                     ]
                 },
                 {
                     name: "Web Designing",
                     id: "web1",
                     papers: [
-                        { year: "2023", title: "Web Designing â€“ Nov 2023", type: "End Sem", url: "" },
-                        { year: "2022", title: "Web Designing â€“ Nov 2022", type: "End Sem", url: "" },
-                        { year: "2021", title: "Web Designing â€“ Nov 2021", type: "End Sem", url: "" },
+                        { year: "2023", title: "Web Designing – Nov 2023", type: "End Sem", url: "" },
+                        { year: "2022", title: "Web Designing – Nov 2022", type: "End Sem", url: "" },
+                        { year: "2021", title: "Web Designing – Nov 2021", type: "End Sem", url: "" },
                     ]
                 },
             ]
@@ -771,40 +771,40 @@ const oldPapersDB = {
                     name: "Data Structures",
                     id: "ds2",
                     papers: [
-                        { year: "2024", title: "Data Structures â€“ May 2024", type: "End Sem", url: "" },
-                        { year: "2023", title: "Data Structures â€“ May 2023", type: "End Sem", url: "" },
-                        { year: "2022", title: "Data Structures â€“ May 2022", type: "End Sem", url: "" },
+                        { year: "2024", title: "Data Structures – May 2024", type: "End Sem", url: "" },
+                        { year: "2023", title: "Data Structures – May 2023", type: "End Sem", url: "" },
+                        { year: "2022", title: "Data Structures – May 2022", type: "End Sem", url: "" },
                     ]
                 },
                 {
                     name: "Computer Architecture",
                     id: "ca2",
                     papers: [
-                        { year: "2024", title: "Computer Architecture â€“ May 2024", type: "End Sem", url: "" },
-                        { year: "2023", title: "Computer Architecture â€“ May 2023", type: "End Sem", url: "" },
+                        { year: "2024", title: "Computer Architecture – May 2024", type: "End Sem", url: "" },
+                        { year: "2023", title: "Computer Architecture – May 2023", type: "End Sem", url: "" },
                     ]
                 },
                 {
                     name: "Graphics Design & Animation",
                     id: "gda2",
                     papers: [
-                        { year: "2024", title: "Graphics Design & Animation â€“ May 2024", type: "End Sem", url: "" },
-                        { year: "2023", title: "Graphics Design & Animation â€“ May 2023", type: "End Sem", url: "" },
+                        { year: "2024", title: "Graphics Design & Animation – May 2024", type: "End Sem", url: "" },
+                        { year: "2023", title: "Graphics Design & Animation – May 2023", type: "End Sem", url: "" },
                     ]
                 },
                 {
                     name: "Graph Theory & Discrete Structures",
                     id: "gtds2",
                     papers: [
-                        { year: "2024", title: "Graph Theory & Discrete Structures â€“ May 2024", type: "End Sem", url: "" },
-                        { year: "2023", title: "Graph Theory & Discrete Structures â€“ May 2023", type: "End Sem", url: "" },
+                        { year: "2024", title: "Graph Theory & Discrete Structures – May 2024", type: "End Sem", url: "" },
+                        { year: "2023", title: "Graph Theory & Discrete Structures – May 2023", type: "End Sem", url: "" },
                     ]
                 },
                 {
                     name: "English",
                     id: "eng2",
                     papers: [
-                        { year: "2024", title: "English â€“ May 2024", type: "End Sem", url: "" },
+                        { year: "2024", title: "English – May 2024", type: "End Sem", url: "" },
                     ]
                 },
             ]
@@ -816,23 +816,23 @@ const oldPapersDB = {
                     name: "Operating Systems",
                     id: "os3",
                     papers: [
-                        { year: "2023", title: "Operating Systems â€“ Nov 2023", type: "End Sem", url: "" },
-                        { year: "2022", title: "Operating Systems â€“ Nov 2022", type: "End Sem", url: "" },
+                        { year: "2023", title: "Operating Systems – Nov 2023", type: "End Sem", url: "" },
+                        { year: "2022", title: "Operating Systems – Nov 2022", type: "End Sem", url: "" },
                     ]
                 },
                 {
                     name: "Database Management",
                     id: "dbms3",
                     papers: [
-                        { year: "2023", title: "DBMS â€“ Nov 2023", type: "End Sem", url: "" },
-                        { year: "2022", title: "DBMS â€“ Nov 2022", type: "End Sem", url: "" },
+                        { year: "2023", title: "DBMS – Nov 2023", type: "End Sem", url: "" },
+                        { year: "2022", title: "DBMS – Nov 2022", type: "End Sem", url: "" },
                     ]
                 },
                 {
                     name: "Java Programming",
                     id: "java3",
                     papers: [
-                        { year: "2023", title: "Java Programming â€“ Nov 2023", type: "End Sem", url: "" },
+                        { year: "2023", title: "Java Programming – Nov 2023", type: "End Sem", url: "" },
                     ]
                 },
             ]
@@ -844,22 +844,22 @@ const oldPapersDB = {
                     name: "Web Technology",
                     id: "web4",
                     papers: [
-                        { year: "2023", title: "Web Technology â€“ May 2023", type: "End Sem", url: "" },
-                        { year: "2022", title: "Web Technology â€“ May 2022", type: "End Sem", url: "" },
+                        { year: "2023", title: "Web Technology – May 2023", type: "End Sem", url: "" },
+                        { year: "2022", title: "Web Technology – May 2022", type: "End Sem", url: "" },
                     ]
                 },
                 {
                     name: "Software Engineering",
                     id: "se4",
                     papers: [
-                        { year: "2023", title: "Software Engineering â€“ May 2023", type: "End Sem", url: "" },
+                        { year: "2023", title: "Software Engineering – May 2023", type: "End Sem", url: "" },
                     ]
                 },
                 {
                     name: "Computer Networks",
                     id: "cn4",
                     papers: [
-                        { year: "2023", title: "Computer Networks â€“ May 2023", type: "End Sem", url: "" },
+                        { year: "2023", title: "Computer Networks – May 2023", type: "End Sem", url: "" },
                     ]
                 },
             ]
@@ -871,14 +871,14 @@ const oldPapersDB = {
                     name: "Advanced Java",
                     id: "aj5",
                     papers: [
-                        { year: "2023", title: "Advanced Java â€“ Nov 2023", type: "End Sem", url: "" },
+                        { year: "2023", title: "Advanced Java – Nov 2023", type: "End Sem", url: "" },
                     ]
                 },
                 {
                     name: "Mobile Computing",
                     id: "mc5",
                     papers: [
-                        { year: "2023", title: "Mobile Computing â€“ Nov 2023", type: "End Sem", url: "" },
+                        { year: "2023", title: "Mobile Computing – Nov 2023", type: "End Sem", url: "" },
                     ]
                 },
             ]
@@ -890,14 +890,14 @@ const oldPapersDB = {
                     name: "Cloud Computing",
                     id: "cc6",
                     papers: [
-                        { year: "2023", title: "Cloud Computing â€“ May 2023", type: "End Sem", url: "" },
+                        { year: "2023", title: "Cloud Computing – May 2023", type: "End Sem", url: "" },
                     ]
                 },
                 {
                     name: "Machine Learning",
                     id: "ml6",
                     papers: [
-                        { year: "2023", title: "Machine Learning â€“ May 2023", type: "End Sem", url: "" },
+                        { year: "2023", title: "Machine Learning – May 2023", type: "End Sem", url: "" },
                     ]
                 },
             ]
@@ -909,7 +909,7 @@ const oldPapersDB = {
                     name: "Artificial Intelligence",
                     id: "ai7",
                     papers: [
-                        { year: "2022", title: "Artificial Intelligence â€“ Nov 2022", type: "End Sem", url: "" },
+                        { year: "2022", title: "Artificial Intelligence – Nov 2022", type: "End Sem", url: "" },
                     ]
                 },
             ]
@@ -921,7 +921,7 @@ const oldPapersDB = {
                     name: "Project / Dissertation",
                     id: "proj8",
                     papers: [
-                        { year: "2022", title: "Project Guidelines â€“ 2022", type: "Reference", url: "" },
+                        { year: "2022", title: "Project Guidelines – 2022", type: "Reference", url: "" },
                     ]
                 },
             ]
@@ -929,7 +929,7 @@ const oldPapersDB = {
     }
 };
 
-const semIcons = ["ðŸ“˜","ðŸ“—","ðŸ“™","ðŸ“•","ðŸ“’","ðŸ“”","ðŸ““","ðŸ—‚ï¸"];
+const semIcons = ["📘","📗","📙","📕","📒","📔","📓","🗂️"];
 
 // ========================================
 // STATE
@@ -1001,13 +1001,13 @@ function renderSemGrid() {
         card.className = "op-sem-card";
         card.dataset.sem = semNum;
         card.innerHTML = `
-            <div class="op-sem-icon">${semIcons[idx] || "ðŸ“„"}</div>
+            <div class="op-sem-icon">${semIcons[idx] || "📄"}</div>
             <div class="op-sem-number">Semester ${semNum}</div>
             <div class="op-sem-title">${semData.semLabel}</div>
             <div class="op-sem-meta">
-                <span class="op-sem-papers-count">ðŸ“„ ${totalPapers} papers</span>
+                <span class="op-sem-papers-count">📄 ${totalPapers} papers</span>
                 <span class="op-sem-dot"></span>
-                <span class="op-sem-subjects-count">ðŸ“š ${semData.subjects.length} subjects</span>
+                <span class="op-sem-subjects-count">📚 ${semData.subjects.length} subjects</span>
             </div>
             <div class="op-sem-arrow">
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -1029,7 +1029,7 @@ function populateMySemFilter(profile) {
     const syl = getSyllabus(profile);
     if (!syl) return;
 
-    filterMySem.innerHTML = `<option value="all">ðŸ“š My Sem Subjects</option>`;
+    filterMySem.innerHTML = `<option value="all">📚 My Sem Subjects</option>`;
 
     syl.subjects.forEach(sub => {
         const opt = document.createElement("option");
@@ -1046,7 +1046,7 @@ function populateMySemFilter(profile) {
     if (!label) {
         const badge = document.createElement("div");
         badge.style.cssText = "font-size:10px;font-weight:700;color:#4F46E5;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;padding-left:2px;";
-        badge.textContent = `Sem ${profile.semester} Â· ${profile.branch}`;
+        badge.textContent = `Sem ${profile.semester} · ${profile.branch}`;
         mySemFilterWrapper.insertBefore(badge, filterMySem);
     }
 }
@@ -1089,7 +1089,7 @@ function openSemester(semNum) {
 
     // Detail header
     opDetailTitle.textContent   = semData.semLabel;
-    opDetailSubtitle.textContent = `${semData.subjects.length} subjects Â· ${semData.subjects.reduce((s,sub)=>s+sub.papers.length,0)} papers`;
+    opDetailSubtitle.textContent = `${semData.subjects.length} subjects · ${semData.subjects.reduce((s,sub)=>s+sub.papers.length,0)} papers`;
 
     // Build subject tabs
     renderSubjectTabs(semData);
@@ -1157,17 +1157,17 @@ function activateTab(tabId, semData) {
                 const card = document.createElement("div");
                 card.className = "op-paper-card";
                 card.innerHTML = `
-                    <div class="op-paper-icon">ðŸ“„</div>
+                    <div class="op-paper-icon">📄</div>
                     <div class="op-paper-info">
-                        <div class="op-paper-year">${paper.year} Â· ${paper.type}</div>
+                        <div class="op-paper-year">${paper.year} · ${paper.type}</div>
                         <div class="op-paper-name">${paper.title}</div>
-                        <div class="op-paper-meta">Question Paper Â· PDF</div>
+                        <div class="op-paper-meta">Question Paper · PDF</div>
                         <div class="op-paper-actions">
                             ${paper.url
-                                ? `<a href="${paper.url}" target="_blank" class="op-btn-view">ðŸ‘ View</a>
-                                   <a href="${paper.url}" download class="op-btn-download">â¬‡</a>`
-                                : `<button class="op-btn-view" onclick="alert('Paper link coming soon! Ask your teacher or class representative.')">ðŸ‘ View</button>
-                                   <button class="op-btn-download" onclick="alert('Download link coming soon!')">â¬‡</button>`
+                                ? `<a href="${paper.url}" target="_blank" class="op-btn-view">👁 View</a>
+                                   <a href="${paper.url}" download class="op-btn-download">⬇</a>`
+                                : `<button class="op-btn-view" onclick="alert('Paper link coming soon! Ask your teacher or class representative.')">👁 View</button>
+                                   <button class="op-btn-download" onclick="alert('Download link coming soon!')">⬇</button>`
                             }
                         </div>
                     </div>
@@ -1184,7 +1184,7 @@ function activateTab(tabId, semData) {
     if (subjectsToShow.length === 0) {
         opPapersContent.innerHTML = `
             <div class="op-empty">
-                <div class="op-empty-icon">ðŸ”</div>
+                <div class="op-empty-icon">🔍</div>
                 <h3>No papers found</h3>
                 <p>No papers available for this selection.</p>
             </div>
@@ -1193,7 +1193,7 @@ function activateTab(tabId, semData) {
 }
 
 // ========================================
-// BACK BUTTON â€“ detail â†’ grid
+// BACK BUTTON – detail → grid
 // ========================================
 opDetailBackBtn.addEventListener("click", () => {
     opDetailView.classList.remove("visible");
@@ -1203,7 +1203,7 @@ opDetailBackBtn.addEventListener("click", () => {
 });
 
 // ========================================
-// TOP BACK LINK â€“ handle detail view
+// TOP BACK LINK – handle detail view
 // ========================================
 topBackLink.addEventListener("click", (e) => {
     if (opDetailView.classList.contains("visible")) {
@@ -1215,7 +1215,7 @@ topBackLink.addEventListener("click", (e) => {
 });
 
 // ========================================
-// FILTER CHANGE â€“ Course
+// FILTER CHANGE – Course
 // ========================================
 filterCourse.addEventListener("change", () => {
     selectedCourse = filterCourse.value;
@@ -1225,7 +1225,7 @@ filterCourse.addEventListener("change", () => {
 });
 
 // ========================================
-// FILTER CHANGE â€“ Subject (highlights sems)
+// FILTER CHANGE – Subject (highlights sems)
 // ========================================
 filterSubject.addEventListener("change", () => {
     const val = filterSubject.value;
@@ -1246,7 +1246,7 @@ filterSubject.addEventListener("change", () => {
     });
 });
 // ========================================
-// FILTER CHANGE â€“ My Semester Subject
+// FILTER CHANGE – My Semester Subject
 // ========================================
 filterMySem.addEventListener("change", () => {
     const val = filterMySem.value;
@@ -1303,9 +1303,9 @@ filterMySem.addEventListener("change", () => {
             <div class="rf-brand-col">
                 <div class="rf-logo">
                     <span class="rf-logo-rise">RISE</span>
-                    <span class="rf-logo-star">âœ¦</span>
+                    <span class="rf-logo-star">✦</span>
                 </div>
-                <p class="rf-tagline">Let's rise together â™¡</p>
+                <p class="rf-tagline">Let's rise together ♡</p>
                 <p class="rf-sub-desc">
                     A student-first platform built to track progress, access resources
                     and achieve academic excellence.
@@ -1315,7 +1315,7 @@ filterMySem.addEventListener("change", () => {
                     <span class="rf-powered-label">Powered by</span>
                     <span class="rf-powered-name">Educant</span>
                 </div>
-                <p class="rf-copyright">Â© 2025 RISE Platform Â· All rights reserved</p>
+                <p class="rf-copyright">© 2025 RISE Platform · All rights reserved</p>
             </div>
 
             <!-- Navigate -->
@@ -1336,20 +1336,20 @@ filterMySem.addEventListener("change", () => {
                 <a href="#">Changelog</a>
             </div>
 
-            <!-- Made with â™¡ â€” Presently -->
+            <!-- Made with ♡ — Presently -->
             <div class="rf-credits-col">
-                <span class="rf-made-label">Made with â™¡ â€” Presently</span>
-                <p class="rf-made-love">Crafted with <strong>â™¡</strong> by our passionate team</p>
+                <span class="rf-made-label">Made with ♡ — Presently</span>
+                <p class="rf-made-love">Crafted with <strong>♡</strong> by our passionate team</p>
 
                 <div class="rf-credit-item is-founder">
-                    <span class="rf-credit-av" style="background: #4F46E5;">P</span>
+                    <span class="rf-credit-av" style="background:linear-gradient(135deg,#E8856A,#F5C842)">P</span>
                     <div class="rf-credit-info">
                         <span class="rf-credit-name">Priyanshu</span>
                         <span class="rf-credit-role">Founder &amp; Visionary</span>
                     </div>
                 </div>
                 <div class="rf-credit-item">
-                    <span class="rf-credit-av" style="background: #4F46E5;">P</span>
+                    <span class="rf-credit-av" style="background:linear-gradient(135deg,#E8856A,#c96b50)">P</span>
                     <div class="rf-credit-info">
                         <span class="rf-credit-name">Prince Mehra</span>
                         <span class="rf-credit-role">Lead Developer</span>
@@ -1362,7 +1362,7 @@ filterMySem.addEventListener("change", () => {
         <!-- Bottom Bar -->
         <div class="rf-bottom-bar">
             <div class="rf-bottom-left">
-                <span class="rf-bottom-copy">Â© 2025 RISE &nbsp;Â·&nbsp; Review Â· Improve Â· Study Â· Excel</span>
+                <span class="rf-bottom-copy">© 2025 RISE &nbsp;·&nbsp; Review · Improve · Study · Excel</span>
                 <div class="rf-bottom-pills">
                     <span class="rf-bottom-pill">IMCA</span>
                     <span class="rf-bottom-pill">Open Platform</span>
@@ -1370,8 +1370,8 @@ filterMySem.addEventListener("change", () => {
                 </div>
             </div>
             <div class="rf-bottom-right">
-                <span class="rf-bottom-heart">â™¡</span>
-                <a href="contributors.html" class="rf-bottom-link">View all contributors â†—</a>
+                <span class="rf-bottom-heart">♡</span>
+                <a href="contributors.html" class="rf-bottom-link">View all contributors ↗</a>
             </div>
         </div>
 
@@ -1379,4 +1379,3 @@ filterMySem.addEventListener("change", () => {
 
 </body>
 </html>
-
