@@ -20,6 +20,11 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
 const storage = getStorage(app);
+
+// Configure storage to fail quickly if bucket doesn't exist (instead of getting stuck at 0% for 2 mins)
+storage.maxOperationRetryTime = 5000;
+storage.maxUploadRetryTime = 5000;
+
 const provider = new GoogleAuthProvider();
 
 export { app, auth, db, storage, provider };
