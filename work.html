@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Work — 100x Productivity</title>
+    <meta name="description" content="100x Productivity Checklist.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Inter:wght@400;500;600;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="footer.css">
+    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="work.css">
+</head>
+
+<body>
+    <!-- ================= DASHBOARD ================= -->
+    <div id="dashboard" class="dash-wrap">
+
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <span class="sb-rise">RISE</span>
+                <span class="sb-star">✦</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="index.html" class="sb-nav-item" id="navDashboard">
+                    <span class="sb-icon">🏠</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="old-papers.html" class="sb-nav-item">
+                    <span class="sb-icon">📄</span>
+                    <span>Old Papers</span>
+                </a>
+                <a href="profile.html" class="sb-nav-item">
+                    <span class="sb-icon">👤</span>
+                    <span>Profile</span>
+                </a>
+                <a href="contributors.html" class="sb-nav-item">
+                    <span class="sb-icon">🌟</span>
+                    <span>Contributors</span>
+                </a>
+                <a href="#" class="sb-nav-item active">
+                    <span class="sb-icon">⚡</span>
+                    <span>Work</span>
+                </a>
+            </nav>
+        </aside>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="dash-main">
+
+            <!-- Decorative floating shapes -->
+            <div class="deco-star deco-1">✦</div>
+            <div class="deco-star deco-2">✦</div>
+            <div class="deco-blob deco-blob-1"></div>
+            <div class="deco-blob deco-blob-2"></div>
+
+            <!-- ===== HERO HEADER ===== -->
+            <header class="dash-hero">
+                <div class="hero-left">
+                    <div class="hero-eyebrow">✦ 100X PRODUCTIVITY</div>
+                    <h1 class="hero-title">
+                        Crush your <span class="hero-name">Tasks!</span>
+                    </h1>
+                    <p class="hero-script">Get things done ♡</p>
+                    <p class="hero-sub">Organize your work, check off your lists, and build momentum today.</p>
+                </div>
+            </header>
+
+            <!-- ===== PRODUCTIVITY SECTION ===== -->
+            <section class="dash-section">
+                
+                <div class="work-container">
+                    <!-- Task Input -->
+                    <div class="task-input-card">
+                        <form id="taskForm" class="task-form">
+                            <input type="text" id="taskInput" placeholder="What needs to be done?" autocomplete="off" required>
+                            <button type="submit" class="add-task-btn">Add Task ✦</button>
+                        </form>
+                    </div>
+
+                    <div class="work-lists-wrapper">
+                        <!-- To-Do List -->
+                        <div class="task-list-column">
+                            <div class="column-header">
+                                <h3>To-Do</h3>
+                                <span class="task-count" id="todoCount">0</span>
+                            </div>
+                            <ul id="todoList" class="task-list">
+                                <!-- Tasks go here -->
+                            </ul>
+                        </div>
+
+                        <!-- Done List -->
+                        <div class="task-list-column">
+                            <div class="column-header">
+                                <h3>Done</h3>
+                                <span class="task-count" id="doneCount">0</span>
+                            </div>
+                            <ul id="doneList" class="task-list done-list-style">
+                                <!-- Completed tasks go here -->
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+            </section>
+        </main>
+    </div>
+
+    <!-- Script for work functionality -->
+    <script src="work.js"></script>
+</body>
+</html>

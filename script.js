@@ -109,10 +109,15 @@ onAuthStateChanged(auth, async (user) => {
         loginScreen.classList.add("hidden");
 
         // Load Student Profile from Firestore
-        studentProfile = await getStudentProfile();
+        try {
+            studentProfile = await getStudentProfile();
+        } catch (error) {
+            console.error("Error loading profile:", error);
+            studentProfile = null;
+        }
 
         if (!studentProfile) {
-            // First time user: show profile setup
+            // First time user (or error): show profile setup
             dashboard.classList.add("hidden");
             profileSetupScreen.classList.remove("hidden");
         } else {
@@ -140,7 +145,12 @@ onAuthStateChanged(auth, async (user) => {
             syllabus = getSyllabus(studentProfile) || defaultSyllabus;
 
             // Load Progress Data from Firestore
-            progressData = await getSavedData();
+            try {
+                progressData = await getSavedData();
+            } catch (error) {
+                console.error("Error loading progress:", error);
+                progressData = {};
+            }
             createSubjectCards();
             updateDashboard();
         }
