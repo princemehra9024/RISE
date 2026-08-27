@@ -85,11 +85,33 @@ const viewProfileBtn = document.getElementById("viewProfileBtn");
 // ========================================
 
 firebaseLoginBtn.addEventListener("click", async () => {
+    const originalText = firebaseLoginBtn.innerHTML;
+    firebaseLoginBtn.disabled = true;
+    firebaseLoginBtn.innerHTML = `<span style="opacity:0.7">Signing in...</span>`;
     try {
         await signInWithPopup(auth, provider);
     } catch (error) {
         console.error("Login Failed:", error);
-        alert("Login failed! Did you add your Firebase keys in firebase-config.js?");
+        firebaseLoginBtn.disabled = false;
+        firebaseLoginBtn.innerHTML = originalText;
+        // Show user-friendly error
+        let msg = "Login failed. Please try again.";
+        if (error.code === "auth/popup-blocked") {
+            msg = "Popup was blocked! Please allow popups for this site and try again.";
+        } else if (error.code === "auth/popup-closed-by-user") {
+            msg = "Sign-in was cancelled. Please try again.";
+        } else if (error.code === "auth/network-request-failed") {
+            msg = "Network error. Check your internet connection and try again.";
+        } else if (error.code === "auth/unauthorized-domain") {
+            msg = "This domain is not authorized in Firebase. Add it to Firebase Console → Authentication → Authorized Domains.";
+        }
+        const errDiv = document.createElement("div");
+        errDiv.style.cssText = "color:#e05a4e;background:rgba(224,90,78,0.1);border:1px solid rgba(224,90,78,0.3);border-radius:10px;padding:10px 14px;font-size:13px;margin-top:12px;text-align:center;";
+        errDiv.textContent = msg;
+        const existing = firebaseLoginBtn.parentNode.querySelector(".login-error-msg");
+        if (existing) existing.remove();
+        errDiv.className = "login-error-msg";
+        firebaseLoginBtn.parentNode.insertBefore(errDiv, firebaseLoginBtn.nextSibling);
     }
 });
 
@@ -175,8 +197,13 @@ profileSetupForm.addEventListener("submit", async (e) => {
     e.preventDefault();
 
     const saveBtn = document.getElementById("saveProfileBtn");
+    const originalBtnText = saveBtn.textContent;
     saveBtn.textContent = "Saving...";
     saveBtn.disabled = true;
+
+    // Remove any previous error
+    const existingErr = profileSetupForm.querySelector(".setup-error-msg");
+    if (existingErr) existingErr.remove();
 
     const profile = {
         studentName: inputStudentName.value.trim(),
@@ -187,28 +214,52 @@ profileSetupForm.addEventListener("submit", async (e) => {
         goal: inputGoal.value.trim() || "Study hard & excel!",
     };
 
-    await saveStudentProfile(profile);
-    studentProfile = profile;
+    try {
+        await saveStudentProfile(profile);
+        studentProfile = profile;
 
-    updateHeaderBadge(profile);
+        updateHeaderBadge(profile);
 
-    // Remove edit param if it was there
-    window.history.replaceState({}, document.title, window.location.pathname);
+        // Remove edit param if it was there
+        window.history.replaceState({}, document.title, window.location.pathname);
 
-    // Show dashboard
-    profileSetupScreen.classList.add("hidden");
-    dashboard.classList.remove("hidden");
+        // Show dashboard
+        profileSetupScreen.classList.add("hidden");
+        dashboard.classList.remove("hidden");
 
-    // Resolve correct syllabus for this student's semester
-    syllabus = getSyllabus(studentProfile) || defaultSyllabus;
+        // Resolve correct syllabus for this student's semester
+        syllabus = getSyllabus(studentProfile) || defaultSyllabus;
 
-    // Load Progress
-    progressData = await getSavedData();
-    createSubjectCards();
-    updateDashboard();
+        // Load Progress
+        try {
+            progressData = await getSavedData();
+        } catch (err) {
+            console.warn("Could not load progress data:", err);
+            progressData = {};
+        }
+        createSubjectCards();
+        updateDashboard();
 
-    saveBtn.textContent = "Create My Profile";
-    saveBtn.disabled = false;
+        saveBtn.textContent = originalBtnText;
+        saveBtn.disabled = false;
+    } catch (error) {
+        console.error("Profile save failed:", error);
+        saveBtn.textContent = originalBtnText;
+        saveBtn.disabled = false;
+
+        // Show error message in the form
+        let errMsg = "Failed to save profile. Please try again.";
+        if (error.code === "permission-denied") {
+            errMsg = "Permission denied. Check your Firestore security rules in Firebase Console.";
+        } else if (error.code === "unavailable" || error.message?.includes("network")) {
+            errMsg = "Network error. Check your internet connection and try again.";
+        }
+        const errDiv = document.createElement("div");
+        errDiv.className = "setup-error-msg";
+        errDiv.style.cssText = "color:#e05a4e;background:rgba(224,90,78,0.1);border:1px solid rgba(224,90,78,0.3);border-radius:10px;padding:10px 14px;font-size:13px;margin-top:12px;text-align:center;";
+        errDiv.textContent = errMsg;
+        saveBtn.parentNode.insertBefore(errDiv, saveBtn);
+    }
 });
 
 // ========================================

@@ -413,6 +413,12 @@ uploadForm.addEventListener("submit", async e => {
     try {
         const cloudName = "YOUR_CLOUDINARY_CLOUD_NAME";
         const uploadPreset = "YOUR_UPLOAD_PRESET";
+
+        // ⚠️ Cloudinary not configured yet — show friendly error
+        if (cloudName === "YOUR_CLOUDINARY_CLOUD_NAME" || uploadPreset === "YOUR_UPLOAD_PRESET") {
+            throw new Error("Paper upload is coming soon! The storage service is not configured yet. Contact the admin.");
+        }
+
         const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
 
         upProgressWrap.style.display = "block";
