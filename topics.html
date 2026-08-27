@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RISE — Topics Tracker</title>
+    <meta name="description" content="RISE Topics Tracker — Track your subject topics and mark progress.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Inter:wght@400;500;600;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="topics.css">
+</head>
+
+<body>
+    <!-- ===== LOADING SCREEN ===== -->
+    <div id="loadingScreen" class="loading-screen">
+        <div class="loading-content">
+            <div class="loading-brand">
+                <span class="loading-rise">RISE</span>
+                <span class="loading-star">✦</span>
+            </div>
+            <p>Loading your topics...</p>
+        </div>
+    </div>
+
+    <!-- ===== MAIN LAYOUT ===== -->
+    <div id="topicsApp" class="topics-app hidden">
+
+        <!-- ===== LEFT PANEL — Subject Switcher ===== -->
+        <aside class="tp-sidebar">
+            <div class="tp-sidebar-top">
+                <a href="index.html" class="tp-back-link">← Dashboard</a>
+                <div class="tp-brand">
+                    <span class="tp-brand-rise">RISE</span>
+                    <span class="tp-brand-star">✦</span>
+                </div>
+                <p class="tp-sidebar-label">Subjects</p>
+            </div>
+
+            <nav id="subjectNav" class="tp-subject-nav">
+                <!-- JS fills subject buttons here -->
+            </nav>
+
+            <div class="tp-sidebar-footer">
+                <div class="tp-progress-ring-wrap">
+                    <svg viewBox="0 0 80 80" class="tp-ring-svg">
+                        <circle cx="40" cy="40" r="34" class="tp-ring-track"/>
+                        <circle cx="40" cy="40" r="34" class="tp-ring-fill" id="sidebarRingFill"/>
+                    </svg>
+                    <span class="tp-ring-pct" id="sidebarPct">0%</span>
+                </div>
+                <p class="tp-footer-label">Overall Progress</p>
+            </div>
+        </aside>
+
+        <!-- ===== RIGHT PANEL — Topics Area ===== -->
+        <main class="tp-main">
+
+            <!-- Header -->
+            <header class="tp-header">
+                <div class="tp-header-left">
+                    <h1 class="tp-subject-title" id="subjectTitle">Select a Subject</h1>
+                    <p class="tp-subject-meta" id="subjectMeta"></p>
+                </div>
+                <div class="tp-header-right">
+                    <div class="tp-subject-progress-wrap">
+                        <div class="tp-subject-progress-bar">
+                            <div class="tp-subject-progress-fill" id="subjectProgressFill"></div>
+                        </div>
+                        <span class="tp-subject-progress-text" id="subjectProgressText">0% Complete</span>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Unit Tabs -->
+            <div class="tp-unit-tabs" id="unitTabs">
+                <!-- JS fills unit tabs -->
+            </div>
+
+            <!-- Topics Grid -->
+            <section class="tp-topics-area" id="topicsArea">
+                <div class="tp-topics-grid" id="topicsGrid">
+                    <!-- JS fills topic pills -->
+                </div>
+            </section>
+
+            <!-- Legend -->
+            <div class="tp-legend">
+                <div class="tp-legend-item">
+                    <span class="tp-legend-dot tp-legend-done"></span>
+                    <span>Completed</span>
+                </div>
+                <div class="tp-legend-item">
+                    <span class="tp-legend-dot tp-legend-pending"></span>
+                    <span>Pending</span>
+                </div>
+            </div>
+
+        </main>
+    </div>
+
+    <script type="module" src="topics.js"></script>
+    <!-- ===== AI STUDY ASSISTANT FAB ===== -->
+    <a href="ai-study.html" class="ai-fab" title="AI Study Assistant">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+        </svg>
+    </a>
+</body>
+
+</html>

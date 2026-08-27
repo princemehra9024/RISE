@@ -9,6 +9,7 @@ let currentUser = null;
 let progressData = {};
 let studentProfile = null;
 let syllabus = defaultSyllabus; // resolved per-profile after login
+let growthChart = null;
 
 // ---------- Cloud Firestore Database ----------
 
@@ -349,7 +350,7 @@ function createSubjectCards() {
 
         card.querySelector("button").addEventListener("click", () => {
 
-            openSubject(subject.id);
+            window.location.href = `topics.html?subject=${subject.id}`;
 
         });
 
@@ -375,67 +376,61 @@ function openSubject(subjectId) {
 
     subjectTitle.innerHTML = `${subject.name}`;
 
-    unitsContainer.innerHTML = "";
+    unitsContainer.innerHTML = `
+        <div class="unit-tabs" id="unitTabs"></div>
+        <div class="unit-topics-container" id="unitTopicsContainer"></div>
+    `;
 
-    subject.units.forEach((unit, unitIndex) => {
+    const tabsContainer = document.getElementById("unitTabs");
+    const topicsContainer = document.getElementById("unitTopicsContainer");
 
-        const unitCard = document.createElement("div");
-
-        unitCard.className = "unit-card";
-
-        let topicsHTML = "";
-
-        unit.topics.forEach((topic, topicIndex) => {
-
-            const topicKey = `${subject.id}-${unitIndex}-${topicIndex}`;
-
-            const checked = progressData[topicKey] ? "checked" : "";
-
-            topicsHTML += `
-
-                <div class="topic">
-
-                    <input
-                        type="checkbox"
-                        class="topic-checkbox"
-                        data-key="${topicKey}"
-                        ${checked}
-                    >
-
-                    <span>${topic}</span>
-
-                </div>
-
-            `;
-
+    function renderTopics(uIndex) {
+        // Update active tab style
+        Array.from(tabsContainer.children).forEach((tab, idx) => {
+            if (idx === uIndex) tab.classList.add("active-tab");
+            else tab.classList.remove("active-tab");
         });
 
-        unitCard.innerHTML = `
-
-            <div class="unit-header">
-
+        const unit = subject.units[uIndex];
+        let topicsHTML = "";
+        
+        unit.topics.forEach((topic, topicIndex) => {
+            const topicKey = `${subject.id}-${uIndex}-${topicIndex}`;
+            const checked = progressData[topicKey] ? "checked" : "";
+            const completedClass = progressData[topicKey] ? "completed" : "";
+            topicsHTML += `
+                <label class="topic-pill ${completedClass}">
+                    <input type="checkbox" class="topic-checkbox" data-key="${topicKey}" ${checked} style="display: none;">
+                    <span>${topic}</span>
+                </label>
+            `;
+        });
+        
+        topicsContainer.innerHTML = `
+            <div class="unit-topics-header">
                 <h3>${unit.name}</h3>
-
-                <span>&#9660;</span>
-
             </div>
-
-            <div class="topic-list">
-
+            <div class="topic-list" style="display: block; padding-top: 0;">
                 ${topicsHTML}
-
             </div>
-
         `;
+        
+        // Re-attach checkbox events for newly rendered topics
+        addCheckboxEvents();
+    }
 
-        unitsContainer.appendChild(unitCard);
-
+    subject.units.forEach((unit, unitIndex) => {
+        const tab = document.createElement("button");
+        tab.className = "unit-tab";
+        tab.textContent = `Unit ${unitIndex + 1}`;
+        tab.addEventListener("click", () => renderTopics(unitIndex));
+        tabsContainer.appendChild(tab);
     });
 
-    addToggle();
-
-    addCheckboxEvents();
-
+    // Initial render of first unit
+    if (subject.units.length > 0) {
+        renderTopics(0);
+    }
 }
 
 // ========================================
@@ -471,21 +466,18 @@ function addToggle() {
 // ========================================
 
 function addCheckboxEvents() {
-
     document.querySelectorAll(".topic-checkbox").forEach(box => {
-
         box.addEventListener("change", function () {
-
+            if (this.checked) {
+                this.parentElement.classList.add("completed");
+            } else {
+                this.parentElement.classList.remove("completed");
+            }
             progressData[this.dataset.key] = this.checked;
-
             saveData(progressData);
-
             updateDashboard();
-
         });
-
     });
-
 }
 
 // ========================================
@@ -553,18 +545,94 @@ function updateDashboard() {
         : Math.round(completed * 100 / total);
 
     completedTopics.textContent = completed;
-
     remainingTopics.textContent = total - completed;
-
     overallPercentage.textContent = overall + "%";
-
     overallProgress.style.width = overall + "%";
 
-    // Drive circular SVG ring (circumference = 2π × 52 ≈ 326.73)
-    if (circleProgress) {
-        const circumference = 326.73;
-        const offset = circumference - (overall / 100) * circumference;
-        circleProgress.style.strokeDashoffset = offset;
-    }
+    // Chart.js Advanced Pie Chart Update
+    const ctx = document.getElementById('growthChart');
+    if (ctx) {
+        const labels = [];
+        const dataValues = []; 
+        const actualPercents = [];
+        const backgroundColors = [];
+        
+        const themeColors = ['#1C3D35', '#F5C842', '#A8D5BF', '#2D5A4A', '#E8856A'];
+        const redZoneColor = '#e05a4e';
 
+        syllabus.subjects.forEach((subject, index) => {
+            let sTotal = 0;
+            let sComp = 0;
+            subject.units.forEach(u => {
+                u.topics.forEach((t, tIndex) => {
+                    sTotal++;
+                    if (progressData[`${subject.id}-${subject.units.indexOf(u)}-${tIndex}`]) sComp++;
+                });
+            });
+            const pct = sTotal === 0 ? 0 : Math.round((sComp * 100) / sTotal);
+            
+            // Only add the subject to the chart if it has completed topics
+            // to show actual growth. If 0, it doesn't take up space in the completed section.
+            labels.push(subject.name);
+            dataValues.push(sComp); 
+            actualPercents.push(pct);
+            
+            // Red zone if < 35%
+            backgroundColors.push(pct < 35 ? redZoneColor : themeColors[index % themeColors.length]);
+        });
+        
+        // Add the "Uncompleted" slice
+        const remainingTotal = total - completed;
+        if (remainingTotal > 0) {
+            labels.push("Remaining");
+            dataValues.push(remainingTotal);
+            actualPercents.push(0);
+            backgroundColors.push('#E5E7EB'); // Light gray for uncompleted
+        }
+
+        if (growthChart) {
+            growthChart.data.labels = labels;
+            growthChart.data.datasets[0].data = dataValues;
+            growthChart.data.datasets[0].backgroundColor = backgroundColors;
+            growthChart.data.datasets[0].actualData = actualPercents;
+            growthChart.update();
+        } else {
+            growthChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: dataValues,
+                        actualData: actualPercents,
+                        backgroundColor: backgroundColors,
+                        borderWidth: 2,
+                        borderColor: '#FAF7F2',
+                        hoverOffset: 4
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    cutout: '75%',
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    const labelName = context.label;
+                                    if (labelName === "Remaining") {
+                                        return ` ${context.raw} Topics Remaining`;
+                                    }
+                                    const pct = context.dataset.actualData[context.dataIndex];
+                                    let label = ` ${labelName}: ${pct}% Completed`;
+                                    if (pct < 35) label += ' (Red Zone)';
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        }
+    }
 }

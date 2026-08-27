@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RISE — AI Study Assistant</title>
+    <meta name="description" content="Learn and clear your doubts instantly with the RISE AI Study Assistant.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Highlight.js for code syntax highlighting -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css">
+
+    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="ai-study.css">
+</head>
+
+<body>
+    <!-- ===== MAIN LAYOUT ===== -->
+    <div class="ai-app">
+
+        <!-- ===== SIDEBAR OVERLAY (mobile) ===== -->
+        <div class="ai-sidebar-overlay" id="sidebarOverlay"></div>
+
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="ai-sidebar" id="sidebar">
+            <div class="ai-sidebar-top">
+                <button class="ai-new-chat-btn" id="newChatBtn">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+                    New chat
+                </button>
+                <button class="ai-sidebar-toggle" id="closeSidebarBtn" title="Close sidebar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+                </button>
+            </div>
+
+            <div class="ai-history-list" id="historyList">
+                <!-- Chat history items will be dynamically added here -->
+            </div>
+            
+            <div class="ai-sidebar-bottom">
+                <a href="index.html" class="ai-back-link">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 12H5"/><polyline points="12 19 5 12 12 5"/></svg>
+                    Back to Dashboard
+                </a>
+                <div class="ai-user-profile">
+                    <div class="user-avatar">S</div>
+                    <span class="user-name">Student</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ===== MAIN CHAT AREA ===== -->
+        <main class="ai-main">
+            
+            <!-- Header -->
+            <header class="ai-header">
+                <button class="ai-sidebar-open-btn" id="openSidebarBtn" title="Open sidebar">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 12h18"/><path d="M3 6h18"/><path d="M3 18h18"/></svg>
+                </button>
+
+                <div class="ai-model-label">
+                    <span class="ai-model-badge">⚡ Gemini 3.6 Flash</span>
+                </div>
+            </header>
+
+            <!-- Chat Window -->
+            <div class="ai-chat-window" id="chatWindow">
+                
+                <!-- Initial Welcome Message -->
+                <div class="ai-welcome-container" id="welcomeMessage">
+                    <div class="ai-welcome-logo">
+                        <div class="logo-glow"></div>
+                        <span>✦</span>
+                    </div>
+                    <h1>What can I help with?</h1>
+                    
+                    <div class="ai-suggestions-grid">
+                        <button class="ai-suggest-card" data-prompt="Explain Data Structures like I'm 5 years old">
+                            <div class="card-icon">📚</div>
+                            <div class="card-text">
+                                <span class="card-title">Explain Data Structures</span>
+                                <span class="card-desc">like I'm 5 years old</span>
+                            </div>
+                        </button>
+                        <button class="ai-suggest-card" data-prompt="Help me debug this C programming code">
+                            <div class="card-icon">🐛</div>
+                            <div class="card-text">
+                                <span class="card-title">Help me debug</span>
+                                <span class="card-desc">this C programming code</span>
+                            </div>
+                        </button>
+                        <button class="ai-suggest-card" data-prompt="Quiz me on Mathematics concepts">
+                            <div class="card-icon">🧮</div>
+                            <div class="card-text">
+                                <span class="card-title">Quiz me</span>
+                                <span class="card-desc">on Mathematics concepts</span>
+                            </div>
+                        </button>
+                        <button class="ai-suggest-card" data-prompt="Summarize the concept of linked lists with examples">
+                            <div class="card-icon">🔗</div>
+                            <div class="card-text">
+                                <span class="card-title">Summarize</span>
+                                <span class="card-desc">the concept of linked lists</span>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Chat messages appended here by JS -->
+
+            </div>
+
+            <!-- Bottom Input Area -->
+            <div class="ai-input-container">
+                <div class="ai-input-box" id="inputBox">
+                    <textarea id="chatInput" placeholder="Message RISE Assistant..." rows="1"></textarea>
+                    <div class="ai-input-actions">
+                        <button class="ai-send-btn" id="sendBtn" title="Send message" disabled>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><polyline points="12 5 19 12 12 19"/></svg>
+                        </button>
+                    </div>
+                </div>
+                <p class="ai-input-footer">RISE AI can make mistakes. Consider verifying important information.</p>
+            </div>
+
+        </main>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/marked/12.0.1/marked.min.js"></script>
+    <script src="ai-study.js"></script>
+</body>
+
+</html>
