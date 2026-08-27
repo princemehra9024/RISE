@@ -179,26 +179,72 @@ function renderTopics(subject, unit, uIndex) {
 
     unit.topics.forEach((topic, topicIndex) => {
         const topicKey = `${subject.id}-${uIndex}-${topicIndex}`;
-        const isDone = !!progressData[topicKey];
+        const state = progressData[topicKey] || 0; // 0 = Pending, 1 = In Progress, 2 = Completed
+        
+        let pillClass = "";
+        let icon = "";
+        if (state === 1) {
+            pillClass = "in-progress";
+            icon = "⏱";
+        } else if (state === 2) {
+            pillClass = "done";
+            icon = "✓";
+        }
 
         const pill = document.createElement("div");
-        pill.className = `tp-pill ${isDone ? "done" : ""}`;
+        pill.className = `tp-pill ${pillClass}`;
         pill.innerHTML = `
-            <span class="tp-pill-check">${isDone ? "✓" : ""}</span>
+            <span class="tp-pill-check">${icon}</span>
             <span>${topic}</span>
         `;
 
         pill.addEventListener("click", () => {
-            const newState = !progressData[topicKey];
+            let newState = (progressData[topicKey] || 0) + 1;
+            if (newState > 2) newState = 0;
+            
+            const prevSubProgress = getSubjectProgress(subject);
+            const wasSub100 = prevSubProgress.total > 0 && prevSubProgress.completed === prevSubProgress.total;
+            
+            const prevUnitProgress = getUnitProgress(subject, uIndex);
+            const wasUnit100 = prevUnitProgress.total > 0 && prevUnitProgress.completed === prevUnitProgress.total;
+
             progressData[topicKey] = newState;
             saveData(progressData);
 
             // Toggle visual
-            pill.classList.toggle("done", newState);
-            pill.querySelector(".tp-pill-check").textContent = newState ? "✓" : "";
+            pill.classList.remove("done", "in-progress");
+            if (newState === 1) {
+                pill.classList.add("in-progress");
+                pill.querySelector(".tp-pill-check").textContent = "⏱";
+            } else if (newState === 2) {
+                pill.classList.add("done");
+                pill.querySelector(".tp-pill-check").textContent = "✓";
+            } else {
+                pill.querySelector(".tp-pill-check").textContent = "";
+            }
 
             // Update all progress indicators
             refreshProgressUI();
+            
+            const newSubProgress = getSubjectProgress(subject);
+            const isSubNow100 = newSubProgress.total > 0 && newSubProgress.completed === newSubProgress.total;
+
+            const newUnitProgress = getUnitProgress(subject, uIndex);
+            const isUnitNow100 = newUnitProgress.total > 0 && newUnitProgress.completed === newUnitProgress.total;
+            
+            const stickerModal = document.getElementById("completionSticker");
+            const stickerTitle = document.getElementById("stickerTitle");
+            const stickerMsg = document.getElementById("stickerMsg");
+
+            if (!wasSub100 && isSubNow100) {
+                if (stickerTitle) stickerTitle.textContent = "Subject Completed!";
+                if (stickerMsg) stickerMsg.textContent = "Awesome job! You've mastered all the topics in this subject.";
+                if (stickerModal) stickerModal.classList.remove("hidden");
+            } else if (!wasUnit100 && isUnitNow100) {
+                if (stickerTitle) stickerTitle.textContent = "Unit Completed!";
+                if (stickerMsg) stickerMsg.textContent = "Great work! You've finished all topics in this unit.";
+                if (stickerModal) stickerModal.classList.remove("hidden");
+            }
         });
 
         topicsGrid.appendChild(pill);
@@ -240,7 +286,7 @@ function updateOverallProgress() {
         subject.units.forEach((unit, uIndex) => {
             unit.topics.forEach((_, tIndex) => {
                 total++;
-                if (progressData[`${subject.id}-${uIndex}-${tIndex}`]) completed++;
+                if (progressData[`${subject.id}-${uIndex}-${tIndex}`] === 2) completed++;
             });
         });
     });
@@ -260,8 +306,30 @@ function getSubjectProgress(subject) {
     subject.units.forEach((unit, uIndex) => {
         unit.topics.forEach((_, tIndex) => {
             total++;
-            if (progressData[`${subject.id}-${uIndex}-${tIndex}`]) completed++;
+            if (progressData[`${subject.id}-${uIndex}-${tIndex}`] === 2) completed++;
         });
     });
     return { completed, total };
+}
+
+// ---------- Helper: get unit progress ----------
+function getUnitProgress(subject, uIndex) {
+    let total = 0, completed = 0;
+    const unit = subject.units[uIndex];
+    if (unit) {
+        unit.topics.forEach((_, tIndex) => {
+            total++;
+            if (progressData[`${subject.id}-${uIndex}-${tIndex}`] === 2) completed++;
+        });
+    }
+    return { completed, total };
+}
+
+// ---------- Close Sticker Modal ----------
+const closeStickerBtn = document.getElementById("closeStickerBtn");
+if (closeStickerBtn) {
+    closeStickerBtn.addEventListener("click", () => {
+        const modal = document.getElementById("completionSticker");
+        if (modal) modal.classList.add("hidden");
+    });
 }

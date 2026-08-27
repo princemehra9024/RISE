@@ -75,10 +75,42 @@
             <section class="dash-section">
                 
                 <div class="work-container">
+                    <!-- Pomodoro Timer -->
+                    <div class="pomodoro-card">
+                        <div class="pomodoro-header">
+                            <h2>Study Timer</h2>
+                            <div class="pomodoro-modes">
+                                <button class="pomo-mode-btn active" id="modeFocus">Focus (25m)</button>
+                                <button class="pomo-mode-btn" id="modeBreak">Break (5m)</button>
+                            </div>
+                        </div>
+                        <div class="pomodoro-display">
+                            <span id="timeDisplay">25:00</span>
+                        </div>
+                        <div class="pomodoro-controls">
+                            <button id="pomoToggleBtn" class="pomo-control-btn primary">Start</button>
+                            <button id="pomoResetBtn" class="pomo-control-btn">Reset</button>
+                        </div>
+                    </div>
+
+                    <!-- Daily Task Limit Reminder -->
+                    <div id="dailyLimitBanner" class="limit-banner hidden">
+                        <span class="limit-icon">⚠️</span>
+                        <span><strong>Heavy Load:</strong> You have more than 5 tasks pending today. Consider breaking them down or deferring some to avoid burnout!</span>
+                    </div>
+
                     <!-- Task Input -->
                     <div class="task-input-card">
                         <form id="taskForm" class="task-form">
-                            <input type="text" id="taskInput" placeholder="What needs to be done?" autocomplete="off" required>
+                            <div class="task-inputs-row">
+                                <input type="text" id="taskInput" placeholder="What needs to be done?" autocomplete="off" required>
+                                <input type="date" id="taskDate" class="task-date-input" required>
+                                <select id="taskPriority" class="task-priority-select">
+                                    <option value="High">High Priority</option>
+                                    <option value="Medium" selected>Medium Priority</option>
+                                    <option value="Low">Low Priority</option>
+                                </select>
+                            </div>
                             <button type="submit" class="add-task-btn">Add Task ✦</button>
                         </form>
                     </div>

@@ -235,3 +235,221 @@
     border-color: var(--gray-500);
     box-shadow: none;
 }
+
+/* =============================================
+   POMODORO TIMER
+============================================= */
+.pomodoro-card {
+    background: var(--white);
+    border-radius: 20px;
+    padding: 30px;
+    box-shadow: var(--shadow-sm);
+    border: 1px solid var(--gray-200);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.pomodoro-header {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+}
+
+.pomodoro-header h2 {
+    color: var(--teal);
+    font-size: 24px;
+    margin: 0;
+}
+
+.pomodoro-modes {
+    display: flex;
+    background: var(--gray-100);
+    border-radius: 30px;
+    padding: 6px;
+    gap: 5px;
+}
+
+.pomo-mode-btn {
+    background: transparent;
+    border: none;
+    padding: 8px 20px;
+    border-radius: 20px;
+    font-weight: 600;
+    color: var(--gray-500);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pomo-mode-btn.active {
+    background: var(--white);
+    color: var(--teal);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.pomodoro-display {
+    font-size: 72px;
+    font-weight: 800;
+    color: var(--teal);
+    font-variant-numeric: tabular-nums;
+    line-height: 1;
+    text-shadow: 0 4px 12px rgba(28,61,53,0.1);
+    margin: 10px 0;
+}
+
+.pomodoro-controls {
+    display: flex;
+    gap: 15px;
+}
+
+.pomo-control-btn {
+    background: var(--gray-100);
+    border: none;
+    padding: 12px 32px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--teal);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.pomo-control-btn.primary {
+    background: var(--mint);
+    color: var(--white);
+    box-shadow: 0 4px 12px rgba(168,213,191,0.4);
+}
+
+.pomo-control-btn.primary.active {
+    background: var(--coral);
+    box-shadow: 0 4px 12px rgba(232,133,106,0.4);
+}
+
+.pomo-control-btn:hover {
+    transform: translateY(-2px);
+    filter: brightness(1.05);
+}
+
+/* =============================================
+   LIMIT BANNER
+============================================= */
+.limit-banner {
+    background: #fff4e5;
+    border-left: 4px solid #ff9800;
+    padding: 16px 20px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    color: #8c5300;
+    font-size: 14px;
+    box-shadow: 0 2px 8px rgba(255, 152, 0, 0.1);
+}
+
+.limit-banner.hidden {
+    display: none;
+}
+
+.limit-icon {
+    font-size: 20px;
+}
+
+/* =============================================
+   TASK INPUTS
+============================================= */
+.task-inputs-row {
+    display: flex;
+    flex: 1;
+    gap: 12px;
+}
+
+.task-date-input,
+.task-priority-select {
+    padding: 0 16px;
+    border-radius: 14px;
+    border: 1px solid var(--gray-200);
+    font-size: 14px;
+    color: var(--teal);
+    background: var(--gray-100);
+    font-weight: 500;
+    outline: none;
+}
+
+.task-date-input:focus,
+.task-priority-select:focus {
+    background: var(--white);
+    border-color: var(--coral);
+}
+
+@media (max-width: 768px) {
+    .task-form {
+        flex-direction: column;
+    }
+    .task-inputs-row {
+        flex-direction: column;
+    }
+    .task-date-input, .task-priority-select {
+        padding: 12px 16px;
+    }
+}
+
+/* =============================================
+   TASK METADATA
+============================================= */
+.task-text-wrap {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.task-meta {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    font-size: 12px;
+}
+
+.task-date {
+    color: var(--gray-500);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.task-date::before {
+    content: "📅";
+    font-size: 10px;
+}
+
+.task-priority {
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 10px;
+    text-transform: uppercase;
+}
+
+.prio-high {
+    background: #ffebe5;
+    color: #e63946;
+}
+
+.prio-medium {
+    background: #fff4e5;
+    color: #ff9800;
+}
+
+.prio-low {
+    background: #e8f5e9;
+    color: #2e7d32;
+}
+
+.done-list-style .task-priority {
+    filter: grayscale(1);
+    opacity: 0.6;
+}

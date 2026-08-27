@@ -1,7 +1,7 @@
 import { getSyllabus, syllabus as defaultSyllabus } from "./syllabus.js";
 import { auth, db } from "./firebase-config.js";
 import { signOut as firebaseSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { doc, getDoc, collection, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // ---------- Elements ----------
 
@@ -257,6 +257,32 @@ onAuthStateChanged(auth, async (user) => {
             await firebaseSignOut(auth);
             window.location.href = "index.html";
         });
+
+        // -- Semester Complete Button --
+        const pfSemCompleteBtn = document.getElementById("pfSemCompleteBtn");
+        if (pfSemCompleteBtn) {
+            pfSemCompleteBtn.addEventListener("click", async () => {
+                const confirmMove = confirm("Are you sure you want to complete this semester? This will move you to the next semester and reset your subject progress.");
+                if (confirmMove) {
+                    try {
+                        const currentSem = parseInt(profile.semester) || 1;
+                        const newSem = currentSem + 1;
+                        
+                        const docRef = doc(db, "users", user.uid);
+                        await updateDoc(docRef, {
+                            "profile.semester": newSem.toString(),
+                            progress: {} // Reset progress
+                        });
+                        
+                        alert(`Congratulations on completing Semester ${currentSem}! 🎉\nWelcome to Semester ${newSem}!`);
+                        window.location.reload();
+                    } catch (error) {
+                        console.error("Error updating semester:", error);
+                        alert("There was an error moving to the next semester.");
+                    }
+                }
+            });
+        }
 
     } catch (err) {
         profileLoading.textContent = "Error loading profile.";

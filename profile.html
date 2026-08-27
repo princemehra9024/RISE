@@ -8,8 +8,9 @@
     <title>Student Profile</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Inter:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
 
+    <link rel="stylesheet" href="base.css">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="profile.css">
     <link rel="stylesheet" href="footer.css">
@@ -18,6 +19,11 @@
 <body>
 
     <div class="profile-standalone">
+        
+        <!-- Decorative Background -->
+        <div class="pf-bg-blob pf-bg-blob-1"></div>
+        <div class="pf-bg-blob pf-bg-blob-2"></div>
+        <div class="pf-bg-blob pf-bg-blob-3"></div>
 
         <!-- Top Nav -->
         <div class="pf-topbar">
@@ -62,21 +68,44 @@
             <!-- SECTION B: Analytics Cards -->
             <div class="pf-analytics">
                 <div class="pf-stat-card">
-                    <div class="pf-stat-label">Overall Progress</div>
-                    <div class="pf-stat-value pf-stat-primary" id="pfProgress">0%</div>
+                    <div class="pf-stat-icon-wrap pf-bg-blue">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline></svg>
+                    </div>
+                    <div class="pf-stat-content">
+                        <div class="pf-stat-label">Overall Progress</div>
+                        <div class="pf-stat-value pf-stat-primary" id="pfProgress">0%</div>
+                    </div>
                     <div class="pf-progress-bar"><div class="pf-progress-fill" id="pfProgressBar"></div></div>
                 </div>
+                
                 <div class="pf-stat-card">
-                    <div class="pf-stat-label">Completed Topics</div>
-                    <div class="pf-stat-value pf-stat-green" id="pfCompleted">0</div>
+                    <div class="pf-stat-icon-wrap pf-bg-green">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                    </div>
+                    <div class="pf-stat-content">
+                        <div class="pf-stat-label">Completed Topics</div>
+                        <div class="pf-stat-value pf-stat-green" id="pfCompleted">0</div>
+                    </div>
                 </div>
+                
                 <div class="pf-stat-card">
-                    <div class="pf-stat-label">Remaining Topics</div>
-                    <div class="pf-stat-value pf-stat-orange" id="pfRemaining">0</div>
+                    <div class="pf-stat-icon-wrap pf-bg-orange">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                    </div>
+                    <div class="pf-stat-content">
+                        <div class="pf-stat-label">Remaining Topics</div>
+                        <div class="pf-stat-value pf-stat-orange" id="pfRemaining">0</div>
+                    </div>
                 </div>
+                
                 <div class="pf-stat-card">
-                    <div class="pf-stat-label">Exam Readiness</div>
-                    <div class="pf-stat-value pf-stat-red" id="pfReadiness">0%</div>
+                    <div class="pf-stat-icon-wrap pf-bg-red">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon></svg>
+                    </div>
+                    <div class="pf-stat-content">
+                        <div class="pf-stat-label">Exam Readiness</div>
+                        <div class="pf-stat-value pf-stat-red" id="pfReadiness">0%</div>
+                    </div>
                     <div class="pf-stat-sub">If exam was today</div>
                 </div>
             </div>
@@ -165,6 +194,7 @@
             <!-- SECTION F: Actions -->
             <div class="pf-actions">
                 <button class="edit-profile-btn" id="pfEditBtn">Edit Profile</button>
+                <button id="pfSemCompleteBtn" style="background:var(--coral, #E8856A); color:white; border:none; border-radius:14px; padding:14px 28px; font-size:14px; font-weight:700; cursor:pointer; box-shadow:0 8px 20px rgba(232,133,106,0.2); transition:all 0.3s;">Semester Complete 🎓</button>
                 <button class="pf-signout-btn" id="pfSignOutBtn">Sign Out</button>
             </div>
 
