@@ -1,4 +1,4 @@
-import { getSyllabus, syllabus as defaultSyllabus } from "./syllabus.js";
+import { getSyllabus, getAvailableBackSubjects, syllabus as defaultSyllabus } from "./syllabus.js";
 import { auth, db } from "./firebase-config.js";
 import { signOut as firebaseSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { doc, getDoc, collection, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -246,6 +246,68 @@ onAuthStateChanged(auth, async (user) => {
             leaderboardLoading.textContent = "Could not load leaderboard. Check Firestore rules.";
             console.error("Leaderboard error:", err);
         }
+
+        // -- Render Back Subjects --
+        const backSubjectsList = document.getElementById("pfBackSubjectsList");
+        const backSubjects = profile.backSubjects || [];
+        
+        if (backSubjects.length === 0) {
+            backSubjectsList.innerHTML = `<div style="color:var(--muted); font-size:14px;">No back subjects added yet.</div>`;
+        } else {
+            backSubjectsList.innerHTML = "";
+            backSubjects.forEach(bs => {
+                const item = document.createElement("div");
+                item.className = "pf-back-item";
+                item.innerHTML = `
+                    <div style="display:flex; justify-content:space-between; width:100%; align-items:flex-start;">
+                        <div class="pf-back-info">
+                            <span class="pf-back-icon" style="display:flex;align-items:center;">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/></svg>
+                            </span>
+                            <div>
+                                <div class="pf-back-title">${bs.name} <span style="font-size: 10px; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.2); padding: 2px 6px; border-radius: 4px; margin-left: 6px; vertical-align: middle;">Needs Attention</span></div>
+                                <div class="pf-back-sem">
+                                    Semester ${bs.semester} 
+                                    ${bs.previousMarks !== undefined ? ` <span style="margin: 0 6px; color: var(--gray-200);">|</span> <strong style="color: #ef4444;">Marks: ${bs.previousMarks}</strong>` : ''}
+                                    ${bs.targetMarks !== undefined ? ` <span style="margin: 0 6px; color: var(--gray-200);">|</span> <strong style="color: var(--teal);">Target: ${bs.targetMarks} 🎯</strong>` : ''}
+                                </div>
+                                <div style="margin-top: 10px; display: flex; gap: 8px;">
+                                    <a href="old-papers.html?q=${encodeURIComponent(bs.name)}" style="font-size: 11px; font-weight: 600; color: var(--coral); background: var(--coral-lt); padding: 4px 10px; border-radius: 6px; text-decoration: none; border: 1px solid rgba(232,133,106,0.3);">📄 Find Old Papers</a>
+                                    <a href="ai-study.html?q=${encodeURIComponent('Help me study ' + bs.name)}" style="font-size: 11px; font-weight: 600; color: var(--teal); background: var(--mint-lt); padding: 4px 10px; border-radius: 6px; text-decoration: none; border: 1px solid rgba(168,213,191,0.4);">🤖 Ask AI</a>
+                                </div>
+                            </div>
+                        </div>
+                        <button class="pf-remove-back" data-id="${bs.subjectId}">Remove</button>
+                    </div>
+                `;
+                backSubjectsList.appendChild(item);
+            });
+
+            // Remove logic
+            document.querySelectorAll(".pf-remove-back").forEach(btn => {
+                btn.addEventListener("click", async (e) => {
+                    const idToRemove = e.target.getAttribute("data-id");
+                    const updatedBackSubjects = backSubjects.filter(bs => bs.subjectId !== idToRemove);
+                    try {
+                        const confirmRemove = confirm("Remove this back subject?");
+                        if (confirmRemove) {
+                            await updateDoc(docRef, { "profile.backSubjects": updatedBackSubjects });
+                            window.location.reload();
+                        }
+                    } catch (error) {
+                        console.error("Error removing back subject:", error);
+                        alert("Could not remove back subject.");
+                    }
+                });
+            });
+        }
+
+        // -- Add Back Subject --
+        const pfAddBackBtn = document.getElementById("pfAddBackBtn");
+        
+        pfAddBackBtn.addEventListener("click", () => {
+            window.location.href = "add-back-subject.html";
+        });
 
         // -- Edit Profile Button --
         document.getElementById("pfEditBtn").addEventListener("click", () => {

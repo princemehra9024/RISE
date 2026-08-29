@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+﻿<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
@@ -321,6 +321,8 @@
 
 <script type="module">
 import { auth, db } from "./firebase-config.js";
+import { getStorage, ref, uploadBytesResumable, getDownloadURL }
+    from "https://www.gstatic.com/firebasejs/10.12.2/firebase-storage.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { doc, getDoc, setDoc, updateDoc, collection, addDoc, increment }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -330,7 +332,7 @@ const TIERS = [
     { name: "Bronze Star",    icon: "🥉", min: 10  },
     { name: "Silver Scholar", icon: "🥈", min: 30  },
     { name: "Gold Guardian",  icon: "🥇", min: 60  },
-    { name: "Legend",         icon: "👑", min: 100 },
+    { name: "Legend",         icon: "🏆", min: 100 },
 ];
 
 const PTS = 10;
@@ -351,6 +353,8 @@ const upProgressWrap = $("upProgressWrap");
 const upProgressFill = $("upProgressFill");
 const upError        = $("upError");
 const upModal        = $("upModal");
+
+const storage = getStorage();
 
 onAuthStateChanged(auth, async user => {
     if (!user) { window.location.href = "index.html"; return; }
@@ -395,7 +399,7 @@ upDropzone.addEventListener("drop", e => {
     if (f) { const dt = new DataTransfer(); dt.items.add(f); upFile.files = dt.files; upFileName.textContent = f.name; upFileChosen.classList.add("show"); }
 });
 
-// Submit
+// Submit — uploads to Firebase Storage then saves metadata to Firestore
 uploadForm.addEventListener("submit", async e => {
     e.preventDefault(); hideErr();
     const course   = $("upCourse").value;
@@ -409,55 +413,51 @@ uploadForm.addEventListener("submit", async e => {
     if (!file) return showErr("Please select a PDF or image file.");
     if (file.size > 20 * 1024 * 1024) return showErr("File too large — max 20 MB.");
 
+    const allowed = ["application/pdf","image/jpeg","image/jpg","image/png","image/webp"];
+    if (!allowed.includes(file.type)) return showErr("Only PDF, JPG, PNG, or WEBP files are allowed.");
+
     setLoading(true);
+    upProgressWrap.style.display = "block";
+
     try {
-        const cloudName = "YOUR_CLOUDINARY_CLOUD_NAME";
-        const uploadPreset = "YOUR_UPLOAD_PRESET";
+        // Build a unique storage path: papers/{uid}/{timestamp}_{filename}
+        const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+        const storagePath = `papers/${currentUser.uid}/${Date.now()}_${safeName}`;
+        const storageRef  = ref(storage, storagePath);
 
-        // ⚠️ Cloudinary not configured yet — show friendly error
-        if (cloudName === "YOUR_CLOUDINARY_CLOUD_NAME" || uploadPreset === "YOUR_UPLOAD_PRESET") {
-            throw new Error("Paper upload is coming soon! The storage service is not configured yet. Contact the admin.");
-        }
-
-        const uploadUrl = `https://api.cloudinary.com/v1_1/${cloudName}/upload`;
-
-        upProgressWrap.style.display = "block";
-
-        const fd = new FormData();
-        fd.append("file", file);
-        fd.append("upload_preset", uploadPreset);
-
-        const secureUrl = await new Promise((resolve, reject) => {
-            const xhr = new XMLHttpRequest();
-            xhr.open("POST", uploadUrl, true);
-            xhr.upload.onprogress = e => {
-                if (e.lengthComputable) {
-                    const p = Math.round((e.loaded / e.total) * 100);
-                    upProgressFill.style.width = p + "%";
-                    upBtnText.textContent = `Uploading… ${p}%`;
-                }
-            };
-            xhr.onload = () => {
-                if (xhr.status === 200) {
-                    const res = JSON.parse(xhr.responseText);
-                    resolve(res.secure_url);
-                } else {
-                    reject(new Error("Cloudinary error: " + xhr.responseText));
-                }
-            };
-            xhr.onerror = () => reject(new Error("Network error during upload"));
-            xhr.send(fd);
+        // Upload with progress tracking
+        const downloadURL = await new Promise((resolve, reject) => {
+            const task = uploadBytesResumable(storageRef, file, {
+                contentType: file.type,
+                customMetadata: { uploadedBy: currentUser.uid }
+            });
+            task.on("state_changed",
+                snapshot => {
+                    const pct = Math.round((snapshot.bytesTransferred / snapshot.totalBytes) * 100);
+                    upProgressFill.style.width = pct + "%";
+                    upBtnText.textContent = `Uploading… ${pct}%`;
+                },
+                err => reject(err),
+                async () => resolve(await getDownloadURL(task.snapshot.ref))
+            );
         });
 
+        // Save paper metadata to Firestore
         await addDoc(collection(db, "papers"), {
-            course, semester: Number(semNum), subject, year, type,
-            title: `${subject} – ${type} ${year}`,
-            url: secureUrl,
-            uploadedBy: currentUser.uid,
+            course,
+            semester:     Number(semNum),
+            subject,
+            year,
+            type,
+            title:        `${subject} - ${type} ${year}`,
+            url:          downloadURL,
+            storagePath,
+            uploadedBy:   currentUser.uid,
             uploaderName: currentUser.displayName || "Anonymous",
-            uploadedAt: new Date().toISOString(),
+            uploadedAt:   new Date().toISOString(),
         });
 
+        // Award contribution points
         const userRef = doc(db, "users", currentUser.uid);
         await updateDoc(userRef, { contributionPoints: increment(PTS), totalUploads: increment(1) })
             .catch(() => setDoc(userRef, { contributionPoints: PTS, totalUploads: 1 }, { merge: true }));
@@ -476,6 +476,7 @@ uploadForm.addEventListener("submit", async e => {
         uploadForm.reset();
         upFileChosen.classList.remove("show");
         upProgressFill.style.width = "0%";
+
     } catch (err) {
         showErr("Upload failed: " + (err.message || "Unknown error."));
         setLoading(false);

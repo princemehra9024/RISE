@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add Back Subject – RISE</title>
+    <meta name="description" content="Add a back subject to your current semester syllabus.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="footer.css">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        :root {
+            --coral:    #E8856A;
+            --indigo:   #4F46E5;
+            --violet:   #7C3AED;
+            --gold:     #FBBF24;
+            --bg:       #0F0F1A;
+            --surface:  #16162A;
+            --card:     #1E1E35;
+            --border:   rgba(255,255,255,0.08);
+            --text:     #F1F0FF;
+            --muted:    #9896B8;
+        }
+
+        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+        .up-blob { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; opacity: 0.15; }
+        .up-blob-1 { width: 500px; height: 500px; background: var(--coral); top: -150px; left: -100px; }
+        .up-blob-2 { width: 400px; height: 400px; background: var(--violet); bottom: -100px; right: -150px; }
+
+        /* TOPBAR */
+        .up-topbar {
+            position: sticky; top: 0; z-index: 100;
+            background: rgba(15,15,26,0.85); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border);
+            padding: 18px 40px;
+            display: flex; align-items: center; justify-content: space-between;
+        }
+        .up-back { display: flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 600; transition: color 0.2s; }
+        .up-back:hover { color: var(--text); }
+        .up-topbar-brand { font-size: 18px; font-weight: 800; background: linear-gradient(135deg, var(--coral), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+
+        /* HERO */
+        .up-hero { text-align: center; padding: 64px 20px 40px; position: relative; z-index: 1; }
+        .up-hero-icon { font-size: 56px; margin-bottom: 16px; display: block; animation: float 3s ease-in-out infinite; color: var(--coral); }
+        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
+        .up-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(28px,5vw,42px); font-weight: 800; background: linear-gradient(135deg,#fff 30%,var(--coral)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom: 12px; }
+        .up-hero p { color: var(--muted); font-size: 16px; max-width: 500px; margin: 0 auto 24px; line-height: 1.6; }
+
+        /* MAIN LAYOUT */
+        .up-main { position: relative; z-index: 1; max-width: 500px; margin: 0 auto; padding: 0 20px 100px; }
+
+        /* FORM CARD */
+        .up-form-card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 36px; }
+        .up-form-title { font-size: 18px; font-weight: 800; margin-bottom: 28px; }
+        .up-form-title span { background: linear-gradient(135deg,var(--coral),var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        
+        .up-field { margin-bottom: 24px; }
+        .up-label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 10px; }
+        .up-select { width: 100%; padding: 14px 18px; background: rgba(255,255,255,0.06); border: 1.5px solid var(--border); border-radius: 12px; color: var(--text); font-size: 15px; font-family: 'Inter',sans-serif; font-weight: 500; outline: none; transition: all 0.2s; appearance: none; }
+        .up-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239896B8' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 44px; cursor: pointer; }
+        .up-select option { background: #1E1E35; color: var(--text); }
+        .up-select:focus { border-color: var(--coral); background: rgba(232,133,106,0.06); box-shadow: 0 0 0 4px rgba(232,133,106,0.12); }
+        .up-select:disabled { opacity: 0.5; cursor: not-allowed; }
+
+        /* SUBMIT */
+        .up-submit-btn { width: 100%; padding: 16px; background: linear-gradient(135deg,var(--coral),var(--gold)); border: none; border-radius: 14px; color: #fff; font-size: 16px; font-weight: 700; font-family: 'Inter',sans-serif; cursor: pointer; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s; position: relative; overflow: hidden; }
+        .up-submit-btn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,transparent 0%,rgba(255,255,255,0.2) 50%,transparent 100%); transform:translateX(-100%); transition:transform 0.6s; }
+        .up-submit-btn:hover::before { transform:translateX(100%); }
+        .up-submit-btn:hover { transform:translateY(-2px); box-shadow:0 12px 36px rgba(232,133,106,0.4); }
+        .up-submit-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+
+        /* ERROR & MSG */
+        .up-error { background: rgba(244,63,94,0.1); border: 1px solid rgba(244,63,94,0.3); color: #FF8099; border-radius: 12px; padding: 12px 16px; font-size: 14px; font-weight: 500; margin-bottom: 20px; display: none; }
+        .up-error.show { display: block; }
+        
+        .up-empty { text-align: center; color: var(--muted); font-size: 14px; margin-bottom: 20px; display: none; background: rgba(255,255,255,0.03); border-radius: 12px; padding: 20px; }
+        .up-empty.show { display: block; }
+
+        /* AUTH LOADING */
+        .up-auth-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; gap: 16px; color: var(--muted); font-size: 15px; }
+        .up-spinner { width: 40px; height: 40px; border: 3px solid rgba(232,133,106,0.2); border-top-color: var(--coral); border-radius: 50%; animation: spin 0.8s linear infinite; }
+        @keyframes spin { to{transform:rotate(360deg)} }
+    </style>
+</head>
+<body>
+
+<!-- Ambient blobs -->
+<div class="up-blob up-blob-1"></div>
+<div class="up-blob up-blob-2"></div>
+
+<!-- TOP BAR -->
+<div class="up-topbar">
+    <a href="profile.html" class="up-back">
+        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
+        </svg>
+        Back to Profile
+    </a>
+    <div class="up-topbar-brand">RISE ✦</div>
+    <div style="width: 80px;"></div>
+</div>
+
+<!-- Auth Loading -->
+<div class="up-auth-loading" id="upAuthLoading">
+    <div class="up-spinner"></div>
+    <span>Checking details…</span>
+</div>
+
+<!-- Main content (shown after auth) -->
+<div id="upPageContent" style="display:none;">
+
+    <!-- HERO -->
+    <div class="up-hero">
+        <span class="up-hero-icon">
+            <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="margin: 0 auto; display:block;">
+                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+            </svg>
+        </span>
+        <h1>Add Back Subject</h1>
+        <p>Select a back subject to add to your current semester syllabus tracking.</p>
+    </div>
+
+    <!-- MAIN GRID -->
+    <div class="up-main">
+
+        <!-- FORM CARD -->
+        <div class="up-form-card">
+            <div class="up-form-title"><span>📘 Available Subjects</span></div>
+
+            <form id="addBackForm">
+                <div class="up-error" id="upError"></div>
+                <div class="up-empty" id="upEmpty">No available back subjects to add.</div>
+
+                <div class="up-field" id="subjectField">
+                    <label class="up-label" for="backSubjectSelect">Select Subject</label>
+                    <select class="up-select" id="backSubjectSelect" required>
+                        <option value="">Loading subjects...</option>
+                    </select>
+                </div>
+
+                <div class="up-field" id="marksField">
+                    <label class="up-label" for="upMarks">Previous Marks Obtained</label>
+                    <input class="up-select" type="number" id="upMarks" placeholder="e.g. 25" required style="background-image:none; padding-right:18px;">
+                    <div style="font-size: 12px; color: var(--muted); margin-top: 6px;">Passing marks: 30</div>
+                </div>
+
+                <div class="up-field" id="targetMarksField" style="display: none;">
+                    <label class="up-label" for="upTargetMarks">Target Marks (Goal)</label>
+                    <input class="up-select" type="number" id="upTargetMarks" placeholder="e.g. 80" style="background-image:none; padding-right:18px;">
+                    <div style="font-size: 12px; color: var(--muted); margin-top: 6px;">Set a goal to strive for!</div>
+                </div>
+
+                <div id="statusBox" style="display: none; padding: 16px; border-radius: 12px; margin-bottom: 24px; font-size: 14px; line-height: 1.5;">
+                    <!-- Dynamically populated status message -->
+                </div>
+
+                <button type="submit" class="up-submit-btn" id="upSubmitBtn" disabled>
+                    <span id="upBtnText">Enter Marks to Continue</span>
+                </button>
+            </form>
+        </div>
+
+    </div>
+</div>
+
+<script type="module">
+import { auth, db } from "./firebase-config.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { doc, getDoc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAvailableBackSubjects } from "./syllabus.js";
+
+let currentUser = null;
+let currentProfile = null;
+
+const $ = id => document.getElementById(id);
+const upAuthLoading  = $("upAuthLoading");
+const upPageContent  = $("upPageContent");
+const addBackForm    = $("addBackForm");
+const backSubjectSelect = $("backSubjectSelect");
+const upSubmitBtn    = $("upSubmitBtn");
+const upBtnText      = $("upBtnText");
+const upError        = $("upError");
+const upEmpty        = $("upEmpty");
+const subjectField   = $("subjectField");
+const marksField     = $("marksField");
+const targetMarksField = $("targetMarksField");
+const upMarks        = $("upMarks");
+const upTargetMarks  = $("upTargetMarks");
+const statusBox      = $("statusBox");
+
+const PASSING_MARKS = 30;
+
+onAuthStateChanged(auth, async user => {
+    if (!user) { window.location.href = "index.html"; return; }
+    currentUser = user;
+    
+    try {
+        const docRef = doc(db, "users", user.uid);
+        const docSnap = await getDoc(docRef);
+        
+        if (!docSnap.exists() || !docSnap.data().profile) {
+            window.location.href = "index.html";
+            return;
+        }
+
+        currentProfile = docSnap.data().profile;
+        loadAvailableSubjects();
+        
+        upAuthLoading.style.display = "none";
+        upPageContent.style.display = "block";
+    } catch (err) {
+        console.error("Error fetching profile:", err);
+        showErr("Failed to load profile. Please try again.");
+    }
+});
+
+function loadAvailableSubjects() {
+    const allAvailable = getAvailableBackSubjects(currentProfile);
+    const alreadyAdded = currentProfile.backSubjects || [];
+    
+    const notAdded = allAvailable.filter(av => !alreadyAdded.find(bs => bs.subjectId === av.subjectId));
+
+    if (notAdded.length === 0) {
+        subjectField.style.display = "none";
+        marksField.style.display = "none";
+        upSubmitBtn.style.display = "none";
+        upEmpty.classList.add("show");
+        return;
+    }
+
+    backSubjectSelect.innerHTML = `<option value="">Select a subject...</option>` + 
+        notAdded.map(av => 
+            `<option value="${av.subjectId}" data-sem="${av.semester}" data-name="${av.name}">${av.name} (Semester ${av.semester})</option>`
+        ).join("");
+}
+
+upMarks.addEventListener("input", () => {
+    const val = upMarks.value.trim();
+    if (val === "") {
+        statusBox.style.display = "none";
+        targetMarksField.style.display = "none";
+        upSubmitBtn.disabled = true;
+        upBtnText.textContent = "Enter Marks to Continue";
+        upTargetMarks.removeAttribute("required");
+        return;
+    }
+
+    const marks = parseInt(val, 10);
+    statusBox.style.display = "block";
+
+    if (marks >= PASSING_MARKS) {
+        statusBox.style.background = "rgba(16,185,129,0.1)";
+        statusBox.style.border = "1px solid rgba(16,185,129,0.3)";
+        statusBox.style.color = "#10B981";
+        statusBox.innerHTML = `<strong>Status: Passed 🎉</strong><br>You scored ${marks} which is above the passing mark of ${PASSING_MARKS}. You do not need to add this as a back subject.`;
+        upSubmitBtn.disabled = true;
+        targetMarksField.style.display = "none";
+        upTargetMarks.removeAttribute("required");
+        upBtnText.textContent = "Subject Cleared";
+    } else {
+        statusBox.style.background = "rgba(244,63,94,0.1)";
+        statusBox.style.border = "1px solid rgba(244,63,94,0.3)";
+        statusBox.style.color = "#FF8099";
+        statusBox.innerHTML = `<strong>Status: Failed ⚠️</strong><br>You scored ${marks} which is below the passing mark of ${PASSING_MARKS}. This will be added to your current syllabus tracking.`;
+        upSubmitBtn.disabled = false;
+        targetMarksField.style.display = "block";
+        upTargetMarks.setAttribute("required", "true");
+        upBtnText.textContent = "Add Subject to Syllabus";
+    }
+});
+
+addBackForm.addEventListener("submit", async e => {
+    e.preventDefault();
+    hideErr();
+    
+    const selectedOpt = backSubjectSelect.options[backSubjectSelect.selectedIndex];
+    if (!selectedOpt || !selectedOpt.value) {
+        return showErr("Please select a subject.");
+    }
+
+    const marks = parseInt(upMarks.value.trim(), 10);
+    if (isNaN(marks) || marks >= PASSING_MARKS) {
+        return showErr("You can only add a back subject if you failed (scored below 30).");
+    }
+
+    const targetMarks = parseInt(upTargetMarks.value.trim(), 10);
+    if (isNaN(targetMarks) || targetMarks <= marks) {
+        return showErr("Please set a valid target mark higher than your previous marks.");
+    }
+
+    const newBackSubject = {
+        branch: currentProfile.branch,
+        semester: selectedOpt.getAttribute("data-sem"),
+        subjectId: selectedOpt.value,
+        name: selectedOpt.getAttribute("data-name"),
+        previousMarks: marks,
+        targetMarks: targetMarks
+    };
+
+    const updatedBackSubjects = [...(currentProfile.backSubjects || []), newBackSubject];
+
+    setLoading(true);
+
+    try {
+        const docRef = doc(db, "users", currentUser.uid);
+        await updateDoc(docRef, { "profile.backSubjects": updatedBackSubjects });
+        window.location.href = "profile.html";
+    } catch (error) {
+        console.error("Error adding back subject:", error);
+        showErr("Could not add back subject. Please try again.");
+        setLoading(false);
+    }
+});
+
+function setLoading(on) { 
+    upSubmitBtn.disabled = on; 
+    upBtnText.textContent = on ? "Adding Subject..." : "Add Subject to Syllabus"; 
+}
+function showErr(m) { upError.textContent = m; upError.classList.add("show"); }
+function hideErr() { upError.classList.remove("show"); }
+</script>
+</body>
+</html>

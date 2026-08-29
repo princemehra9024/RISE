@@ -644,6 +644,110 @@
 }
 
 /* ========================
+   BACK SUBJECTS & MODAL
+======================== */
+.pf-back-subjects-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.pf-back-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--gray-50);
+    border: 1px solid var(--gray-200);
+    padding: 14px 20px;
+    border-radius: 14px;
+    transition: all 0.2s;
+}
+
+.pf-back-item:hover {
+    background: var(--gray-100);
+}
+
+.pf-back-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.pf-back-icon {
+    font-size: 20px;
+    background: var(--coral-lt);
+    color: var(--coral);
+    padding: 8px;
+    border-radius: 10px;
+}
+
+.pf-back-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--teal);
+}
+
+.pf-back-sem {
+    font-size: 12px;
+    color: var(--gray-500);
+}
+
+.pf-remove-back {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid rgba(239, 68, 68, 0.2);
+    padding: 6px 12px;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pf-remove-back:hover {
+    background: rgba(239, 68, 68, 0.2);
+}
+
+/* MODAL (Reused from upload-paper conceptually) */
+.up-modal-overlay { 
+    position: fixed; inset: 0; 
+    background: rgba(0,0,0,0.75); 
+    backdrop-filter: blur(8px); 
+    z-index: 999; 
+    display: none; 
+    align-items: center; 
+    justify-content: center; 
+    padding: 20px; 
+}
+.up-modal-overlay.show { display: flex; }
+.up-modal { 
+    background: var(--card); 
+    border: 1px solid var(--border); 
+    border-radius: 28px; 
+    padding: 48px 40px; 
+    text-align: center; 
+    max-width: 420px; 
+    width: 100%; 
+    animation: modal-in 0.4s cubic-bezier(0.34,1.56,0.64,1); 
+    position: relative; 
+    overflow: hidden; 
+}
+.up-modal::before { 
+    content:''; position:absolute; top:-80px; left:50%; transform:translateX(-50%); width:300px; height:300px; 
+    background:radial-gradient(circle,rgba(251,191,36,0.08) 0%,transparent 70%); pointer-events:none; 
+}
+@keyframes modal-in { from{opacity:0;transform:scale(0.6)} to{opacity:1;transform:scale(1)} }
+.up-modal-burst { font-size: 64px; display: block; margin-bottom: 16px; }
+.up-modal h2 { font-size: 26px; font-weight: 800; background: linear-gradient(135deg,var(--gold),#fff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom: 8px; }
+.up-modal p { color: var(--muted); font-size: 15px; margin-bottom: 24px; line-height: 1.6; }
+.up-modal-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
+.up-modal-btn { padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; font-family: 'Inter',sans-serif; cursor: pointer; text-decoration: none; transition: all 0.2s; border: none; display: inline-block; }
+.up-modal-btn.primary { background: linear-gradient(135deg,var(--indigo),var(--violet)); color: #fff; }
+.up-modal-btn.secondary { background: rgba(255,255,255,0.06); color: var(--muted); border: 1px solid var(--border); }
+.up-modal-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+
+/* ========================
    RESPONSIVE
 ======================== */
 @media (max-width: 768px) {

@@ -1,13 +1,38 @@
 rules_version = '2';
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    // ── Users Collection ────────────────────────────────────────────
+    // Any signed-in user can read all profiles (needed for leaderboard)
+    // Users can only write their own document
     match /users/{userId} {
-      allow read: if request.auth != null;
-      allow write: if request.auth != null && request.auth.uid == userId;
+      allow get:    if request.auth != null;
+      allow list:   if request.auth != null;
+      allow create: if request.auth != null && request.auth.uid == userId;
+      allow update: if request.auth != null && request.auth.uid == userId;
+      allow delete: if request.auth != null && request.auth.uid == userId;
     }
+
+    // Subcollections under a user document
     match /users/{userId}/{document=**} {
-      allow read: if request.auth != null;
+      allow read:  if request.auth != null;
       allow write: if request.auth != null && request.auth.uid == userId;
     }
+
+    // ── Papers Collection ────────────────────────────────────────────
+    // Anyone (even unauthenticated) can read/list papers
+    // Only signed-in users can upload a paper
+    // Only the uploader can delete their own paper
+    match /papers/{paperId} {
+      allow read:   if true;
+      allow create: if request.auth != null
+                    && request.resource.data.uploadedBy == request.auth.uid
+                    && request.resource.data.keys().hasAll(['course','semester','subject','year','type','url','uploadedBy','uploaderName','uploadedAt'])
+                    && request.resource.data.url is string
+                    && request.resource.data.url.size() > 0;
+      allow update: if request.auth != null && resource.data.uploadedBy == request.auth.uid;
+      allow delete: if request.auth != null && resource.data.uploadedBy == request.auth.uid;
+    }
+
   }
 }

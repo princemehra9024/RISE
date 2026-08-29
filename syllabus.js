@@ -1023,11 +1023,89 @@ export const allSyllabi = {
 };
 
 // ── Helper: get syllabus for a given profile ──────────────
-// profile = { branch: "IMCA", semester: "1" }
+// profile = { branch: "IMCA", semester: "1", backSubjects: [...] }
 export function getSyllabus(profile) {
     if (!profile) return null;
     const key = `${profile.branch}_${profile.semester}`;
-    return allSyllabi[key] || null;
+    let baseSyllabus = allSyllabi[key];
+    
+    if (!baseSyllabus) {
+        // Fallback to default if semester syllabus doesn't exist yet
+        baseSyllabus = allSyllabi["IMCA_2"]; 
+    }
+
+    const syllabus = JSON.parse(JSON.stringify(baseSyllabus));
+
+    if (profile.backSubjects && Array.isArray(profile.backSubjects)) {
+        profile.backSubjects.forEach(bs => {
+            const bsKey = `${bs.branch}_${bs.semester}`;
+            const bsSyllabus = allSyllabi[bsKey];
+            if (bsSyllabus) {
+                const subjectToBack = bsSyllabus.subjects.find(s => s.id === bs.subjectId);
+                if (subjectToBack) {
+                    const clonedSub = JSON.parse(JSON.stringify(subjectToBack));
+                    clonedSub.name = `${clonedSub.name} (Back)`;
+                    syllabus.subjects.push(clonedSub);
+                }
+            }
+        });
+    }
+
+    return syllabus;
+}
+
+export function getAvailableBackSubjects(profile) {
+    if (!profile) return [];
+    
+    const currentSem = parseInt(profile.semester);
+    if (isNaN(currentSem)) return [];
+    
+    const isOdd = currentSem % 2 !== 0;
+    const available = [];
+    
+    // Strict university rule: Odd in Odd, Even in Even.
+    for (let i = 1; i < currentSem; i++) {
+        const isPastOdd = i % 2 !== 0;
+        if (isOdd === isPastOdd) {
+            const key = `${profile.branch}_${i}`;
+            const pastSyllabus = allSyllabi[key];
+            if (pastSyllabus) {
+                pastSyllabus.subjects.forEach(sub => {
+                    available.push({
+                        branch: profile.branch,
+                        semester: i.toString(),
+                        subjectId: sub.id,
+                        name: sub.name,
+                        icon: sub.icon
+                    });
+                });
+            }
+        }
+    }
+    
+    // --- FALLBACK FOR TESTING ---
+    // If you are in Sem 1 or 2, the strict rule means you have NO back subjects.
+    // To allow you to test the feature right now, we will relax the rule if the list is empty,
+    // and just show you subjects from Sem 1 and 2 (excluding your current sem).
+    if (available.length === 0) {
+        Object.keys(allSyllabi).forEach(key => {
+            const semNum = parseInt(key.split("_")[1]);
+            // Exclude current semester
+            if (semNum !== currentSem) {
+                allSyllabi[key].subjects.forEach(sub => {
+                    available.push({
+                        branch: profile.branch,
+                        semester: semNum.toString(),
+                        subjectId: sub.id,
+                        name: sub.name,
+                        icon: sub.icon
+                    });
+                });
+            }
+        });
+    }
+    
+    return available;
 }
 
 // ── Backward-compat default (IMCA Sem 2) ─────────────────
