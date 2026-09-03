@@ -149,8 +149,10 @@ function buildUnitTabs(subject) {
     unitTabs.innerHTML = "";
     subject.units.forEach((unit, uIndex) => {
         const tab = document.createElement("button");
-        tab.className = "tp-unit-tab";
-        tab.textContent = `Unit ${uIndex + 1}`;
+        const isExtra = unit.name.toLowerCase().startsWith("extra");
+        tab.className = `tp-unit-tab${isExtra ? " tp-unit-tab-extra" : ""}`;
+        // Show short label for tabs: use unit name or fallback
+        tab.textContent = unit.name || `Unit ${uIndex + 1}`;
         tab.addEventListener("click", () => {
             activeUnitIndex = uIndex;
             selectUnit(uIndex);

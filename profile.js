@@ -90,7 +90,31 @@ onAuthStateChanged(auth, async (user) => {
         document.getElementById("pfName").textContent = profile.studentName || "--";
         document.getElementById("pfEmail").textContent = user.email || "--";
         document.getElementById("pfBranch").textContent = profile.branch || "--";
-        document.getElementById("pfSemester").textContent = `Sem ${profile.semester}`;
+        
+        const pfSemester = document.getElementById("pfSemester");
+        pfSemester.innerHTML = `Sem ${profile.semester} <span style="font-size:10px; margin-left:4px;">✎</span>`;
+        pfSemester.onclick = async () => {
+            const newSem = prompt("Enter your correct semester (1-8):", profile.semester);
+            if (newSem !== null && newSem.trim() !== "" && !isNaN(newSem) && newSem >= 1 && newSem <= 8) {
+                const confirmChange = confirm(`Switch to Semester ${newSem}? Your subjects will be updated automatically.`);
+                if (confirmChange) {
+                    try {
+                        await updateDoc(docRef, {
+                            "profile.semester": newSem.toString(),
+                            progress: {} // Reset progress as subjects changed
+                        });
+                        alert(`Successfully switched to Semester ${newSem}!`);
+                        window.location.reload();
+                    } catch (error) {
+                        console.error("Error updating semester:", error);
+                        alert("There was an error updating your semester.");
+                    }
+                }
+            } else if (newSem !== null) {
+                alert("Please enter a valid semester number between 1 and 8.");
+            }
+        };
+
         document.getElementById("pfRollNumber").textContent = `Roll: ${profile.rollNumber}`;
         document.getElementById("pfCollege").textContent = profile.college || "--";
         document.getElementById("pfGoal").textContent = profile.goal || "--";

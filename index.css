@@ -581,6 +581,19 @@ body {
     margin-bottom: 6px;
 }
 
+.hero-badge {
+    display: inline-block;
+    background: rgba(45, 90, 74, 0.08);
+    color: var(--teal);
+    padding: 5px 14px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-family: 'Inter', sans-serif;
+    font-weight: 700;
+    margin-bottom: 12px;
+    letter-spacing: 0.02em;
+}
+
 .hero-name {
     color: var(--coral);
     display: block;

@@ -271,6 +271,13 @@ function updateHeaderBadge(profile) {
     if (profileSemBadge && profile) {
         profileSemBadge.textContent = `${profile.branch} · Sem ${profile.semester}`;
     }
+    
+    const heroCourseBadge = document.getElementById("heroCourseBadge");
+    if (heroCourseBadge && profile) {
+        heroCourseBadge.textContent = `${profile.branch} — Semester ${profile.semester}`;
+        heroCourseBadge.style.display = "inline-block";
+    }
+
     const name = profile?.studentName || currentUser?.displayName || "Student";
     if (profileName) profileName.textContent = name;
     if (heroName)    heroName.textContent = name + "!";

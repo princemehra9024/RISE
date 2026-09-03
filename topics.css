@@ -422,6 +422,27 @@ body {
     box-shadow: 0 4px 12px rgba(28,61,53,0.15);
 }
 
+/* Extra / Industry Topics tab */
+.tp-unit-tab-extra {
+    background: linear-gradient(135deg, #fff4e5, #fce4ec);
+    border-color: var(--coral);
+    color: var(--coral);
+    font-style: italic;
+}
+
+.tp-unit-tab-extra:hover {
+    border-color: #d35400;
+    color: #d35400;
+    background: linear-gradient(135deg, #fce4ec, #fff0dc);
+}
+
+.tp-unit-tab-extra.active {
+    background: linear-gradient(135deg, var(--coral), #d35400);
+    color: white;
+    border-color: var(--coral);
+    box-shadow: 0 4px 12px rgba(232,133,106,0.3);
+}
+
 /* ========================
    TOPICS GRID (Pills)
 ======================== */
