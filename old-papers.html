@@ -632,7 +632,13 @@
     </div>
 
     <!-- LOADING STATE -->
-    <div class="op-loading" id="opLoading">Checking authentication…</div>
+    <div class="op-loading" id="opLoading">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
+            <div style="width:36px;height:36px;border:3px solid #E5E7EB;border-top-color:#4F46E5;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
+            <span id="opLoadingText">Checking authentication…</span>
+        </div>
+    </div>
+    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 
     <!-- MAIN CONTENT (hidden until auth) -->
     <div id="opMain" style="display:none;">
@@ -699,7 +705,7 @@
                     <h3>📤 Have a paper to share?</h3>
                     <p>Help your classmates by contributing old question papers to the community.</p>
                 </div>
-                <button class="op-upload-btn" onclick="alert('Upload feature coming soon! Contact your class representative.')">Contribute a Paper</button>
+                <a href="upload-paper.html" class="op-upload-btn" style="text-decoration:none;">Contribute a Paper</a>
             </div>
         </div>
 
@@ -709,7 +715,7 @@
 <script type="module">
 import { auth, db } from "./firebase-config.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { doc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { doc, getDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 import { getSyllabus } from "./syllabus.js";
 
 // ========================================
@@ -1021,10 +1027,66 @@ const opDetailBackBtn = document.getElementById("opDetailBackBtn");
 const topBackLink     = document.getElementById("topBackLink");
 
 // ========================================
+// MERGE FIRESTORE PAPERS INTO LOCAL DB
+// ========================================
+async function mergeFirestorePapers() {
+    try {
+        const loadingText = document.getElementById('opLoadingText');
+        if (loadingText) loadingText.textContent = 'Loading community papers…';
+
+        const snap = await getDocs(collection(db, "papers"));
+        snap.forEach(docSnap => {
+            const p = docSnap.data();
+            const course  = p.course;
+            const semNum  = Number(p.semester);
+            const subject = (p.subject || "").trim();
+            if (!course || !semNum || !subject) return;
+
+            // Ensure course and semester exist in DB
+            if (!oldPapersDB[course]) oldPapersDB[course] = {};
+            if (!oldPapersDB[course][semNum]) {
+                oldPapersDB[course][semNum] = {
+                    semLabel: `Semester ${semNum}`,
+                    subjects: []
+                };
+            }
+
+            const semData = oldPapersDB[course][semNum];
+
+            // Find or create the subject entry
+            let subEntry = semData.subjects.find(s => s.name.toLowerCase() === subject.toLowerCase());
+            if (!subEntry) {
+                const safeId = course.toLowerCase() + semNum + "_" + subject.replace(/[^a-zA-Z0-9]/g, "").toLowerCase();
+                subEntry = { name: subject, id: safeId, papers: [] };
+                semData.subjects.push(subEntry);
+            }
+
+            // Avoid duplicate papers (same Firestore doc)
+            const alreadyAdded = subEntry.papers.some(pp => pp._firestoreId === docSnap.id);
+            if (!alreadyAdded) {
+                subEntry.papers.push({
+                    _firestoreId: docSnap.id,
+                    year:  p.year  || "—",
+                    title: p.title || subject,
+                    type:  p.type  || "—",
+                    url:   p.url   || "",
+                    uploadedBy: p.uploaderName || "Community"
+                });
+            }
+        });
+    } catch (e) {
+        console.warn("Could not load community papers from Firestore:", e);
+    }
+}
+
+// ========================================
 // AUTH GUARD
 // ========================================
 onAuthStateChanged(auth, async (user) => {
     if (user) {
+        // First merge community-uploaded papers, then render
+        await mergeFirestorePapers();
+
         opLoading.style.display = "none";
         opMain.style.display    = "block";
         renderSemGrid();
@@ -1135,7 +1197,7 @@ function populateSubjectFilter() {
 // ========================================
 // OPEN A SEMESTER
 // ========================================
-function openSemester(semNum) {
+function openSemester(semNum, jumpToSubjectName) {
     selectedSem = semNum;
     const semData = oldPapersDB[selectedCourse][semNum];
     if (!semData) return;
@@ -1150,13 +1212,27 @@ function openSemester(semNum) {
     opDetailView.classList.add("visible");
 
     // Detail header
-    opDetailTitle.textContent   = semData.semLabel;
+    opDetailTitle.textContent    = semData.semLabel;
     opDetailSubtitle.textContent = `${semData.subjects.length} subjects · ${semData.subjects.reduce((s,sub)=>s+sub.papers.length,0)} papers`;
 
     // Build subject tabs
     renderSubjectTabs(semData);
 
-    // Activate first tab
+    // If a specific subject was requested, jump to it; otherwise open first tab
+    if (jumpToSubjectName) {
+        const sub = semData.subjects.find(s => s.name.toLowerCase() === jumpToSubjectName.toLowerCase());
+        if (sub) {
+            activateTab(sub.id, semData);
+            // Scroll the tab into view
+            setTimeout(() => {
+                const activeTab = document.querySelector(`.op-tab[data-tab-id="${sub.id}"]`);
+                if (activeTab) activeTab.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                opDetailView.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            }, 50);
+            return;
+        }
+    }
+    // Default: activate first tab
     if (semData.subjects.length > 0) {
         activateTab(semData.subjects[0].id, semData);
     }
@@ -1206,7 +1282,7 @@ function activateTab(tabId, semData) {
 
     subjectsToShow.forEach(sub => {
         const section = document.createElement("div");
-        section.innerHTML = `<div class="op-papers-section-title">${sub.name} <span>${sub.papers.length} papers</span></div>`;
+        section.innerHTML = `<div class="op-papers-section-title">${sub.name} <span>${sub.papers.length} paper${sub.papers.length !== 1 ? 's' : ''}</span></div>`;
 
         if (sub.papers.length === 0) {
             section.innerHTML += `<div class="op-empty" style="text-align:left;padding:20px 0">
@@ -1216,20 +1292,31 @@ function activateTab(tabId, semData) {
             grid.className = "op-papers-grid";
 
             sub.papers.forEach(paper => {
+                const isFirebase = paper.url && paper.url.startsWith("https://");
+                const isCommunity = !!paper._firestoreId;
                 const card = document.createElement("div");
                 card.className = "op-paper-card";
+
+                const communityBadge = isCommunity
+                    ? `<span style="display:inline-block;background:#EEF2FF;color:#4F46E5;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:0.06em;margin-left:6px;">COMMUNITY</span>`
+                    : '';
+
+                const uploadedBy = isCommunity && paper.uploadedBy
+                    ? `· by ${paper.uploadedBy}`
+                    : '';
+
                 card.innerHTML = `
                     <div class="op-paper-icon">📄</div>
                     <div class="op-paper-info">
-                        <div class="op-paper-year">${paper.year} · ${paper.type}</div>
+                        <div class="op-paper-year">${paper.year} · ${paper.type}${communityBadge}</div>
                         <div class="op-paper-name">${paper.title}</div>
-                        <div class="op-paper-meta">Question Paper · PDF</div>
+                        <div class="op-paper-meta">Question Paper · PDF ${uploadedBy}</div>
                         <div class="op-paper-actions">
                             ${paper.url
                                 ? `<a href="${paper.url}" target="_blank" class="op-btn-view">👁 View</a>
-                                   <a href="${paper.url}" download class="op-btn-download">⬇</a>`
-                                : `<button class="op-btn-view" onclick="alert('Paper link coming soon! Ask your teacher or class representative.')">👁 View</button>
-                                   <button class="op-btn-download" onclick="alert('Download link coming soon!')">⬇</button>`
+                                   <button class="op-btn-download" onclick="downloadPaper('${paper.url}', '${(paper.title || 'paper').replace(/'/g, '')}')" title="Download">⬇ Download</button>`
+                                : `<button class="op-btn-view" onclick="alert('Paper link coming soon!')">👁 View</button>
+                                   <button class="op-btn-download" onclick="alert('Download coming soon!')">⬇ Download</button>`
                             }
                         </div>
                     </div>
@@ -1262,6 +1349,15 @@ opDetailBackBtn.addEventListener("click", () => {
     opSemGridView.style.display = "block";
     document.querySelectorAll(".op-sem-card").forEach(c => c.classList.remove("active-sem"));
     selectedSem = null;
+    // Reset filter dropdowns to "All"
+    filterSubject.value = "all";
+    filterMySem.value   = "all";
+    // Restore all card visibility
+    document.querySelectorAll(".op-sem-card").forEach(card => {
+        card.style.opacity = "1";
+        card.style.pointerEvents = "auto";
+        card.style.order = "0";
+    });
 });
 
 // ========================================
@@ -1287,51 +1383,110 @@ filterCourse.addEventListener("change", () => {
 });
 
 // ========================================
-// FILTER CHANGE – Subject (highlights sems)
+// FILTER CHANGE – Subject → navigate directly to semester + subject
 // ========================================
 filterSubject.addEventListener("change", () => {
     const val = filterSubject.value;
-    // Reset My Sem filter to avoid conflict
+
+    // Reset My Sem filter
     if (val !== "all") filterMySem.value = "all";
 
-    document.querySelectorAll(".op-sem-card").forEach(card => {
-        if (val === "all") {
+    if (val === "all") {
+        // Back to grid, reset all card styles
+        opDetailView.classList.remove("visible");
+        opSemGridView.style.display = "block";
+        document.querySelectorAll(".op-sem-card").forEach(card => {
             card.style.opacity = "1";
             card.style.pointerEvents = "auto";
             card.style.order = "0";
-            return;
+        });
+        return;
+    }
+
+    // Find the first semester that has this subject
+    const courseData = oldPapersDB[selectedCourse];
+    let foundSem = null;
+    for (const semNum of Object.keys(courseData)) {
+        const semData = courseData[semNum];
+        if (semData.subjects.some(s => s.name.toLowerCase() === val.toLowerCase())) {
+            foundSem = semNum;
+            break;
         }
-        const semNum = card.dataset.sem;
-        const semData = oldPapersDB[selectedCourse][semNum];
-        const hasSubject = semData && semData.subjects.some(s => s.name === val);
-        card.style.opacity = hasSubject ? "1" : "0.35";
-        card.style.pointerEvents = hasSubject ? "auto" : "none";
-        card.style.order = hasSubject ? "-1" : "0";
-    });
+    }
+
+    if (foundSem) {
+        // Directly open that semester and jump to the subject tab
+        openSemester(foundSem, val);
+    }
 });
 // ========================================
-// FILTER CHANGE – My Semester Subject
+// FILTER CHANGE – My Semester Subject → navigate directly
 // ========================================
 filterMySem.addEventListener("change", () => {
     const val = filterMySem.value;
-    // Also reset the other subject filter to avoid conflict
+    // Reset the other subject filter
     if (val !== "all") filterSubject.value = "all";
 
-    document.querySelectorAll(".op-sem-card").forEach(card => {
-        if (val === "all") {
+    if (val === "all") {
+        opDetailView.classList.remove("visible");
+        opSemGridView.style.display = "block";
+        document.querySelectorAll(".op-sem-card").forEach(card => {
             card.style.opacity = "1";
             card.style.pointerEvents = "auto";
             card.style.order = "0";
-            return;
+        });
+        return;
+    }
+
+    // Find the first semester that has this subject
+    const courseData = oldPapersDB[selectedCourse];
+    let foundSem = null;
+    for (const semNum of Object.keys(courseData)) {
+        const semData = courseData[semNum];
+        if (semData.subjects.some(s => s.name.toLowerCase() === val.toLowerCase())) {
+            foundSem = semNum;
+            break;
         }
-        const semNum = card.dataset.sem;
-        const semData = oldPapersDB[selectedCourse][semNum];
-        const hasSubject = semData && semData.subjects.some(s => s.name === val);
-        card.style.opacity = hasSubject ? "1" : "0.35";
-        card.style.pointerEvents = hasSubject ? "auto" : "none";
-        card.style.order = hasSubject ? "-1" : "0";
-    });
+    }
+
+    if (foundSem) {
+        openSemester(foundSem, val);
+    }
 });
+
+// ========================================
+// DOWNLOAD HELPER – works for both local paths & Firebase Storage URLs
+// ========================================
+window.downloadPaper = async function(url, filename) {
+    if (!url) { alert('Download link not available.'); return; }
+    try {
+        // For Firebase Storage / cross-origin URLs, fetch as blob first
+        if (url.startsWith('https://')) {
+            const resp = await fetch(url);
+            if (!resp.ok) throw new Error('Network error');
+            const blob = await resp.blob();
+            const blobUrl = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = blobUrl;
+            a.download = filename.endsWith('.pdf') ? filename : filename + '.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            setTimeout(() => URL.revokeObjectURL(blobUrl), 5000);
+        } else {
+            // Local file — standard anchor download
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename.endsWith('.pdf') ? filename : filename + '.pdf';
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+        }
+    } catch(e) {
+        // Fallback: open in new tab
+        window.open(url, '_blank');
+    }
+};
 </script>
     <!-- ===== SITE FOOTER ===== -->
     <footer class="rise-footer">
