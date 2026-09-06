@@ -1,200 +1,611 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Upload Paper – RISE</title>
-    <meta name="description" content="Contribute old question papers to RISE and earn stars for your community.">
+    <title>Upload Question Paper — RISE Student Platform</title>
+    <meta name="description" content="Contribute authentic question papers to RISE and earn academic contribution points and star ranks.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Inter:wght@400;500;600;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="base.css">
     <link rel="stylesheet" href="footer.css">
     <style>
         *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
         :root {
-            --indigo:   #4F46E5;
-            --violet:   #7C3AED;
-            --amber:    #F59E0B;
-            --gold:     #FBBF24;
-            --emerald:  #10B981;
-            --rose:     #F43F5E;
-            --bg:       #0F0F1A;
-            --surface:  #16162A;
-            --card:     #1E1E35;
-            --border:   rgba(255,255,255,0.08);
-            --text:     #F1F0FF;
-            --muted:    #9896B8;
+            --cream:         #FAF7F2;
+            --cream-surface: #F5EFE6;
+            --teal:          #1C3D35;
+            --teal-mid:      #2D5A4A;
+            --teal-dark:     #122822;
+            --teal-glow:     rgba(28, 61, 53, 0.12);
+            --coral:         #E8856A;
+            --coral-hover:   #D66E52;
+            --coral-lt:      #FCEAE4;
+            --yellow:        #F5C842;
+            --yellow-lt:     #FEF8DC;
+            --mint:          #A8D5BF;
+            --mint-lt:       #E4F5EE;
+            --white:         #FFFFFF;
+            --gray-50:       #F9FAFB;
+            --gray-100:      #F3F4F6;
+            --gray-200:      #E5E7EB;
+            --gray-400:      #9CA3AF;
+            --gray-500:      #6B7280;
+            --gray-700:      #374151;
+            --border-warm:   rgba(28, 61, 53, 0.08);
+            --border-warm-hover: rgba(28, 61, 53, 0.22);
+            --radius-xl:     28px;
+            --radius-lg:     20px;
+            --radius-md:     14px;
+            --radius-sm:     10px;
+            --shadow-subtle: 0 4px 16px rgba(28, 61, 53, 0.04);
+            --shadow-card:   0 12px 36px rgba(28, 61, 53, 0.06);
+            --shadow-hover:  0 20px 48px rgba(28, 61, 53, 0.12);
         }
 
-        body { font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--cream);
+            color: var(--teal);
+            min-height: 100vh;
+            position: relative;
+            overflow-x: hidden;
+            -webkit-font-smoothing: antialiased;
+        }
 
-        .up-blob { position: fixed; border-radius: 50%; filter: blur(120px); pointer-events: none; z-index: 0; opacity: 0.18; }
-        .up-blob-1 { width: 600px; height: 600px; background: var(--indigo); top: -200px; left: -200px; }
-        .up-blob-2 { width: 500px; height: 500px; background: var(--violet); bottom: -100px; right: -200px; }
-        .up-blob-3 { width: 300px; height: 300px; background: var(--amber);  top: 40%; right: 10%; }
+        /* Ambient background glow mesh */
+        .up-ambient-blob {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(100px);
+            pointer-events: none;
+            z-index: 0;
+        }
+        .up-blob-1 { width: 500px; height: 500px; background: rgba(232, 133, 106, 0.13); top: -140px; right: -100px; }
+        .up-blob-2 { width: 440px; height: 440px; background: rgba(168, 213, 191, 0.16); top: 380px; left: -140px; }
+        .up-blob-3 { width: 340px; height: 340px; background: rgba(245, 200, 66, 0.10); bottom: 160px; right: 5%; }
 
-        /* TOPBAR */
+        /* ====================
+           EDITORIAL TOPBAR
+           ==================== */
         .up-topbar {
             position: sticky; top: 0; z-index: 100;
-            background: rgba(15,15,26,0.85); backdrop-filter: blur(20px);
-            border-bottom: 1px solid var(--border);
-            padding: 18px 40px;
+            background: rgba(255, 255, 255, 0.88);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-bottom: 1.5px solid var(--border-warm);
+            padding: 18px 48px;
             display: flex; align-items: center; justify-content: space-between;
+            box-shadow: 0 4px 20px rgba(28, 61, 53, 0.03);
+            transition: all 0.3s ease;
         }
-        .up-back { display: flex; align-items: center; gap: 8px; color: var(--muted); text-decoration: none; font-size: 14px; font-weight: 600; transition: color 0.2s; }
-        .up-back:hover { color: var(--text); }
-        .up-topbar-brand { font-size: 18px; font-weight: 800; background: linear-gradient(135deg, var(--indigo), var(--gold)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
-        .up-topbar-badge { background: linear-gradient(135deg, var(--indigo), var(--violet)); color: #fff; font-size: 11px; font-weight: 700; padding: 4px 14px; border-radius: 20px; letter-spacing: 0.08em; }
+        .up-back {
+            display: inline-flex; align-items: center; gap: 8px;
+            color: var(--teal-mid);
+            background: rgba(28, 61, 53, 0.05);
+            border: 1px solid var(--border-warm);
+            padding: 8px 14px;
+            border-radius: var(--radius-sm);
+            text-decoration: none;
+            font-size: 13px; font-weight: 600;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .up-back:hover {
+            color: var(--white);
+            background: var(--teal);
+            transform: translateX(-3px);
+            box-shadow: 0 4px 12px rgba(28, 61, 53, 0.2);
+        }
+        .up-back svg { width: 14px; height: 14px; transition: transform 0.2s ease; }
+        .up-back:hover svg { transform: translateX(-2px); }
 
-        /* HERO */
-        .up-hero { text-align: center; padding: 64px 20px 40px; position: relative; z-index: 1; }
-        .up-hero-icon { font-size: 56px; margin-bottom: 16px; display: block; animation: float 3s ease-in-out infinite; }
-        @keyframes float { 0%,100%{transform:translateY(0)} 50%{transform:translateY(-10px)} }
-        .up-hero h1 { font-family: 'Playfair Display', serif; font-size: clamp(28px,5vw,42px); font-weight: 800; background: linear-gradient(135deg,#fff 30%,var(--gold)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom: 12px; }
-        .up-hero p { color: var(--muted); font-size: 16px; max-width: 500px; margin: 0 auto 24px; line-height: 1.6; }
-        .up-reward-pill { display: inline-flex; align-items: center; gap: 8px; background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.3); color: var(--gold); font-size: 13px; font-weight: 700; padding: 8px 20px; border-radius: 50px; animation: pulse-glow 2s ease-in-out infinite; }
-        @keyframes pulse-glow { 0%,100%{box-shadow:0 0 0 0 rgba(251,191,36,0.15)} 50%{box-shadow:0 0 20px 4px rgba(251,191,36,0.15)} }
+        .up-topbar-brand {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 22px; font-weight: 800;
+            color: var(--teal);
+            letter-spacing: -0.01em;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .up-topbar-brand span { color: var(--coral); font-family: 'Inter', sans-serif; font-size: 18px; }
 
-        /* MAIN LAYOUT */
-        .up-main { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; padding: 0 20px 100px; display: grid; grid-template-columns: 1fr 340px; gap: 28px; align-items: start; }
-        @media (max-width: 768px) { .up-main { grid-template-columns: 1fr; } }
+        .up-topbar-badge {
+            background: var(--mint-lt);
+            color: var(--teal);
+            border: 1.5px solid rgba(28, 61, 53, 0.12);
+            font-size: 11px; font-weight: 700;
+            padding: 5px 14px; border-radius: 20px;
+            letter-spacing: 0.08em; text-transform: uppercase;
+        }
 
-        /* FORM CARD */
-        .up-form-card { background: var(--card); border: 1px solid var(--border); border-radius: 24px; padding: 36px; }
-        .up-form-title { font-size: 18px; font-weight: 800; margin-bottom: 28px; }
-        .up-form-title span { background: linear-gradient(135deg,var(--indigo),var(--violet)); -webkit-background-clip:text; -webkit-text-fill-color:transparent; }
+        /* ====================
+           HERO SECTION
+           ==================== */
+        .up-hero {
+            text-align: center;
+            padding: 56px 20px 36px;
+            position: relative;
+            z-index: 1;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .up-hero-icon-box {
+            width: 68px; height: 68px;
+            border-radius: 22px;
+            background: var(--mint-lt);
+            color: var(--teal);
+            border: 1.5px solid rgba(28, 61, 53, 0.1);
+            display: inline-flex; align-items: center; justify-content: center;
+            margin-bottom: 20px;
+            box-shadow: var(--shadow-subtle);
+            animation: float-icon 3.5s ease-in-out infinite;
+        }
+        @keyframes float-icon {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-7px); }
+        }
+        .up-hero-icon-box svg { width: 32px; height: 32px; }
+
+        .up-hero-tag {
+            display: inline-flex; align-items: center; gap: 6px;
+            font-size: 11px; font-weight: 800;
+            letter-spacing: 0.12em; text-transform: uppercase;
+            color: var(--coral);
+            margin-bottom: 8px;
+        }
+        .up-hero h1 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: clamp(30px, 5vw, 44px);
+            font-weight: 800;
+            color: var(--teal);
+            line-height: 1.2;
+            margin-bottom: 12px;
+            letter-spacing: -0.02em;
+        }
+        .up-hero p {
+            color: var(--teal-mid);
+            font-size: 15px; line-height: 1.6;
+            max-width: 580px; margin: 0 auto 20px;
+        }
+        .up-reward-pill {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--yellow-lt);
+            border: 1.5px solid rgba(245, 200, 66, 0.4);
+            color: #8C6207;
+            font-size: 13px; font-weight: 700;
+            padding: 8px 22px; border-radius: 50px;
+            box-shadow: 0 4px 16px rgba(245, 200, 66, 0.15);
+        }
+        .up-reward-pill svg { width: 15px; height: 15px; color: #D9A21B; }
+
+        /* ====================
+           MAIN LAYOUT GRID
+           ==================== */
+        .up-main {
+            position: relative; z-index: 1;
+            max-width: 1040px; margin: 0 auto;
+            padding: 0 24px 80px;
+            display: grid; grid-template-columns: 1fr 340px;
+            gap: 28px; align-items: start;
+        }
+        @media (max-width: 860px) {
+            .up-main { grid-template-columns: 1fr; }
+            .up-topbar { padding: 16px 24px; }
+        }
+
+        /* ====================
+           FORM CARD
+           ==================== */
+        .up-form-card {
+            background: var(--white);
+            border: 1.5px solid var(--border-warm);
+            border-radius: var(--radius-xl);
+            padding: 38px 36px;
+            box-shadow: var(--shadow-card);
+            position: relative;
+        }
+        .up-form-header {
+            display: flex; align-items: center; gap: 12px;
+            margin-bottom: 28px;
+            padding-bottom: 18px;
+            border-bottom: 1px solid var(--border-warm);
+        }
+        .up-form-header-icon {
+            width: 36px; height: 36px; border-radius: 10px;
+            background: var(--mint-lt); color: var(--teal);
+            display: flex; align-items: center; justify-content: center;
+        }
+        .up-form-header-icon svg { width: 18px; height: 18px; }
+        .up-form-title {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 22px; font-weight: 800;
+            color: var(--teal); letter-spacing: -0.01em;
+        }
+
         .up-field { margin-bottom: 20px; }
-        .up-label { display: block; font-size: 12px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 8px; }
-        .up-input, .up-select { width: 100%; padding: 14px 18px; background: rgba(255,255,255,0.04); border: 1.5px solid var(--border); border-radius: 12px; color: var(--text); font-size: 15px; font-family: 'Inter',sans-serif; font-weight: 500; outline: none; transition: all 0.2s; appearance: none; }
-        .up-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' fill='none'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%239896B8' stroke-width='2' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; padding-right: 44px; cursor: pointer; }
-        .up-select option { background: #1E1E35; color: var(--text); }
-        .up-input:focus, .up-select:focus { border-color: var(--indigo); background: rgba(79,70,229,0.06); box-shadow: 0 0 0 4px rgba(79,70,229,0.12); }
-        .up-input::placeholder { color: #4D4D6B; }
+        .up-label {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 11px; font-weight: 700;
+            color: var(--teal-mid);
+            text-transform: uppercase; letter-spacing: 0.1em;
+            margin-bottom: 8px;
+        }
+        .up-input, .up-select {
+            width: 100%;
+            padding: 13px 18px;
+            background: var(--cream);
+            border: 1.5px solid var(--border-warm);
+            border-radius: var(--radius-md);
+            color: var(--teal);
+            font-size: 14px; font-family: 'Inter', sans-serif; font-weight: 600;
+            outline: none;
+            transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+            appearance: none; -webkit-appearance: none;
+        }
+        .up-select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' fill='none' stroke='%231C3D35' stroke-width='2.5' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='4 6 7 9 10 6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 16px center;
+            padding-right: 42px;
+            cursor: pointer;
+        }
+        .up-select option { background: var(--white); color: var(--teal); }
+        .up-input:hover, .up-select:hover {
+            border-color: var(--border-warm-hover);
+            background: var(--white);
+        }
+        .up-input:focus, .up-select:focus {
+            border-color: var(--teal);
+            background: var(--white);
+            box-shadow: 0 0 0 3.5px var(--teal-glow);
+        }
+        .up-input::placeholder { color: var(--gray-400); font-weight: 500; }
         .up-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
-        @media (max-width: 500px) { .up-row { grid-template-columns: 1fr; } }
+        @media (max-width: 520px) { .up-row { grid-template-columns: 1fr; } }
 
-        /* DROPZONE */
-        .up-dropzone { border: 2px dashed rgba(79,70,229,0.4); border-radius: 16px; padding: 36px 20px; text-align: center; cursor: pointer; transition: all 0.3s; position: relative; background: rgba(79,70,229,0.03); }
-        .up-dropzone:hover, .up-dropzone.drag-over { border-color: var(--indigo); background: rgba(79,70,229,0.08); transform: scale(1.01); }
-        .up-dropzone input[type="file"] { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; }
-        .up-dropzone-icon { font-size: 40px; margin-bottom: 10px; display: block; }
-        .up-dropzone-title { font-size: 15px; font-weight: 700; color: var(--text); margin-bottom: 4px; }
-        .up-dropzone-sub { font-size: 13px; color: var(--muted); }
-        .up-file-chosen { display: none; align-items: center; gap: 12px; background: rgba(16,185,129,0.1); border: 1px solid rgba(16,185,129,0.3); border-radius: 12px; padding: 14px 18px; margin-top: 12px; }
+        /* ====================
+           DROPZONE
+           ==================== */
+        .up-dropzone {
+            border: 2px dashed rgba(28, 61, 53, 0.2);
+            border-radius: var(--radius-lg);
+            padding: 36px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative;
+            background: var(--cream);
+        }
+        .up-dropzone:hover, .up-dropzone.drag-over {
+            border-color: var(--teal);
+            background: var(--mint-lt);
+            transform: scale(1.01);
+        }
+        .up-dropzone input[type="file"] {
+            position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer;
+        }
+        .up-dropzone-icon-wrap {
+            width: 52px; height: 52px; border-radius: 16px;
+            background: var(--white); color: var(--teal);
+            border: 1.5px solid var(--border-warm);
+            display: inline-flex; align-items: center; justify-content: center;
+            margin-bottom: 12px;
+            transition: transform 0.2s ease;
+        }
+        .up-dropzone:hover .up-dropzone-icon-wrap {
+            transform: scale(1.08);
+            background: var(--teal); color: var(--white);
+        }
+        .up-dropzone-icon-wrap svg { width: 26px; height: 26px; }
+        .up-dropzone-title {
+            font-size: 15px; font-weight: 700; color: var(--teal); margin-bottom: 4px;
+        }
+        .up-dropzone-sub { font-size: 13px; color: var(--gray-500); }
+
+        .up-file-chosen {
+            display: none; align-items: center; gap: 12px;
+            background: var(--mint-lt);
+            border: 1.5px solid rgba(28, 61, 53, 0.15);
+            border-radius: var(--radius-md);
+            padding: 12px 18px; margin-top: 12px;
+        }
         .up-file-chosen.show { display: flex; }
-        .up-file-chosen-name { font-size: 14px; font-weight: 600; color: #10B981; flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .up-file-chosen svg { width: 18px; height: 18px; color: var(--teal); flex-shrink: 0; }
+        .up-file-chosen-name {
+            font-size: 13px; font-weight: 700; color: var(--teal);
+            flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+        }
 
-        /* SUBMIT */
-        .up-submit-btn { width: 100%; padding: 16px; background: linear-gradient(135deg,var(--indigo),var(--violet)); border: none; border-radius: 14px; color: #fff; font-size: 16px; font-weight: 700; font-family: 'Inter',sans-serif; cursor: pointer; margin-top: 8px; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s; position: relative; overflow: hidden; }
-        .up-submit-btn::before { content:''; position:absolute; inset:0; background:linear-gradient(135deg,transparent 0%,rgba(255,255,255,0.1) 50%,transparent 100%); transform:translateX(-100%); transition:transform 0.6s; }
-        .up-submit-btn:hover::before { transform:translateX(100%); }
-        .up-submit-btn:hover { transform:translateY(-2px); box-shadow:0 12px 36px rgba(79,70,229,0.4); }
-        .up-submit-btn:disabled { opacity:0.6; cursor:not-allowed; transform:none; }
+        /* ====================
+           SUBMIT BUTTON
+           ==================== */
+        .up-submit-btn {
+            width: 100%; padding: 15px;
+            background: linear-gradient(135deg, var(--teal), var(--teal-mid));
+            border: none; border-radius: var(--radius-md);
+            color: var(--white);
+            font-size: 15px; font-weight: 700; font-family: 'Inter', sans-serif;
+            cursor: pointer; margin-top: 10px;
+            display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            position: relative; overflow: hidden;
+            box-shadow: 0 8px 24px rgba(28, 61, 53, 0.25);
+        }
+        .up-submit-btn:hover {
+            transform: translateY(-2px);
+            background: linear-gradient(135deg, #16362F, #22493C);
+            box-shadow: 0 12px 32px rgba(28, 61, 53, 0.35);
+        }
+        .up-submit-btn:disabled { opacity: 0.6; cursor: not-allowed; transform: none; box-shadow: none; }
+        .up-submit-btn svg { width: 18px; height: 18px; }
 
-        /* PROGRESS */
-        .up-progress-wrap { display: none; margin-top: 12px; background: rgba(255,255,255,0.06); border-radius: 100px; height: 6px; overflow: hidden; }
-        .up-progress-fill { height: 100%; background: linear-gradient(90deg,var(--indigo),var(--violet),var(--gold)); border-radius: 100px; width: 0%; transition: width 0.3s ease; }
+        .up-progress-wrap {
+            display: none; margin-top: 14px;
+            background: var(--cream-surface);
+            border-radius: 100px; height: 7px; overflow: hidden;
+            border: 1px solid var(--border-warm);
+        }
+        .up-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, var(--teal), var(--coral), var(--yellow));
+            border-radius: 100px; width: 0%;
+            transition: width 0.3s ease;
+        }
 
-        /* SIDE */
-        .up-side { display: flex; flex-direction: column; gap: 20px; }
+        /* ====================
+           SIDE PANEL CARDS
+           ==================== */
+        .up-side { display: flex; flex-direction: column; gap: 24px; }
 
-        /* REWARD CARD */
-        .up-reward-card { background: linear-gradient(135deg,#1A1430,#201830); border: 1px solid rgba(251,191,36,0.2); border-radius: 24px; padding: 28px; position: relative; overflow: hidden; }
-        .up-reward-card::before { content:''; position:absolute; top:-60px; right:-60px; width:200px; height:200px; background:radial-gradient(circle,rgba(251,191,36,0.12) 0%,transparent 70%); pointer-events:none; }
-        .up-reward-card-title { font-size: 13px; font-weight: 700; color: var(--gold); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
-        .up-stars-row { display: flex; gap: 8px; margin-bottom: 16px; }
-        .up-star { font-size: 28px; filter: grayscale(1) brightness(0.4); transition: all 0.4s; }
-        .up-star.lit { filter: none; animation: star-pop 0.4s cubic-bezier(0.34,1.56,0.64,1); }
-        @keyframes star-pop { 0%{transform:scale(0.4)} 100%{transform:scale(1)} }
+        /* Star Rank Card (Deep Forest Bento) */
+        .up-reward-card {
+            background: linear-gradient(135deg, #1C3D35 0%, #254F42 60%, #16362C 100%);
+            border-radius: var(--radius-xl);
+            padding: 32px 28px;
+            position: relative; overflow: hidden;
+            color: var(--white);
+            box-shadow: var(--shadow-card);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .up-reward-card::before {
+            content: ''; position: absolute;
+            top: -60px; right: -60px; width: 200px; height: 200px;
+            background: radial-gradient(circle, rgba(245, 200, 66, 0.2) 0%, transparent 70%);
+            pointer-events: none;
+        }
+        .up-reward-card-title {
+            display: flex; align-items: center; gap: 6px;
+            font-size: 11px; font-weight: 800;
+            color: var(--yellow);
+            text-transform: uppercase; letter-spacing: 0.12em;
+            margin-bottom: 14px;
+        }
+        .up-reward-card-title svg { width: 14px; height: 14px; }
+
+        .up-stars-row { display: flex; gap: 8px; margin-bottom: 18px; }
+        .up-star {
+            width: 26px; height: 26px;
+            color: rgba(255, 255, 255, 0.2);
+            transition: all 0.3s ease;
+        }
+        .up-star svg { width: 100%; height: 100%; fill: currentColor; }
+        .up-star.lit {
+            color: var(--yellow);
+            filter: drop-shadow(0 2px 8px rgba(245, 200, 66, 0.5));
+            animation: star-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+        @keyframes star-pop { 0% { transform: scale(0.4); } 100% { transform: scale(1); } }
+
+        .up-pts-block {
+            margin-bottom: 20px; padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .up-pts-label { font-size: 12px; color: rgba(255, 255, 255, 0.7); margin-bottom: 4px; }
+        .up-pts-val {
+            font-family: 'Playfair Display', serif;
+            font-size: 32px; font-weight: 800;
+            color: var(--yellow); line-height: 1;
+        }
+
         .up-reward-tiers { display: flex; flex-direction: column; gap: 8px; }
-        .up-tier { display: flex; align-items: center; gap: 10px; padding: 10px 14px; border-radius: 10px; background: rgba(255,255,255,0.03); border: 1px solid transparent; transition: all 0.2s; }
-        .up-tier.achieved { background: rgba(251,191,36,0.08); border-color: rgba(251,191,36,0.2); }
-        .up-tier-icon { font-size: 20px; }
-        .up-tier-name { font-size: 13px; font-weight: 700; color: var(--text); flex: 1; }
-        .up-tier-pts { font-size: 12px; color: var(--muted); }
-        .up-tier.achieved .up-tier-pts { color: var(--gold); }
+        .up-tier {
+            display: flex; align-items: center; gap: 10px;
+            padding: 9px 12px; border-radius: var(--radius-sm);
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            transition: all 0.2s;
+        }
+        .up-tier.achieved {
+            background: rgba(245, 200, 66, 0.12);
+            border-color: rgba(245, 200, 66, 0.3);
+        }
+        .up-tier-icon {
+            width: 22px; height: 22px;
+            display: flex; align-items: center; justify-content: center;
+            color: rgba(255, 255, 255, 0.6);
+        }
+        .up-tier.achieved .up-tier-icon { color: var(--yellow); }
+        .up-tier-name { font-size: 13px; font-weight: 700; color: var(--white); flex: 1; }
+        .up-tier-pts { font-size: 12px; color: rgba(255, 255, 255, 0.6); font-weight: 600; }
+        .up-tier.achieved .up-tier-pts { color: var(--yellow); }
 
-        /* HOW CARD */
-        .up-how-card { background: var(--card); border: 1px solid var(--border); border-radius: 20px; padding: 24px; }
-        .up-how-title { font-size: 13px; font-weight: 700; color: var(--muted); text-transform: uppercase; letter-spacing: 0.1em; margin-bottom: 16px; }
+        /* How Card */
+        .up-how-card {
+            background: var(--white);
+            border: 1.5px solid var(--border-warm);
+            border-radius: var(--radius-xl);
+            padding: 30px 26px;
+            box-shadow: var(--shadow-subtle);
+        }
+        .up-how-title {
+            display: flex; align-items: center; gap: 8px;
+            font-size: 11px; font-weight: 800;
+            color: var(--teal-mid);
+            text-transform: uppercase; letter-spacing: 0.12em;
+            margin-bottom: 20px;
+        }
+        .up-how-title svg { width: 14px; height: 14px; color: var(--coral); }
         .up-how-step { display: flex; gap: 12px; margin-bottom: 14px; align-items: flex-start; }
-        .up-how-num { min-width: 24px; height: 24px; border-radius: 50%; background: linear-gradient(135deg,var(--indigo),var(--violet)); color: #fff; font-size: 11px; font-weight: 800; display: flex; align-items: center; justify-content: center; }
-        .up-how-text { font-size: 13px; color: var(--muted); line-height: 1.5; }
-        .up-how-text strong { color: var(--text); }
+        .up-how-num {
+            min-width: 24px; height: 24px; border-radius: 50%;
+            background: var(--mint-lt); color: var(--teal);
+            border: 1px solid rgba(28, 61, 53, 0.15);
+            font-size: 11px; font-weight: 800;
+            display: flex; align-items: center; justify-content: center;
+        }
+        .up-how-text { font-size: 13px; color: var(--gray-700); line-height: 1.5; }
+        .up-how-text strong { color: var(--teal); }
 
-        /* MODAL */
-        .up-modal-overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.75); backdrop-filter: blur(8px); z-index: 999; display: none; align-items: center; justify-content: center; padding: 20px; }
+        /* ====================
+           MODAL DIALOG
+           ==================== */
+        .up-modal-overlay {
+            position: fixed; inset: 0;
+            background: rgba(28, 61, 53, 0.65);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+            z-index: 999; display: none;
+            align-items: center; justify-content: center;
+            padding: 20px;
+        }
         .up-modal-overlay.show { display: flex; }
-        .up-modal { background: var(--card); border: 1px solid var(--border); border-radius: 28px; padding: 48px 40px; text-align: center; max-width: 420px; width: 100%; animation: modal-in 0.4s cubic-bezier(0.34,1.56,0.64,1); position: relative; overflow: hidden; }
-        .up-modal::before { content:''; position:absolute; top:-80px; left:50%; transform:translateX(-50%); width:300px; height:300px; background:radial-gradient(circle,rgba(251,191,36,0.08) 0%,transparent 70%); pointer-events:none; }
-        @keyframes modal-in { from{opacity:0;transform:scale(0.6)} to{opacity:1;transform:scale(1)} }
-        .up-modal-burst { font-size: 64px; display: block; margin-bottom: 16px; animation: spin-once 0.6s ease 0.2s both; }
-        @keyframes spin-once { from{transform:rotate(-30deg) scale(0)} to{transform:rotate(0deg) scale(1)} }
-        .up-modal h2 { font-size: 26px; font-weight: 800; background: linear-gradient(135deg,var(--gold),#fff); -webkit-background-clip:text; -webkit-text-fill-color:transparent; margin-bottom: 8px; }
-        .up-modal p { color: var(--muted); font-size: 15px; margin-bottom: 24px; line-height: 1.6; }
-        .up-modal-pts { display: inline-flex; align-items: center; gap: 8px; background: rgba(251,191,36,0.12); border: 1px solid rgba(251,191,36,0.3); color: var(--gold); font-size: 20px; font-weight: 800; padding: 12px 28px; border-radius: 50px; margin-bottom: 28px; }
-        .up-modal-stars { font-size: 32px; margin-bottom: 28px; letter-spacing: 4px; }
+        .up-modal {
+            background: var(--white);
+            border: 1.5px solid var(--border-warm);
+            border-radius: var(--radius-xl);
+            padding: 44px 36px; text-align: center;
+            max-width: 440px; width: 100%;
+            animation: modal-in 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative; overflow: hidden;
+            box-shadow: var(--shadow-hover);
+        }
+        @keyframes modal-in { from { opacity: 0; transform: scale(0.85); } to { opacity: 1; transform: scale(1); } }
+        .up-modal-burst-icon {
+            width: 64px; height: 64px; border-radius: 20px;
+            background: var(--mint-lt); color: var(--teal);
+            border: 1.5px solid rgba(28, 61, 53, 0.1);
+            display: inline-flex; align-items: center; justify-content: center;
+            margin-bottom: 16px;
+        }
+        .up-modal-burst-icon svg { width: 34px; height: 34px; }
+        .up-modal h2 {
+            font-family: 'Playfair Display', Georgia, serif;
+            font-size: 26px; font-weight: 800; color: var(--teal); margin-bottom: 8px;
+        }
+        .up-modal p { color: var(--teal-mid); font-size: 14px; margin-bottom: 22px; line-height: 1.6; }
+        .up-modal-pts {
+            display: inline-flex; align-items: center; gap: 8px;
+            background: var(--yellow-lt);
+            border: 1.5px solid rgba(245, 200, 66, 0.4);
+            color: #8C6207; font-size: 18px; font-weight: 800;
+            padding: 10px 24px; border-radius: 50px; margin-bottom: 22px;
+        }
         .up-modal-actions { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; }
-        .up-modal-btn { padding: 12px 24px; border-radius: 12px; font-size: 14px; font-weight: 700; font-family: 'Inter',sans-serif; cursor: pointer; text-decoration: none; transition: all 0.2s; border: none; display: inline-block; }
-        .up-modal-btn.primary { background: linear-gradient(135deg,var(--indigo),var(--violet)); color: #fff; }
-        .up-modal-btn.secondary { background: rgba(255,255,255,0.06); color: var(--muted); border: 1px solid var(--border); }
-        .up-modal-btn:hover { transform: translateY(-2px); opacity: 0.9; }
+        .up-modal-btn {
+            padding: 12px 22px; border-radius: var(--radius-sm);
+            font-size: 13px; font-weight: 700; font-family: 'Inter', sans-serif;
+            cursor: pointer; text-decoration: none; transition: all 0.2s; border: none;
+            display: inline-flex; align-items: center; gap: 6px;
+        }
+        .up-modal-btn.primary { background: var(--teal); color: var(--white); }
+        .up-modal-btn.primary:hover { background: var(--teal-mid); transform: translateY(-2px); }
+        .up-modal-btn.secondary { background: var(--cream); color: var(--teal); border: 1.5px solid var(--border-warm); }
+        .up-modal-btn.secondary:hover { background: var(--white); transform: translateY(-2px); }
 
-        /* AUTH LOADING */
-        .up-auth-loading { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; gap: 16px; color: var(--muted); font-size: 15px; }
-        .up-spinner { width: 40px; height: 40px; border: 3px solid rgba(79,70,229,0.2); border-top-color: var(--indigo); border-radius: 50%; animation: spin 0.8s linear infinite; }
-        @keyframes spin { to{transform:rotate(360deg)} }
+        /* ====================
+           AUTH LOADING & ERROR
+           ==================== */
+        .up-auth-loading {
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
+            min-height: 60vh; gap: 16px; color: var(--teal-mid); font-size: 15px; font-weight: 600;
+        }
+        .up-spinner {
+            width: 44px; height: 44px;
+            border: 3px solid rgba(28, 61, 53, 0.1);
+            border-top-color: var(--teal);
+            border-right-color: var(--coral);
+            border-radius: 50%; animation: spin 0.8s linear infinite;
+        }
+        @keyframes spin { to { transform: rotate(360deg); } }
 
-        /* ERROR */
-        .up-error { background: rgba(244,63,94,0.1); border: 1px solid rgba(244,63,94,0.3); color: #FF8099; border-radius: 12px; padding: 12px 16px; font-size: 14px; font-weight: 500; margin-top: 12px; display: none; }
+        .up-error {
+            background: var(--coral-lt);
+            border: 1.5px solid rgba(232, 133, 106, 0.4);
+            color: #B93815; border-radius: var(--radius-sm);
+            padding: 12px 16px; font-size: 13px; font-weight: 600;
+            margin-top: 14px; display: none;
+        }
         .up-error.show { display: block; }
     </style>
 </head>
 <body>
 
-<!-- Ambient blobs -->
-<div class="up-blob up-blob-1"></div>
-<div class="up-blob up-blob-2"></div>
-<div class="up-blob up-blob-3"></div>
+<!-- Ambient background glows -->
+<div class="up-ambient-blob up-blob-1"></div>
+<div class="up-ambient-blob up-blob-2"></div>
+<div class="up-ambient-blob up-blob-3"></div>
 
 <!-- TOP BAR -->
-<div class="up-topbar">
+<header class="up-topbar">
     <a href="old-papers.html" class="up-back">
-        <svg width="16" height="16" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
             <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
         </svg>
-        Old Papers
+        <span>Old Papers</span>
     </a>
-    <div class="up-topbar-brand">RISE ✦</div>
+    <div class="up-topbar-brand">
+        RISE <span>✦</span>
+    </div>
     <span class="up-topbar-badge">CONTRIBUTE</span>
-</div>
+</header>
 
 <!-- Auth Loading -->
 <div class="up-auth-loading" id="upAuthLoading">
     <div class="up-spinner"></div>
-    <span>Checking authentication…</span>
+    <span>Authenticating contributor…</span>
 </div>
 
 <!-- Main content (shown after auth) -->
-<div id="upPageContent" style="display:none;">
+<main id="upPageContent" style="display:none;">
 
     <!-- HERO -->
-    <div class="up-hero">
-        <span class="up-hero-icon">📤</span>
-        <h1>Upload a Question Paper</h1>
-        <p>Help your classmates by sharing old exam papers. Every upload earns you contribution points &amp; stars!</p>
-        <div class="up-reward-pill">
-            ⭐ Earn <strong style="margin:0 4px;">+10 Points</strong> per upload · Unlock Star Badges
+    <section class="up-hero">
+        <div class="up-hero-icon-box">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                <polyline points="17 8 12 3 7 8"/>
+                <line x1="12" y1="3" x2="12" y2="15"/>
+            </svg>
         </div>
-    </div>
+        <div class="up-hero-tag">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            COMMUNITY REPOSITORY
+        </div>
+        <h1>Upload a Question Paper</h1>
+        <p>Help your classmates excel by contributing past examination papers. Every upload directly earns you contribution points and community rank badges.</p>
+        <div class="up-reward-pill">
+            <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span>Earn <strong>+10 Points</strong> per upload · Unlock Star Badges</span>
+        </div>
+    </section>
 
     <!-- MAIN GRID -->
     <div class="up-main">
 
         <!-- FORM CARD -->
         <div class="up-form-card">
-            <div class="up-form-title"><span>📋 Paper Details</span></div>
+            <div class="up-form-header">
+                <div class="up-form-header-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                    </svg>
+                </div>
+                <div class="up-form-title">Paper Specifications</div>
+            </div>
 
             <form id="uploadForm">
                 <div class="up-row">
@@ -246,24 +657,34 @@
                 </div>
 
                 <div class="up-field">
-                    <label class="up-label">Upload PDF / Image</label>
+                    <label class="up-label">Attach File (PDF or Image)</label>
                     <div class="up-dropzone" id="upDropzone">
                         <input type="file" id="upFile" accept=".pdf,.jpg,.jpeg,.png,.webp">
-                        <span class="up-dropzone-icon">📂</span>
-                        <div class="up-dropzone-title">Click or drag &amp; drop here</div>
-                        <div class="up-dropzone-sub">PDF, JPG, PNG — Max 20 MB</div>
+                        <div class="up-dropzone-icon-wrap">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                                <polyline points="17 8 12 3 7 8"/>
+                                <line x1="12" y1="3" x2="12" y2="15"/>
+                            </svg>
+                        </div>
+                        <div class="up-dropzone-title">Click or drag &amp; drop file here</div>
+                        <div class="up-dropzone-sub">Supports PDF, JPG, PNG — Maximum size 20 MB</div>
                     </div>
                     <div class="up-file-chosen" id="upFileChosen">
-                        <span>✅</span>
-                        <span class="up-file-chosen-name" id="upFileName">No file</span>
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                        <span class="up-file-chosen-name" id="upFileName">No file selected</span>
                     </div>
                 </div>
 
                 <div class="up-error" id="upError"></div>
 
                 <button type="submit" class="up-submit-btn" id="upSubmitBtn">
-                    <span>📤</span>
-                    <span id="upBtnText">Upload &amp; Earn Stars</span>
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    <span id="upBtnText">Upload Paper &amp; Earn Stars</span>
                 </button>
                 <div class="up-progress-wrap" id="upProgressWrap">
                     <div class="up-progress-fill" id="upProgressFill"></div>
@@ -272,52 +693,78 @@
         </div>
 
         <!-- SIDE PANEL -->
-        <div class="up-side">
+        <aside class="up-side">
 
-            <!-- Stars card -->
+            <!-- Stars rank card (Forest Green Bento) -->
             <div class="up-reward-card">
-                <div class="up-reward-card-title">⭐ Your Star Rank</div>
-                <div class="up-stars-row" id="upStarsRow">
-                    <span class="up-star">⭐</span>
-                    <span class="up-star">⭐</span>
-                    <span class="up-star">⭐</span>
-                    <span class="up-star">⭐</span>
-                    <span class="up-star">⭐</span>
+                <div class="up-reward-card-title">
+                    <svg viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    <span>YOUR STAR RANK</span>
                 </div>
-                <div style="margin-bottom:16px;">
-                    <div style="font-size:13px;color:var(--muted);margin-bottom:4px;">Total Points</div>
-                    <div id="upTotalPts" style="font-size:28px;font-weight:800;background:linear-gradient(135deg,var(--gold),#fff);-webkit-background-clip:text;-webkit-text-fill-color:transparent;">0 pts</div>
+                <div class="up-stars-row" id="upStarsRow">
+                    <span class="up-star"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+                    <span class="up-star"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+                    <span class="up-star"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+                    <span class="up-star"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+                    <span class="up-star"><svg viewBox="0 0 24 24"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></span>
+                </div>
+                <div class="up-pts-block">
+                    <div class="up-pts-label">Total Contribution Points</div>
+                    <div class="up-pts-val" id="upTotalPts">0 pts</div>
                 </div>
                 <div class="up-reward-tiers" id="upTierList"></div>
             </div>
 
             <!-- How it works -->
             <div class="up-how-card">
-                <div class="up-how-title">💡 How it Works</div>
-                <div class="up-how-step"><div class="up-how-num">1</div><div class="up-how-text">Fill in the paper details — course, semester, subject.</div></div>
-                <div class="up-how-step"><div class="up-how-num">2</div><div class="up-how-text">Upload the PDF or image of the question paper.</div></div>
-                <div class="up-how-step"><div class="up-how-num">3</div><div class="up-how-text"><strong>+10 Points</strong> are added to your profile instantly.</div></div>
-                <div class="up-how-step"><div class="up-how-num">4</div><div class="up-how-text">Unlock <strong>⭐ Star Badges</strong> as your points grow.</div></div>
-                <div class="up-how-step" style="margin-bottom:0"><div class="up-how-num">5</div><div class="up-how-text">Your paper appears on <strong>Old Papers</strong> page for everyone!</div></div>
+                <div class="up-how-title">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/></svg>
+                    <span>How it Works</span>
+                </div>
+                <div class="up-how-step"><div class="up-how-num">1</div><div class="up-how-text">Select your course, semester, and accurate subject title.</div></div>
+                <div class="up-how-step"><div class="up-how-num">2</div><div class="up-how-text">Attach the PDF or clear photo of the exam paper.</div></div>
+                <div class="up-how-step"><div class="up-how-num">3</div><div class="up-how-text"><strong>+10 Points</strong> credited to your profile instantly.</div></div>
+                <div class="up-how-step"><div class="up-how-num">4</div><div class="up-how-text">Unlock <strong>Star Badges</strong> as your contribution rank grows.</div></div>
+                <div class="up-how-step" style="margin-bottom:0"><div class="up-how-num">5</div><div class="up-how-text">Your paper appears live on the <strong>Old Papers</strong> repository!</div></div>
             </div>
-        </div>
+        </aside>
     </div>
-</div>
+</main>
 
 <!-- SUCCESS MODAL -->
 <div class="up-modal-overlay" id="upModal">
     <div class="up-modal">
-        <span class="up-modal-burst">🎉</span>
-        <h2>Paper Uploaded!</h2>
-        <p>Thank you for contributing to the RISE community. Your paper is now live for everyone!</p>
-        <div class="up-modal-pts">⭐ +10 Points Earned</div>
-        <div class="up-modal-stars" id="upModalStars">⭐</div>
+        <div class="up-modal-burst-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+                <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+        </div>
+        <h2>Paper Uploaded! ✦</h2>
+        <p>Thank you for enriching the RISE student community. Your question paper is now archived and accessible to all students!</p>
+        <div class="up-modal-pts">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+            <span>+10 Points Earned</span>
+        </div>
         <div class="up-modal-actions">
-            <a href="old-papers.html" class="up-modal-btn primary">View Papers</a>
-            <a href="profile.html" class="up-modal-btn secondary">My Profile</a>
+            <a href="old-papers.html" class="up-modal-btn primary">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                <span>View in Old Papers</span>
+            </a>
+            <a href="profile.html" class="up-modal-btn secondary">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                <span>My Profile</span>
+            </a>
         </div>
     </div>
 </div>
+
+<!-- AI FAB -->
+<a href="ai-study.html" class="ai-fab" title="AI Study Assistant">
+    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+    </svg>
+</a>
 
 <script type="module">
 import { auth, db } from "./firebase-config.js";
@@ -327,12 +774,33 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/f
 import { doc, getDoc, setDoc, updateDoc, collection, addDoc, increment }
     from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
+// Custom vector SVG tiers matching the RISE design system
 const TIERS = [
-    { name: "First Spark",    icon: "🌟", min: 1   },
-    { name: "Bronze Star",    icon: "🥉", min: 10  },
-    { name: "Silver Scholar", icon: "🥈", min: 30  },
-    { name: "Gold Guardian",  icon: "🥇", min: 60  },
-    { name: "Legend",         icon: "🏆", min: 100 },
+    {
+        name: "First Spark",
+        min: 1,
+        svg: `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`
+    },
+    {
+        name: "Bronze Scholar",
+        min: 10,
+        svg: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="8" r="7"/><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"/></svg>`
+    },
+    {
+        name: "Silver Guardian",
+        min: 30,
+        svg: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>`
+    },
+    {
+        name: "Gold Master",
+        min: 60,
+        svg: `<svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"/><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"/><path d="M4 22h16"/><path d="M10 14.66V17c0 .55-.45 1-1 1H7.5a1.5 1.5 0 0 0 0 3h9a1.5 1.5 0 0 0 0-3H15c-.55 0-1-.45-1-1v-2.34"/><path d="M18 4H6v7a6 6 0 0 0 12 0V4z"/></svg>`
+    },
+    {
+        name: "Legend Contributor",
+        min: 100,
+        svg: `<svg viewBox="0 0 24 24" width="16" height="16" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>`
+    }
 ];
 
 const PTS = 10;
@@ -380,7 +848,7 @@ function renderPts(pts) {
     stars.forEach((s, i) => s.classList.toggle("lit", i < lit));
     $("upTierList").innerHTML = TIERS.map(t => `
         <div class="up-tier ${pts >= t.min ? 'achieved' : ''}">
-            <span class="up-tier-icon">${t.icon}</span>
+            <span class="up-tier-icon">${t.svg}</span>
             <span class="up-tier-name">${t.name}</span>
             <span class="up-tier-pts">${t.min}+ pts</span>
         </div>`).join("");
@@ -389,14 +857,23 @@ function renderPts(pts) {
 // File picker
 upFile.addEventListener("change", () => {
     const f = upFile.files[0];
-    if (f) { upFileName.textContent = f.name; upFileChosen.classList.add("show"); }
+    if (f) {
+        upFileName.textContent = f.name;
+        upFileChosen.classList.add("show");
+    }
 });
 upDropzone.addEventListener("dragover", e => { e.preventDefault(); upDropzone.classList.add("drag-over"); });
 upDropzone.addEventListener("dragleave", () => upDropzone.classList.remove("drag-over"));
 upDropzone.addEventListener("drop", e => {
     e.preventDefault(); upDropzone.classList.remove("drag-over");
     const f = e.dataTransfer.files[0];
-    if (f) { const dt = new DataTransfer(); dt.items.add(f); upFile.files = dt.files; upFileName.textContent = f.name; upFileChosen.classList.add("show"); }
+    if (f) {
+        const dt = new DataTransfer();
+        dt.items.add(f);
+        upFile.files = dt.files;
+        upFileName.textContent = f.name;
+        upFileChosen.classList.add("show");
+    }
 });
 
 // Submit — uploads to Firebase Storage then saves metadata to Firestore
@@ -411,7 +888,7 @@ uploadForm.addEventListener("submit", async e => {
 
     if (!course || !semNum || !subject || !year || !type) return showErr("Please fill in all fields.");
     if (!file) return showErr("Please select a PDF or image file.");
-    if (file.size > 20 * 1024 * 1024) return showErr("File too large — max 20 MB.");
+    if (file.size > 20 * 1024 * 1024) return showErr("File too large — max size is 20 MB.");
 
     const allowed = ["application/pdf","image/jpeg","image/jpg","image/png","image/webp"];
     if (!allowed.includes(file.type)) return showErr("Only PDF, JPG, PNG, or WEBP files are allowed.");
@@ -420,7 +897,7 @@ uploadForm.addEventListener("submit", async e => {
     upProgressWrap.style.display = "block";
 
     try {
-        // Build a unique storage path: papers/{uid}/{timestamp}_{filename}
+        // Build unique storage path: papers/{uid}/{timestamp}_{filename}
         const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
         const storagePath = `papers/${currentUser.uid}/${Date.now()}_${safeName}`;
         const storageRef  = ref(storage, storagePath);
@@ -465,11 +942,6 @@ uploadForm.addEventListener("submit", async e => {
         userPts += PTS;
         renderPts(userPts);
 
-        let tier = TIERS[0];
-        TIERS.forEach(t => { if (userPts >= t.min) tier = t; });
-        const tierIdx = TIERS.indexOf(tier);
-        $("upModalStars").textContent = TIERS.slice(0, tierIdx + 1).map(t => t.icon).join(" ");
-
         setLoading(false);
         upProgressWrap.style.display = "none";
         upModal.classList.add("show");
@@ -484,9 +956,109 @@ uploadForm.addEventListener("submit", async e => {
     }
 });
 
-function setLoading(on) { upSubmitBtn.disabled = on; if (!on) upBtnText.textContent = "Upload & Earn Stars"; }
+function setLoading(on) {
+    upSubmitBtn.disabled = on;
+    if (!on) upBtnText.textContent = "Upload Paper & Earn Stars";
+}
 function showErr(m) { upError.textContent = m; upError.classList.add("show"); }
 function hideErr() { upError.classList.remove("show"); }
 </script>
+
+    <!-- ===== SITE FOOTER ===== -->
+    <footer class="rise-footer">
+        <div class="rf-blob rf-blob-1"></div>
+        <div class="rf-blob rf-blob-2"></div>
+        <div class="rf-blob rf-blob-3"></div>
+
+        <!-- RISE Acronym Strip -->
+        <div class="rf-acronym-strip">
+            <div class="rf-acronym-item">
+                <span class="rf-acr-letter">R</span>
+                <span class="rf-acr-word">Review</span>
+            </div>
+            <div class="rf-acronym-item">
+                <span class="rf-acr-letter">I</span>
+                <span class="rf-acr-word">Improve</span>
+            </div>
+            <div class="rf-acronym-item">
+                <span class="rf-acr-letter">S</span>
+                <span class="rf-acr-word">Study</span>
+            </div>
+            <div class="rf-acronym-item">
+                <span class="rf-acr-letter">E</span>
+                <span class="rf-acr-word">Excel</span>
+            </div>
+        </div>
+        <div class="rf-acronym-rule"></div>
+
+        <!-- Main Grid -->
+        <div class="rise-footer-inner">
+            <div class="rf-brand-col">
+                <div class="rf-logo">
+                    <span class="rf-logo-rise">RISE</span>
+                    <span class="rf-logo-star">✦</span>
+                </div>
+                <p class="rf-tagline">Let's rise together ♡</p>
+                <p class="rf-sub-desc">
+                    A student-first platform built to track progress, access resources
+                    and achieve academic excellence.
+                </p>
+                <div class="rf-powered">
+                    <span class="rf-powered-dot"></span>
+                    <span class="rf-powered-label">Powered by</span>
+                    <span class="rf-powered-name">Educant</span>
+                </div>
+                <p class="rf-copyright">© 2025 RISE Platform · All rights reserved</p>
+            </div>
+
+            <div class="rf-links-col">
+                <span class="rf-col-heading">Navigate</span>
+                <a href="index.html">Dashboard</a>
+                <a href="old-papers.html">Old Papers</a>
+                <a href="profile.html">My Profile</a>
+            </div>
+
+            <div class="rf-links-col">
+                <span class="rf-col-heading">Project</span>
+                <a href="#">Report a Bug</a>
+                <a href="#">Suggest a Feature</a>
+                <a href="#">Changelog</a>
+            </div>
+
+            <div class="rf-credits-col">
+                <span class="rf-made-label">Made with ♡ — Presently</span>
+                <p class="rf-made-love">Crafted with <strong>♡</strong> by our passionate team</p>
+
+                <div class="rf-credit-item is-founder">
+                    <span class="rf-credit-av" style="background:linear-gradient(135deg,#E8856A,#F5C842)">P</span>
+                    <div class="rf-credit-info">
+                        <span class="rf-credit-name">Priyanshu</span>
+                        <span class="rf-credit-role">Founder &amp; Visionary</span>
+                    </div>
+                </div>
+                <div class="rf-credit-item">
+                    <span class="rf-credit-av" style="background:linear-gradient(135deg,#E8856A,#c96b50)">P</span>
+                    <div class="rf-credit-info">
+                        <span class="rf-credit-name">Prince Mehra</span>
+                        <span class="rf-credit-role">Lead Developer</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="rf-bottom-bar">
+            <div class="rf-bottom-left">
+                <span class="rf-bottom-copy">© 2025 RISE &nbsp;·&nbsp; Review · Improve · Study · Excel</span>
+                <div class="rf-bottom-pills">
+                    <span class="rf-bottom-pill">IMCA</span>
+                    <span class="rf-bottom-pill">Open Platform</span>
+                    <span class="rf-bottom-pill">Student First</span>
+                </div>
+            </div>
+            <div class="rf-bottom-right">
+                <span class="rf-bottom-heart">♡</span>
+            </div>
+        </div>
+    </footer>
 </body>
 </html>

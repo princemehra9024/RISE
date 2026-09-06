@@ -3,672 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Old Papers – Student Dashboard</title>
-    <meta name="description" content="Browse old question papers by semester and subject for IMCA course.">
+    <title>Old Question Papers — RISE Student Platform</title>
+    <meta name="description" content="Browse authentic university question papers by semester and subject for IMCA students.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Dancing+Script:wght@700&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Inter:wght@400;500;600;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="base.css">
     <link rel="stylesheet" href="old-papers.css">
     <link rel="stylesheet" href="footer.css">
-    <style>
-        /* ===== OLD PAPERS PAGE ===== */
-        .op-page {
-            background: #F3F4F6;
-            min-height: 100vh;
-            padding-bottom: 80px;
-        }
-
-        /* Top Bar */
-        .op-topbar {
-            background: #FFFFFF;
-            border-bottom: 1px solid #E5E7EB;
-            padding: 20px 40px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-        }
-
-        .op-topbar-left {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .op-back-link {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #6B7280;
-            text-decoration: none;
-            font-weight: 600;
-            font-size: 14px;
-            transition: color 0.2s;
-        }
-
-        .op-back-link:hover { color: #111827; }
-
-        .op-back-link svg {
-            width: 16px;
-            height: 16px;
-        }
-
-        .op-topbar h1 {
-            font-size: 20px;
-            color: #111827;
-            margin: 0;
-            letter-spacing: -0.01em;
-        }
-
-        .op-badge {
-            background: linear-gradient(135deg, #4F46E5, #7C3AED);
-            color: white;
-            font-size: 11px;
-            font-weight: 700;
-            padding: 4px 12px;
-            border-radius: 20px;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-        }
-
-        /* Filter Bar */
-        .op-filter-bar {
-            width: 92%;
-            max-width: 1200px;
-            margin: 40px auto 32px;
-        }
-
-        .op-filter-label {
-            font-size: 12px;
-            font-weight: 700;
-            color: #6B7280;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 16px;
-        }
-
-        .op-filter-controls {
-            display: flex;
-            gap: 16px;
-            flex-wrap: wrap;
-            align-items: center;
-        }
-
-        .op-select-wrapper {
-            position: relative;
-            flex: 1;
-            min-width: 180px;
-            max-width: 280px;
-        }
-
-        .op-select-wrapper::after {
-            content: '';
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 0;
-            height: 0;
-            border-left: 5px solid transparent;
-            border-right: 5px solid transparent;
-            border-top: 6px solid #6B7280;
-            pointer-events: none;
-        }
-
-        .op-select {
-            width: 100%;
-            padding: 14px 40px 14px 18px;
-            border: 2px solid #E5E7EB;
-            border-radius: 14px;
-            font-size: 15px;
-            font-weight: 600;
-            color: #111827;
-            background: #FFFFFF;
-            appearance: none;
-            cursor: pointer;
-            transition: all 0.2s;
-            outline: none;
-        }
-
-        .op-select:focus {
-            border-color: #4F46E5;
-            box-shadow: 0 0 0 4px rgba(79,70,229,0.1);
-        }
-
-        /* Section title */
-        .op-section-header {
-            width: 92%;
-            max-width: 1200px;
-            margin: 0 auto 24px;
-            display: flex;
-            align-items: baseline;
-            gap: 12px;
-        }
-
-        .op-section-title {
-            font-size: 26px;
-            font-weight: 800;
-            color: #111827;
-            letter-spacing: -0.01em;
-        }
-
-        .op-section-count {
-            font-size: 14px;
-            color: #9CA3AF;
-            font-weight: 500;
-        }
-
-        /* Semester Grid */
-        .op-sem-grid {
-            width: 92%;
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
-            gap: 20px;
-        }
-
-        .op-sem-card {
-            background: #FFFFFF;
-            border: 2px solid #E5E7EB;
-            border-radius: 24px;
-            padding: 32px 28px;
-            cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.16,1,0.3,1);
-            position: relative;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-            box-shadow: 0 8px 24px rgba(0,0,0,0.03);
-        }
-
-        .op-sem-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 4px;
-            background: linear-gradient(90deg, #4F46E5, #7C3AED);
-            opacity: 0;
-            transition: opacity 0.3s;
-        }
-
-        .op-sem-card:hover {
-            transform: translateY(-6px);
-            border-color: #4F46E5;
-            box-shadow: 0 20px 48px rgba(79,70,229,0.12);
-        }
-
-        .op-sem-card:hover::before {
-            opacity: 1;
-        }
-
-        .op-sem-card.active-sem {
-            border-color: #4F46E5;
-            background: linear-gradient(135deg, #EEF2FF 0%, #F5F3FF 100%);
-            box-shadow: 0 20px 48px rgba(79,70,229,0.15);
-        }
-
-        .op-sem-card.active-sem::before {
-            opacity: 1;
-        }
-
-        .op-sem-icon {
-            width: 52px;
-            height: 52px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 22px;
-            background: linear-gradient(135deg, #EEF2FF, #E0E7FF);
-            margin-bottom: 4px;
-        }
-
-        .op-sem-card.active-sem .op-sem-icon {
-            background: linear-gradient(135deg, #4F46E5, #7C3AED);
-        }
-
-        .op-sem-number {
-            font-size: 13px;
-            font-weight: 700;
-            color: #4F46E5;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-        }
-
-        .op-sem-title {
-            font-size: 20px;
-            font-weight: 800;
-            color: #111827;
-            letter-spacing: -0.01em;
-            line-height: 1.2;
-        }
-
-        .op-sem-meta {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-top: 4px;
-        }
-
-        .op-sem-papers-count {
-            font-size: 13px;
-            color: #6B7280;
-            font-weight: 500;
-        }
-
-        .op-sem-dot {
-            width: 4px;
-            height: 4px;
-            border-radius: 50%;
-            background: #D1D5DB;
-        }
-
-        .op-sem-subjects-count {
-            font-size: 13px;
-            color: #6B7280;
-            font-weight: 500;
-        }
-
-        .op-sem-arrow {
-            width: 32px;
-            height: 32px;
-            border-radius: 10px;
-            background: #F3F4F6;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            margin-top: auto;
-            transition: all 0.2s;
-            align-self: flex-end;
-        }
-
-        .op-sem-card:hover .op-sem-arrow,
-        .op-sem-card.active-sem .op-sem-arrow {
-            background: #4F46E5;
-            color: white;
-        }
-
-        /* ===== PAPERS DETAIL VIEW ===== */
-        .op-detail-view {
-            display: none;
-            width: 92%;
-            max-width: 1200px;
-            margin: 0 auto;
-            animation: fadeUp 0.4s cubic-bezier(0.16,1,0.3,1);
-        }
-
-        .op-detail-view.visible {
-            display: block;
-        }
-
-        .op-detail-header {
-            display: flex;
-            align-items: center;
-            gap: 16px;
-            margin-bottom: 32px;
-        }
-
-        .op-detail-back {
-            background: #FFFFFF;
-            border: 1px solid #E5E7EB;
-            color: #111827;
-            padding: 10px 18px;
-            border-radius: 12px;
-            font-weight: 600;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.2s;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.04);
-        }
-
-        .op-detail-back:hover {
-            background: #F9FAFB;
-            border-color: #D1D5DB;
-        }
-
-        .op-detail-title {
-            font-size: 28px;
-            font-weight: 800;
-            color: #111827;
-            letter-spacing: -0.02em;
-        }
-
-        .op-detail-subtitle {
-            font-size: 14px;
-            color: #6B7280;
-            font-weight: 500;
-        }
-
-        /* Subject Tabs */
-        .op-subject-tabs {
-            display: flex;
-            gap: 8px;
-            flex-wrap: wrap;
-            margin-bottom: 28px;
-        }
-
-        .op-tab {
-            padding: 10px 20px;
-            border-radius: 12px;
-            border: 2px solid #E5E7EB;
-            background: #FFFFFF;
-            color: #374151;
-            font-size: 14px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
-        .op-tab:hover {
-            border-color: #4F46E5;
-            color: #4F46E5;
-        }
-
-        .op-tab.active {
-            background: #4F46E5;
-            border-color: #4F46E5;
-            color: white;
-        }
-
-        /* Papers List */
-        .op-papers-section {
-            display: none;
-        }
-
-        .op-papers-section.active {
-            display: block;
-            animation: fadeUp 0.3s ease;
-        }
-
-        .op-papers-section-title {
-            font-size: 18px;
-            font-weight: 700;
-            color: #111827;
-            margin-bottom: 16px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .op-papers-section-title span {
-            font-size: 13px;
-            color: #6B7280;
-            font-weight: 500;
-        }
-
-        .op-papers-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
-            gap: 16px;
-            margin-bottom: 40px;
-        }
-
-        .op-paper-card {
-            background: #FFFFFF;
-            border: 1px solid #E5E7EB;
-            border-radius: 18px;
-            padding: 24px;
-            display: flex;
-            align-items: flex-start;
-            gap: 16px;
-            transition: all 0.2s;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.02);
-        }
-
-        .op-paper-card:hover {
-            transform: translateY(-3px);
-            border-color: #4F46E5;
-            box-shadow: 0 12px 28px rgba(79,70,229,0.1);
-        }
-
-        .op-paper-icon {
-            width: 44px;
-            height: 44px;
-            border-radius: 12px;
-            background: linear-gradient(135deg, #EEF2FF, #E0E7FF);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            flex-shrink: 0;
-        }
-
-        .op-paper-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .op-paper-year {
-            font-size: 11px;
-            font-weight: 700;
-            color: #4F46E5;
-            text-transform: uppercase;
-            letter-spacing: 0.1em;
-            margin-bottom: 4px;
-        }
-
-        .op-paper-name {
-            font-size: 15px;
-            font-weight: 700;
-            color: #111827;
-            margin-bottom: 6px;
-            line-height: 1.3;
-        }
-
-        .op-paper-meta {
-            font-size: 12px;
-            color: #9CA3AF;
-            font-weight: 500;
-        }
-
-        .op-paper-actions {
-            display: flex;
-            gap: 8px;
-            margin-top: 16px;
-        }
-
-        .op-btn-view {
-            flex: 1;
-            padding: 10px 14px;
-            background: #111827;
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            text-align: center;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 6px;
-        }
-
-        .op-btn-view:hover {
-            background: #000000;
-            transform: translateY(-1px);
-        }
-
-        .op-btn-download {
-            padding: 10px 14px;
-            background: #F3F4F6;
-            color: #374151;
-            border: none;
-            border-radius: 10px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s;
-            display: flex;
-            align-items: center;
-            gap: 6px;
-            text-decoration: none;
-        }
-
-        .op-btn-download:hover {
-            background: #E5E7EB;
-        }
-
-        /* Empty state */
-        .op-empty {
-            text-align: center;
-            padding: 60px 20px;
-            color: #6B7280;
-        }
-
-        .op-empty-icon {
-            font-size: 48px;
-            margin-bottom: 16px;
-        }
-
-        .op-empty h3 {
-            font-size: 20px;
-            color: #374151;
-            margin-bottom: 8px;
-        }
-
-        .op-empty p {
-            font-size: 15px;
-        }
-
-        /* Upload CTA */
-        .op-upload-cta {
-            background: linear-gradient(135deg, #4F46E5 0%, #7C3AED 100%);
-            border-radius: 20px;
-            padding: 32px 36px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin: 32px 0;
-            gap: 20px;
-            flex-wrap: wrap;
-        }
-
-        .op-upload-cta-text h3 {
-            color: white;
-            font-size: 20px;
-            margin-bottom: 6px;
-        }
-
-        .op-upload-cta-text p {
-            color: rgba(255,255,255,0.75);
-            font-size: 14px;
-        }
-
-        .op-upload-btn {
-            background: white;
-            color: #4F46E5;
-            border: none;
-            border-radius: 12px;
-            padding: 14px 24px;
-            font-size: 15px;
-            font-weight: 700;
-            cursor: pointer;
-            transition: all 0.2s;
-            white-space: nowrap;
-        }
-
-        .op-upload-btn:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
-        }
-
-        /* Loading */
-        .op-loading {
-            text-align: center;
-            padding: 80px 20px;
-            font-size: 16px;
-            color: #6B7280;
-            font-weight: 600;
-        }
-
-        @keyframes fadeUp {
-            from { opacity: 0; transform: translateY(16px); }
-            to   { opacity: 1; transform: translateY(0); }
-        }
-
-        @media (max-width: 640px) {
-            .op-topbar { padding: 16px 20px; }
-            .op-filter-bar,
-            .op-section-header,
-            .op-sem-grid,
-            .op-detail-view { width: 95%; }
-            .op-sem-grid { grid-template-columns: 1fr 1fr; gap: 12px; }
-            .op-sem-card { padding: 20px 16px; }
-            .op-filter-controls { flex-direction: column; }
-            .op-select-wrapper { max-width: 100%; }
-        }
-    </style>
 </head>
 <body>
 <div class="op-page">
 
+    <!-- Ambient background glows -->
+    <div class="op-ambient-blob op-blob-1"></div>
+    <div class="op-ambient-blob op-blob-2"></div>
+    <div class="op-ambient-blob op-blob-3"></div>
+
     <!-- TOP BAR -->
-    <div class="op-topbar">
+    <header class="op-topbar">
         <div class="op-topbar-left">
             <a href="index.html" class="op-back-link" id="topBackLink">
                 <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
                 </svg>
-                Dashboard
+                <span>Dashboard</span>
             </a>
-            <h1>📄 Old Question Papers</h1>
+            <div class="op-topbar-title-wrap">
+                <div class="op-title-icon-badge">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                        <polyline points="14 2 14 8 20 8"/>
+                        <line x1="16" y1="13" x2="8" y2="13"/>
+                        <line x1="16" y1="17" x2="8" y2="17"/>
+                        <polyline points="10 9 9 9 8 9"/>
+                    </svg>
+                </div>
+                <h1>Old Question Papers</h1>
+            </div>
         </div>
-        <div style="display:flex;align-items:center;gap:12px;">
-            <a href="upload-paper.html" style="display:inline-flex;align-items:center;gap:6px;background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff;font-size:13px;font-weight:700;padding:8px 16px;border-radius:20px;text-decoration:none;transition:all 0.2s;box-shadow:0 4px 12px rgba(79,70,229,0.3);" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='none'">📤 Upload Paper</a>
+        <div class="op-topbar-right">
+            <a href="upload-paper.html" class="op-upload-nav-btn">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                    <polyline points="17 8 12 3 7 8"/>
+                    <line x1="12" y1="3" x2="12" y2="15"/>
+                </svg>
+                <span>Upload Paper</span>
+            </a>
             <span class="op-badge">IMCA</span>
         </div>
-    </div>
+    </header>
 
     <!-- LOADING STATE -->
     <div class="op-loading" id="opLoading">
-        <div style="display:flex;flex-direction:column;align-items:center;gap:12px;">
-            <div style="width:36px;height:36px;border:3px solid #E5E7EB;border-top-color:#4F46E5;border-radius:50%;animation:spin 0.8s linear infinite;"></div>
-            <span id="opLoadingText">Checking authentication…</span>
+        <div style="display:flex;flex-direction:column;align-items:center;gap:16px;">
+            <div class="op-spinner"></div>
+            <span id="opLoadingText">Connecting to paper archives…</span>
         </div>
     </div>
-    <style>@keyframes spin{to{transform:rotate(360deg)}}</style>
 
     <!-- MAIN CONTENT (hidden until auth) -->
-    <div id="opMain" style="display:none;">
+    <main id="opMain" style="display:none;">
 
-        <!-- FILTER BAR -->
-        <div class="op-filter-bar">
-            <div class="op-filter-label">Filter Papers</div>
+        <!-- HERO EDITORIAL BANNER -->
+        <section class="op-hero-banner">
+            <div class="op-hero-content">
+                <div class="op-hero-tag">
+                    <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                    Academic Resource Portal
+                </div>
+                <h2 class="op-hero-title">Previous Year Question Papers</h2>
+                <p class="op-hero-subtitle">Access curated semester question archives, analyze paper patterns, and prepare thoroughly for your exams.</p>
+                <span class="op-hero-script">Empowering your academic rise ♡</span>
+            </div>
+            <div class="op-hero-stats">
+                <div class="op-stat-pill">
+                    <div class="op-stat-number" id="heroSemStat">8</div>
+                    <div class="op-stat-label">Semesters</div>
+                </div>
+                <div class="op-stat-pill">
+                    <div class="op-stat-number" id="heroPaperStat">30+</div>
+                    <div class="op-stat-label">Exam Papers</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FILTER BAR (Bento Ribbon) -->
+        <section class="op-filter-bar">
+            <div class="op-filter-label">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+                Filter Archives
+            </div>
             <div class="op-filter-controls">
                 <div class="op-select-wrapper">
+                    <div class="op-select-icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>
+                    </div>
                     <select class="op-select" id="filterCourse">
-                        <option value="IMCA">IMCA</option>
-                        <option value="BCA">BCA</option>
-                        <option value="MCA">MCA</option>
+                        <option value="IMCA">Course: IMCA</option>
+                        <option value="BCA">Course: BCA</option>
+                        <option value="MCA">Course: MCA</option>
                     </select>
+                    <div class="op-select-chevron">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
                 </div>
                 <div class="op-select-wrapper">
+                    <div class="op-select-icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                    </div>
                     <select class="op-select" id="filterSubject">
                         <option value="all">All Subjects</option>
                     </select>
+                    <div class="op-select-chevron">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
                 </div>
                 <div class="op-select-wrapper" id="mySemFilterWrapper" style="display:none;">
+                    <div class="op-select-icon">
+                        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    </div>
                     <select class="op-select" id="filterMySem" title="Filter by your semester's subjects">
-                        <option value="all">📚 My Sem Subjects</option>
+                        <option value="all">My Sem Subjects</option>
                     </select>
+                    <div class="op-select-chevron">
+                        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+                    </div>
                 </div>
             </div>
-        </div>
+        </section>
 
         <!-- SEMESTER GRID VIEW -->
-        <div id="opSemGridView">
+        <section id="opSemGridView">
             <div class="op-section-header">
                 <div class="op-section-title">All Semesters</div>
                 <div class="op-section-count" id="opSemCount"></div>
@@ -676,20 +143,20 @@
             <div class="op-sem-grid" id="opSemGrid">
                 <!-- Cards injected by JS -->
             </div>
-        </div>
+        </section>
 
         <!-- PAPERS DETAIL VIEW (per semester) -->
-        <div class="op-detail-view" id="opDetailView">
+        <section class="op-detail-view" id="opDetailView">
             <div class="op-detail-header">
                 <button class="op-detail-back" id="opDetailBackBtn">
                     <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
                     </svg>
-                    All Semesters
+                    <span>All Semesters</span>
                 </button>
                 <div>
                     <div class="op-detail-title" id="opDetailTitle">Semester 1</div>
-                    <div class="op-detail-subtitle" id="opDetailSubtitle">Select a subject to browse papers</div>
+                    <div class="op-detail-subtitle" id="opDetailSubtitle">Select a subject tab to browse papers</div>
                 </div>
             </div>
 
@@ -699,17 +166,28 @@
             <!-- Papers Content -->
             <div id="opPapersContent"></div>
 
-            <!-- Upload CTA -->
+            <!-- Upload CTA Banner (Award-winning forest green bento) -->
             <div class="op-upload-cta">
                 <div class="op-upload-cta-text">
-                    <h3>📤 Have a paper to share?</h3>
-                    <p>Help your classmates by contributing old question papers to the community.</p>
+                    <div class="op-upload-cta-tag">
+                        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+                        COMMUNITY ARCHIVE
+                    </div>
+                    <h3>Have a paper to share? ✦</h3>
+                    <p>Help your classmates by contributing question papers to the student community repository.</p>
                 </div>
-                <a href="upload-paper.html" class="op-upload-btn" style="text-decoration:none;">Contribute a Paper</a>
+                <a href="upload-paper.html" class="op-upload-btn" style="text-decoration:none;">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/>
+                        <polyline points="17 8 12 3 7 8"/>
+                        <line x1="12" y1="3" x2="12" y2="15"/>
+                    </svg>
+                    <span>Contribute a Paper</span>
+                </a>
             </div>
-        </div>
+        </section>
 
-    </div>
+    </main>
 </div>
 
 <script type="module">
@@ -997,7 +475,17 @@ const oldPapersDB = {
     }
 };
 
-const semIcons = ["📘","📗","📙","📕","📒","📔","📓","🗂️"];
+// Curated custom semester icons and pastel containers for RISE theme
+const semThemeStyles = [
+    { bg: "#E4F5EE", color: "#1C3D35", icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>` }, // Sem 1: Code Syntax
+    { bg: "#FCEAE4", color: "#E8856A", icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="6" y1="3" x2="6" y2="15"/><circle cx="18" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M18 9a9 9 0 0 1-9 9"/></svg>` }, // Sem 2: Algorithm
+    { bg: "#FEF8DC", color: "#D9A21B", icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"/><path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"/></svg>` }, // Sem 3: Database
+    { bg: "#E8F3ED", color: "#2D5A4A", icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="4" y="4" width="16" height="16" rx="2"/><rect x="9" y="9" width="6" height="6"/><line x1="9" y1="1" x2="9" y2="4"/><line x1="15" y1="1" x2="15" y2="4"/><line x1="9" y1="20" x2="9" y2="23"/><line x1="15" y1="20" x2="15" y2="23"/><line x1="20" y1="9" x2="23" y2="9"/><line x1="20" y1="14" x2="23" y2="14"/><line x1="1" y1="9" x2="4" y2="9"/><line x1="1" y1="14" x2="4" y2="14"/></svg>` }, // Sem 4: Systems / Architecture
+    { bg: "#F8EBE6", color: "#C86244", icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>` }, // Sem 5: Networks
+    { bg: "#EDF7F2", color: "#1C3D35", icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/></svg>` }, // Sem 6: Stack / Software Eng
+    { bg: "#FCF5D8", color: "#B8860B", icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>` }, // Sem 7: AI / Electives
+    { bg: "#E6EFEA", color: "#1C3D35", icon: `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>` } // Sem 8: Capstone / Degree
+];
 
 // ========================================
 // STATE
@@ -1118,20 +606,39 @@ function renderSemGrid() {
     const sems = Object.keys(courseData);
     opSemCount.textContent = `${sems.length} semesters`;
 
+    // Update dynamic stats on hero banner
+    let grandTotalPapers = 0;
+    sems.forEach(s => {
+        grandTotalPapers += courseData[s].subjects.reduce((sum, sub) => sum + sub.papers.length, 0);
+    });
+    const heroSemStat = document.getElementById("heroSemStat");
+    const heroPaperStat = document.getElementById("heroPaperStat");
+    if (heroSemStat) heroSemStat.textContent = sems.length;
+    if (heroPaperStat) heroPaperStat.textContent = grandTotalPapers + "+";
+
     sems.forEach((semNum, idx) => {
         const semData   = courseData[semNum];
         const totalPapers = semData.subjects.reduce((s, sub) => s + sub.papers.length, 0);
+        const theme = semThemeStyles[idx % semThemeStyles.length];
+
         const card = document.createElement("div");
         card.className = "op-sem-card";
         card.dataset.sem = semNum;
         card.innerHTML = `
-            <div class="op-sem-icon">${semIcons[idx] || "📄"}</div>
+            <div class="op-sem-icon-box" style="background:${theme.bg};color:${theme.color};">
+                ${theme.icon}
+            </div>
             <div class="op-sem-number">Semester ${semNum}</div>
             <div class="op-sem-title">${semData.semLabel}</div>
             <div class="op-sem-meta">
-                <span class="op-sem-papers-count">📄 ${totalPapers} papers</span>
-                <span class="op-sem-dot"></span>
-                <span class="op-sem-subjects-count">📚 ${semData.subjects.length} subjects</span>
+                <span class="op-sem-meta-chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                    ${totalPapers} papers
+                </span>
+                <span class="op-sem-meta-chip">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+                    ${semData.subjects.length} subjects
+                </span>
             </div>
             <div class="op-sem-arrow">
                 <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
@@ -1153,25 +660,26 @@ function populateMySemFilter(profile) {
     const syl = getSyllabus(profile);
     if (!syl) return;
 
-    filterMySem.innerHTML = `<option value="all">📚 My Sem Subjects</option>`;
+    filterMySem.innerHTML = `<option value="all">My Sem Subjects</option>`;
 
     syl.subjects.forEach(sub => {
         const opt = document.createElement("option");
         opt.value = sub.name;
-        opt.textContent = `${sub.icon || ''} ${sub.name}`;
+        opt.textContent = sub.name;
         filterMySem.appendChild(opt);
     });
 
-    // Show the dropdown (it starts hidden)
+    // Show the dropdown
     mySemFilterWrapper.style.display = "block";
 
-    // Add a subtle label to differentiate
-    const label = mySemFilterWrapper.querySelector(".op-my-sem-label");
-    if (!label) {
+    // Add a subtle badge to differentiate
+    const existingBadge = mySemFilterWrapper.querySelector(".op-my-sem-label");
+    if (!existingBadge) {
         const badge = document.createElement("div");
-        badge.style.cssText = "font-size:10px;font-weight:700;color:#4F46E5;text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;padding-left:2px;";
+        badge.className = "op-my-sem-label";
+        badge.style.cssText = "font-size:10px;font-weight:800;color:var(--coral);text-transform:uppercase;letter-spacing:0.08em;margin-bottom:4px;padding-left:4px;";
         badge.textContent = `Sem ${profile.semester} · ${profile.branch}`;
-        mySemFilterWrapper.insertBefore(badge, filterMySem);
+        mySemFilterWrapper.insertBefore(badge, filterMySem.parentElement || filterMySem);
     }
 }
 
@@ -1248,7 +756,15 @@ function renderSubjectTabs(semData) {
     const allTab = document.createElement("button");
     allTab.className = "op-tab";
     allTab.dataset.tabId = "all";
-    allTab.textContent = "All Papers";
+    allTab.innerHTML = `
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="3" y="3" width="7" height="7"/>
+            <rect x="14" y="3" width="7" height="7"/>
+            <rect x="14" y="14" width="7" height="7"/>
+            <rect x="3" y="14" width="7" height="7"/>
+        </svg>
+        <span>All Papers</span>
+    `;
     allTab.addEventListener("click", () => activateTab("all", semData));
     opSubjectTabs.appendChild(allTab);
 
@@ -1285,8 +801,8 @@ function activateTab(tabId, semData) {
         section.innerHTML = `<div class="op-papers-section-title">${sub.name} <span>${sub.papers.length} paper${sub.papers.length !== 1 ? 's' : ''}</span></div>`;
 
         if (sub.papers.length === 0) {
-            section.innerHTML += `<div class="op-empty" style="text-align:left;padding:20px 0">
-                <p style="color:#9CA3AF;font-size:14px;">No papers uploaded yet for this subject.</p></div>`;
+            section.innerHTML += `<div class="op-empty" style="text-align:left;padding:24px 0">
+                <p style="color:var(--gray-500);font-size:14px;">No papers uploaded yet for this subject.</p></div>`;
         } else {
             const grid = document.createElement("div");
             grid.className = "op-papers-grid";
@@ -1298,25 +814,52 @@ function activateTab(tabId, semData) {
                 card.className = "op-paper-card";
 
                 const communityBadge = isCommunity
-                    ? `<span style="display:inline-block;background:#EEF2FF;color:#4F46E5;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;letter-spacing:0.06em;margin-left:6px;">COMMUNITY</span>`
+                    ? `<span class="op-community-badge">
+                        <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/></svg>
+                        COMMUNITY
+                       </span>`
                     : '';
 
                 const uploadedBy = isCommunity && paper.uploadedBy
-                    ? `· by ${paper.uploadedBy}`
+                    ? `· Uploaded by ${paper.uploadedBy}`
                     : '';
 
                 card.innerHTML = `
-                    <div class="op-paper-icon">📄</div>
+                    <div class="op-paper-icon-box">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/>
+                            <polyline points="14 2 14 8 20 8"/>
+                            <line x1="16" y1="13" x2="8" y2="13"/>
+                            <line x1="16" y1="17" x2="8" y2="17"/>
+                            <polyline points="10 9 9 9 8 9"/>
+                        </svg>
+                    </div>
                     <div class="op-paper-info">
-                        <div class="op-paper-year">${paper.year} · ${paper.type}${communityBadge}</div>
+                        <div class="op-paper-header-pills">
+                            <span class="op-paper-year-badge">${paper.year}</span>
+                            <span class="op-paper-type-badge">${paper.type}</span>
+                            ${communityBadge}
+                        </div>
                         <div class="op-paper-name">${paper.title}</div>
                         <div class="op-paper-meta">Question Paper · PDF ${uploadedBy}</div>
                         <div class="op-paper-actions">
                             ${paper.url
-                                ? `<a href="${paper.url}" target="_blank" class="op-btn-view">👁 View</a>
-                                   <button class="op-btn-download" onclick="downloadPaper('${paper.url}', '${(paper.title || 'paper').replace(/'/g, '')}')" title="Download">⬇ Download</button>`
-                                : `<button class="op-btn-view" onclick="alert('Paper link coming soon!')">👁 View</button>
-                                   <button class="op-btn-download" onclick="alert('Download coming soon!')">⬇ Download</button>`
+                                ? `<a href="${paper.url}" target="_blank" class="op-btn-view">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    <span>View</span>
+                                   </a>
+                                   <button class="op-btn-download" onclick="downloadPaper('${paper.url}', '${(paper.title || 'paper').replace(/'/g, '')}')" title="Download Paper">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                    <span>Download</span>
+                                   </button>`
+                                : `<button class="op-btn-view" onclick="alert('Paper link coming soon!')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+                                    <span>View</span>
+                                   </button>
+                                   <button class="op-btn-download" onclick="alert('Download coming soon!')">
+                                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                    <span>Download</span>
+                                   </button>`
                             }
                         </div>
                     </div>
@@ -1333,9 +876,11 @@ function activateTab(tabId, semData) {
     if (subjectsToShow.length === 0) {
         opPapersContent.innerHTML = `
             <div class="op-empty">
-                <div class="op-empty-icon">🔍</div>
+                <div class="op-empty-icon-box">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                </div>
                 <h3>No papers found</h3>
-                <p>No papers available for this selection.</p>
+                <p>There are no question papers matching this subject selection yet.</p>
             </div>
         `;
     }
