@@ -1298,6 +1298,7 @@ filterSubject.addEventListener("change", () => {
         if (val === "all") {
             card.style.opacity = "1";
             card.style.pointerEvents = "auto";
+            card.style.order = "0";
             return;
         }
         const semNum = card.dataset.sem;
@@ -1305,6 +1306,7 @@ filterSubject.addEventListener("change", () => {
         const hasSubject = semData && semData.subjects.some(s => s.name === val);
         card.style.opacity = hasSubject ? "1" : "0.35";
         card.style.pointerEvents = hasSubject ? "auto" : "none";
+        card.style.order = hasSubject ? "-1" : "0";
     });
 });
 // ========================================
@@ -1319,6 +1321,7 @@ filterMySem.addEventListener("change", () => {
         if (val === "all") {
             card.style.opacity = "1";
             card.style.pointerEvents = "auto";
+            card.style.order = "0";
             return;
         }
         const semNum = card.dataset.sem;
@@ -1326,6 +1329,7 @@ filterMySem.addEventListener("change", () => {
         const hasSubject = semData && semData.subjects.some(s => s.name === val);
         card.style.opacity = hasSubject ? "1" : "0.35";
         card.style.pointerEvents = hasSubject ? "auto" : "none";
+        card.style.order = hasSubject ? "-1" : "0";
     });
 });
 </script>

@@ -1,7 +1,7 @@
 // ai-study.js — RISE AI Study Assistant (Google Gemini 2.5 Flash)
 
 // ========== CONFIG ==========
-const GEMINI_API_KEY = "AIzaSyCfET5hfJfJYMEWsJoQZ7uWpb_t245dylc";
+const GEMINI_API_KEY = "AQ.Ab8RN6IEYFV5qpUC2cqbDEvqaClyhMFkR2R09EP6a3kXgW601Q";
 const GEMINI_MODEL  = "gemini-3.6-flash";
 const GEMINI_URL    = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:streamGenerateContent?alt=sse&key=${GEMINI_API_KEY}`;
 
