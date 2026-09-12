@@ -5,7 +5,7 @@ const GEMINI_API_KEY = "AQ.Ab8RN6IEYFV5qpUC2cqbDEvqaClyhMFkR2R09EP6a3kXgW601Q";
 const GEMINI_MODEL  = "gemini-3.6-flash";
 const GEMINI_URL    = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:streamGenerateContent?alt=sse&key=${GEMINI_API_KEY}`;
 
-const SYSTEM_PROMPT = `You are the RISE Study Assistant — a brilliant, friendly, and encouraging tutor for university students.
+const SYSTEM_PROMPT = `You are Astra — a brilliant, friendly, and encouraging intelligent study companion for university students.
 - Give clear, well-structured answers using proper markdown (headings, bold, lists, code blocks).
 - For code: always specify the language after triple backticks (e.g. \`\`\`python).
 - For math: explain step by step.
@@ -39,23 +39,6 @@ function createNewChat() {
 
 function getActiveChat() { return allChats.find(c => c.id === activeChatId); }
 
-function updateChatTitle(chatId, text) {
-    const chat = allChats.find(c => c.id === chatId);
-    if (chat && chat.title === "New chat") {
-        chat.title = text.slice(0, 42) + (text.length > 42 ? "…" : "");
-        saveChats();
-        renderHistory();
-    }
-}
-
-function deleteChat(chatId) {
-    allChats = allChats.filter(c => c.id !== chatId);
-    saveChats();
-    if (activeChatId === chatId) {
-        allChats.length > 0 ? loadChat(allChats[0].id) : startFreshUI();
-    }
-    renderHistory();
-}
 
 // Convert our simple format → Gemini API format
 function toGemini(msgs) {
@@ -119,7 +102,10 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 
     chatInput.addEventListener("keydown", e => {
-        if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); if (!sendBtn.disabled) handleSend(); }
+        if (e.key === "Enter" && !e.shiftKey && !e.isComposing) { 
+            e.preventDefault(); 
+            if (!sendBtn.disabled && !isStreaming) handleSend(); 
+        }
     });
 
     sendBtn.addEventListener("click", () => {
@@ -152,6 +138,24 @@ document.addEventListener("DOMContentLoaded", () => {
         sendBtn.disabled = true;
     }
 
+    function updateChatTitle(chatId, text) {
+        const chat = allChats.find(c => c.id === chatId);
+        if (chat && chat.title === "New chat") {
+            chat.title = text.slice(0, 42) + (text.length > 42 ? "…" : "");
+            saveChats();
+            renderHistory();
+        }
+    }
+
+    function deleteChat(chatId) {
+        allChats = allChats.filter(c => c.id !== chatId);
+        saveChats();
+        if (activeChatId === chatId) {
+            allChats.length > 0 ? loadChat(allChats[0].id) : startFreshUI();
+        }
+        renderHistory();
+    }
+
     // ---- History ----
     function renderHistory() {
         historyList.innerHTML = "";
@@ -173,7 +177,7 @@ document.addEventListener("DOMContentLoaded", () => {
             g.className = "history-group";
             g.innerHTML = `<p class="history-label">${label}</p>`;
             chats.forEach(chat => {
-                const btn = document.createElement("button");
+                const btn = document.createElement("div");
                 btn.className = "history-item" + (chat.id === activeChatId ? " active" : "");
                 btn.innerHTML = `
                     <span class="history-item-text">${esc(chat.title)}</span>
@@ -223,8 +227,8 @@ document.addEventListener("DOMContentLoaded", () => {
         const div = document.createElement("div");
         div.className = `ai-message ai-message-${role === "user" ? "user" : "system"}`;
         const rendered = role === "user" ? `<p>${esc(content).replace(/\n/g, "<br>")}</p>` : renderMarkdown(content);
-        const actions  = role === "assistant" ? `<div class="ai-msg-actions"><button class="msg-action-btn copy-msg-btn" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>` : "";
-        div.innerHTML = `<div class="ai-msg-inner"><div class="ai-msg-avatar">${role === "user" ? "S" : "✦"}</div><div class="ai-msg-body"><div class="ai-msg-content">${rendered}</div>${actions}</div></div>`;
+        const actions  = role === "assistant" ? `<div class="ai-msg-actions"><button class="msg-action-btn copy-msg-btn" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div>` : "";
+        div.innerHTML = `<div class="ai-msg-avatar">${role === "user" ? "S" : "✦"}</div><div class="ai-msg-body"><div class="ai-msg-content">${rendered}</div>${actions}</div>`;
         div.querySelector(".copy-msg-btn")?.addEventListener("click", () => {
             navigator.clipboard.writeText(content).then(() => {
                 const btn = div.querySelector(".copy-msg-btn");
@@ -240,7 +244,7 @@ document.addEventListener("DOMContentLoaded", () => {
         const div = document.createElement("div");
         div.className = "ai-message ai-message-system";
         div.id = "typingDot";
-        div.innerHTML = `<div class="ai-msg-inner"><div class="ai-msg-avatar">✦</div><div class="ai-msg-body"><div class="ai-msg-content"><div class="typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div></div></div></div>`;
+        div.innerHTML = `<div class="ai-msg-avatar">✦</div><div class="ai-msg-body"><div class="ai-msg-content"><div class="typing-indicator"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div></div></div>`;
         chatWindow.appendChild(div);
         scrollBottom();
     }
@@ -277,7 +281,7 @@ document.addEventListener("DOMContentLoaded", () => {
             // Create streaming message container
             const msgDiv = document.createElement("div");
             msgDiv.className = "ai-message ai-message-system";
-            msgDiv.innerHTML = `<div class="ai-msg-inner"><div class="ai-msg-avatar">✦</div><div class="ai-msg-body"><div class="ai-msg-content"><span class="streaming-cursor">▊</span></div><div class="ai-msg-actions" style="opacity:0"><button class="msg-action-btn copy-msg-btn" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div></div></div>`;
+            msgDiv.innerHTML = `<div class="ai-msg-avatar">✦</div><div class="ai-msg-body"><div class="ai-msg-content"><span class="streaming-cursor">▊</span></div><div class="ai-msg-actions" style="opacity:0"><button class="msg-action-btn copy-msg-btn" title="Copy"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg></button></div></div>`;
             chatWindow.appendChild(msgDiv);
             const contentEl = msgDiv.querySelector(".ai-msg-content");
 
@@ -329,7 +333,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 console.error("Gemini error:", err);
                 const errDiv = document.createElement("div");
                 errDiv.className = "ai-message ai-message-system";
-                errDiv.innerHTML = `<div class="ai-msg-inner"><div class="ai-msg-avatar">✦</div><div class="ai-msg-body"><div class="ai-error-msg"><span>⚠️</span><span>${esc(err.message)}</span></div></div></div>`;
+                errDiv.innerHTML = `<div class="ai-msg-avatar">✦</div><div class="ai-msg-body"><div class="ai-error-msg"><span>⚠️</span><span>${esc(err.message)}</span></div></div>`;
                 chatWindow.appendChild(errDiv);
                 scrollBottom();
             }
@@ -374,6 +378,18 @@ document.addEventListener("DOMContentLoaded", () => {
     }
     renderHistory();
     chatInput.focus();
+
+    // ---- Auto start from topic parameter ----
+    const urlParams = new URLSearchParams(window.location.search);
+    const initialTopic = urlParams.get('topic');
+    if (initialTopic) {
+        // Clear param from URL to avoid re-triggering on refresh
+        window.history.replaceState({}, document.title, "ai-study.html");
+        
+        chatInput.value = `Can you explain the topic: "${initialTopic}" in detail?`;
+        chatInput.dispatchEvent(new Event("input"));
+        setTimeout(() => handleSend(), 100); // small delay to let UI settle
+    }
 });
 
 // ---- Copy code block (global) ----

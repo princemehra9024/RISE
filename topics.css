@@ -536,6 +536,61 @@ body {
     color: #ff9800;
 }
 
+.tp-pill-actions {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    margin-left: 6px;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.2s;
+}
+
+.tp-pill:hover .tp-pill-actions {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+.tp-action-btn {
+    background: transparent;
+    border: none;
+    color: var(--gray-500);
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.tp-action-btn svg {
+    width: 14px;
+    height: 14px;
+}
+
+.tp-action-btn:hover {
+    background: rgba(28,61,53,0.1);
+    color: var(--teal);
+}
+
+.tp-pill.done .tp-action-btn {
+    color: rgba(255,255,255,0.7);
+}
+.tp-pill.done .tp-action-btn:hover {
+    background: rgba(255,255,255,0.2);
+    color: white;
+}
+
+.tp-pill.in-progress .tp-action-btn {
+    color: rgba(255, 152, 0, 0.7);
+}
+.tp-pill.in-progress .tp-action-btn:hover {
+    background: rgba(255, 152, 0, 0.2);
+    color: #ff9800;
+}
+
 /* ========================
    LEGEND
 ======================== */
