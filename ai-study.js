@@ -156,6 +156,33 @@ document.addEventListener("DOMContentLoaded", () => {
         renderHistory();
     }
 
+    function togglePin(chatId) {
+        const chat = allChats.find(c => c.id === chatId);
+        if (chat) {
+            chat.pinned = !chat.pinned;
+            saveChats();
+            renderHistory();
+        }
+    }
+
+    function exportChat() {
+        const chat = getActiveChat();
+        if (!chat || chat.messages.length === 0) return;
+        
+        let content = `# ${chat.title}\n\n`;
+        chat.messages.forEach(m => {
+            content += `**${m.role === 'user' ? 'You' : 'Astra'}**:\n${m.content}\n\n---\n\n`;
+        });
+        
+        const blob = new Blob([content], { type: "text/markdown" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = `${chat.title.replace(/[^a-z0-9]/gi, '_').toLowerCase()}.md`;
+        a.click();
+        URL.revokeObjectURL(url);
+    }
+
     // ---- History ----
     function renderHistory() {
         historyList.innerHTML = "";
@@ -164,13 +191,24 @@ document.addEventListener("DOMContentLoaded", () => {
             return;
         }
         const now = Date.now();
-        const groups = { "Today": [], "Previous 7 Days": [], "Older": [] };
+        const groups = { "Pinned": [], "Today": [], "Previous 7 Days": [], "Older": [] };
+        
         allChats.forEach(c => {
-            const age = now - c.createdAt;
-            if (age < 86400000) groups["Today"].push(c);
-            else if (age < 604800000) groups["Previous 7 Days"].push(c);
-            else groups["Older"].push(c);
+            if (c.pinned) {
+                groups["Pinned"].push(c);
+            } else {
+                const age = now - c.createdAt;
+                if (age < 86400000) groups["Today"].push(c);
+                else if (age < 604800000) groups["Previous 7 Days"].push(c);
+                else groups["Older"].push(c);
+            }
         });
+
+        // Sort all arrays by updated descending
+        Object.keys(groups).forEach(k => {
+            groups[k].sort((a,b) => new Date(b.updatedAt) - new Date(a.updatedAt));
+        });
+
         Object.entries(groups).forEach(([label, chats]) => {
             if (!chats.length) return;
             const g = document.createElement("div");
@@ -181,11 +219,17 @@ document.addEventListener("DOMContentLoaded", () => {
                 btn.className = "history-item" + (chat.id === activeChatId ? " active" : "");
                 btn.innerHTML = `
                     <span class="history-item-text">${esc(chat.title)}</span>
-                    <button class="history-delete" title="Delete">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
-                    </button>`;
+                    <div class="history-actions">
+                        <button class="history-pin" title="${chat.pinned ? 'Unpin' : 'Pin'}">
+                            <svg viewBox="0 0 24 24" fill="${chat.pinned ? 'currentColor' : 'none'}" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 17v5"/><path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/></svg>
+                        </button>
+                        <button class="history-delete" title="Delete">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg>
+                        </button>
+                    </div>`;
                 btn.querySelector(".history-item-text").addEventListener("click", () => { loadChat(chat.id); closeSidebar(); });
                 btn.querySelector(".history-delete").addEventListener("click", e => { e.stopPropagation(); deleteChat(chat.id); });
+                btn.querySelector(".history-pin").addEventListener("click", e => { e.stopPropagation(); togglePin(chat.id); });
                 g.appendChild(btn);
             });
             historyList.appendChild(g);
@@ -390,6 +434,10 @@ document.addEventListener("DOMContentLoaded", () => {
         chatInput.dispatchEvent(new Event("input"));
         setTimeout(() => handleSend(), 100); // small delay to let UI settle
     }
+    
+    // ---- Global Listeners ----
+    const exportBtn = document.getElementById("exportChatBtn");
+    if(exportBtn) exportBtn.addEventListener("click", exportChat);
 });
 
 // ---- Copy code block (global) ----
