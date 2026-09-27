@@ -1,0 +1,363 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RISE — Events & Organizations</title>
+    <meta name="description" content="Discover, plan, and organize academic events, quizzes, and workshops.">
+
+    <!-- Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Inter:wght@400;500;600;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
+
+    <!-- Shared CSS -->
+    <link rel="stylesheet" href="base.css">
+    <link rel="stylesheet" href="index.css"> <!-- For sidebar and general layout -->
+    <link rel="stylesheet" href="footer.css">
+    
+    <!-- Specific CSS -->
+    <link rel="stylesheet" href="events.css">
+</head>
+
+<body>
+
+    <div class="dash-wrap">
+
+        <!-- ===== SIDEBAR ===== -->
+        <aside class="sidebar">
+            <div class="sidebar-brand">
+                <span class="sb-rise">RISE</span>
+                <span class="sb-star">✦</span>
+            </div>
+
+            <nav class="sidebar-nav">
+                <a href="index.html" class="sb-nav-item">
+                    <span class="sb-icon">🏠</span>
+                    <span>Dashboard</span>
+                </a>
+                <a href="old-papers.html" class="sb-nav-item">
+                    <span class="sb-icon">📄</span>
+                    <span>Old Papers</span>
+                </a>
+                <a href="profile.html" class="sb-nav-item">
+                    <span class="sb-icon">👤</span>
+                    <span>Profile</span>
+                </a>
+                <a href="work.html" class="sb-nav-item">
+                    <span class="sb-icon">⚡</span>
+                    <span>Work</span>
+                </a>
+                <a href="timetable.html" class="sb-nav-item">
+                    <span class="sb-icon">📅</span>
+                    <span>Timetable</span>
+                </a>
+                <a href="events.html" class="sb-nav-item active">
+                    <span class="sb-icon">🎉</span>
+                    <span>Events</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-user">
+                <img src="https://ui-avatars.com/api/?name=Student&background=random" alt="Profile" class="sb-avatar">
+                <div class="sb-user-info">
+                    <span class="sb-name">Student</span>
+                    <span class="sb-badge">Explorer</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="dash-main events-main">
+
+            <!-- Decorative floating shapes -->
+            <div class="deco-star deco-1">✦</div>
+            <div class="deco-blob deco-blob-1"></div>
+
+            <!-- ===== HERO ===== -->
+            <header class="events-hero">
+                <h1 class="events-title">Events <span class="hero-star">&amp;</span> Quizzes</h1>
+                <p class="events-subtitle">Participate in upcoming academic activities or step up and organize your own event for the community.</p>
+            </header>
+
+            <!-- ===== GRID CONTAINER ===== -->
+            <div class="events-grid">
+                
+                <!-- Default Official Card (Always shown) -->
+                <div class="event-card default-rise">
+                    <div class="ec-header">
+                        <span class="ec-badge">OFFICIAL</span>
+                        <span class="ec-date">Always On</span>
+                    </div>
+                    <h3 class="ec-title">RISE Welcome Challenge</h3>
+                    <p class="ec-desc">Explore the platform, complete your profile, and join your first study group to earn early rewards.</p>
+                    <div class="ec-footer">
+                        <div class="ec-org">
+                            <div class="ec-org-av" style="background: linear-gradient(135deg, #E8856A, #F5C842); color: white;">R</div>
+                            <span class="ec-org-name">RISE Team</span>
+                        </div>
+                        <button class="ec-action-btn" style="color: #E8856A;">Learn More</button>
+                    </div>
+                </div>
+
+                <!-- Dynamic events and ADD card will be injected here via JS -->
+                <div id="dynamicEventsContainer" style="display: contents;">
+                    <!-- Fallback Add Card (Replaced by JS) -->
+                    <div class="event-card add-card" id="btnOpenAddModal">
+                        <div class="add-icon-wrap">
+                            <span class="add-icon">+</span>
+                        </div>
+                        <div class="add-title">Organize New Event</div>
+                        <div class="add-desc">Click here to plan a quiz, workshop, or meetup.</div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+    <!-- ===== SITE FOOTER ===== -->
+    <footer class="rise-footer dash-footer">
+
+        <!-- Ambient blobs -->
+        <div class="rf-blob rf-blob-1"></div>
+        <div class="rf-blob rf-blob-2"></div>
+        <div class="rf-blob rf-blob-3"></div>
+
+        <!-- RISE Acronym Strip -->
+        <div class="rf-acronym-strip">
+            <div class="rf-acronym-item">
+                <span class="rf-acr-letter">R</span>
+                <span class="rf-acr-word">Review</span>
+            </div>
+            <div class="rf-acronym-item">
+                <span class="rf-acr-letter">I</span>
+                <span class="rf-acr-word">Improve</span>
+            </div>
+            <div class="rf-acronym-item">
+                <span class="rf-acr-letter">S</span>
+                <span class="rf-acr-word">Study</span>
+            </div>
+            <div class="rf-acronym-item">
+                <span class="rf-acr-letter">E</span>
+                <span class="rf-acr-word">Excel</span>
+            </div>
+        </div>
+        <div class="rf-acronym-rule"></div>
+
+        <!-- Main Grid -->
+        <div class="rise-footer-inner">
+
+            <!-- Brand -->
+            <div class="rf-brand-col">
+                <div class="rf-logo">
+                    <span class="rf-logo-rise">RISE</span>
+                    <span class="rf-logo-star">✦</span>
+                </div>
+                <p class="rf-tagline">Let's rise together ♡</p>
+                <p class="rf-sub-desc">
+                    A student-first platform built to track progress, access resources
+                    and achieve academic excellence.
+                </p>
+                <div class="rf-powered">
+                    <span class="rf-powered-dot"></span>
+                    <span class="rf-powered-label">Powered by</span>
+                    <span class="rf-powered-name">Educant</span>
+                </div>
+                <p class="rf-copyright">© 2025 RISE Platform · All rights reserved</p>
+            </div>
+
+            <!-- Navigate -->
+            <div class="rf-links-col">
+                <span class="rf-col-heading">Navigate</span>
+                <a href="index.html">Dashboard</a>
+                <a href="old-papers.html">Old Papers</a>
+                <a href="profile.html">My Profile</a>
+                <a href="timetable.html">Timetable</a>
+            </div>
+
+            <!-- Project -->
+            <div class="rf-links-col">
+                <span class="rf-col-heading">Project</span>
+
+                <a href="#">Report a Bug</a>
+                <a href="#">Suggest a Feature</a>
+                <a href="#">Changelog</a>
+            </div>
+
+            <!-- Made with ♡ — Presently -->
+            <div class="rf-credits-col">
+                <span class="rf-made-label">Made with ♡ — Presently</span>
+                <p class="rf-made-love">Crafted with <strong>♡</strong> by our passionate team</p>
+
+                <div class="rf-credit-item is-founder">
+                    <span class="rf-credit-av" style="background:linear-gradient(135deg,#E8856A,#F5C842)">P</span>
+                    <div class="rf-credit-info">
+                        <span class="rf-credit-name">Priyanshu</span>
+                        <span class="rf-credit-role">Founder &amp; Visionary</span>
+                    </div>
+                </div>
+                <div class="rf-credit-item">
+                    <span class="rf-credit-av" style="background:linear-gradient(135deg,#E8856A,#c96b50)">P</span>
+                    <div class="rf-credit-info">
+                        <span class="rf-credit-name">Prince Mehra</span>
+                        <span class="rf-credit-role">Lead Developer</span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Bottom Bar -->
+        <div class="rf-bottom-bar">
+            <div class="rf-bottom-left">
+                <span class="rf-bottom-copy">© 2025 RISE &nbsp;·&nbsp; Review · Improve · Study · Excel</span>
+                <div class="rf-bottom-pills">
+                    <span class="rf-bottom-pill">IMCA</span>
+                    <span class="rf-bottom-pill">Open Platform</span>
+                    <span class="rf-bottom-pill">Student First</span>
+                </div>
+            </div>
+            <div class="rf-bottom-right">
+                <a href="https://executiveplans.antideploy.com/" target="_blank" rel="noopener noreferrer" class="ep-card">
+                    <!-- Noise texture -->
+                    <div class="ep-noise"></div>
+                    <!-- Logo -->
+                    <div class="ep-logo">
+                        <span class="ep-logo-mark">EP</span>
+                        <span class="ep-logo-text">EXECUTIVE <strong>PLANS</strong></span>
+                        <div class="ep-ornament">
+                            <div class="ep-line-l"></div>
+                            <div class="ep-diamond"></div>
+                            <div class="ep-line-r"></div>
+                        </div>
+                    </div>
+                    <!-- Content -->
+                    <div class="ep-content">
+                        <h3>CRAFTED WITH <span class="ep-accent">PURPOSE.</span></h3>
+                        <p class="ep-sub">Designed & Developed by Executive Plans</p>
+                        <div class="ep-divider"></div>
+                        <p class="ep-desc">We build modern digital experiences<br>that help businesses grow.</p>
+                    </div>
+                    <!-- Footer -->
+                    <div class="ep-bottom">
+                        <span class="ep-explore">EXPLORE OUR WORK <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M7 17L17 7M17 7H7M17 7V17"/></svg></span>
+                        <span class="ep-domain">🌐 executiveplans.antideploy.com</span>
+                    </div>
+                    <!-- Shine -->
+                    <div class="ep-shine"></div>
+                </a>
+            </div>
+        </div>
+
+    </footer>
+
+    <!-- ===== AI STUDY ASSISTANT FAB ===== -->
+    <a href="ai-study.html" class="ai-fab" title="AI Study Assistant">
+        <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/>
+        </svg>
+    </a>
+
+    <!-- ===== ORGANIZE QUIZ MODAL ===== -->
+    <div class="event-modal-overlay" id="eventModalOverlay">
+        <div class="event-modal" style="max-width: 600px; max-height: 90vh; overflow-y: auto;">
+            <button class="modal-close" id="btnCloseModal">&times;</button>
+            <div class="modal-header">
+                <h2>Organize a Quiz</h2>
+                <p>Create a custom quiz for your peers.</p>
+            </div>
+            
+            <form class="event-form" id="formAddEvent">
+                <div class="form-group">
+                    <label for="inputEventName">Quiz Name</label>
+                    <input type="text" id="inputEventName" placeholder="e.g. Mid-term Data Structures Quiz" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="inputEventDesc">Description</label>
+                    <textarea id="inputEventDesc" placeholder="What is this quiz about?" required></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Quiz Questions</label>
+                    <div id="questionsContainer">
+                        <!-- Questions injected here via JS -->
+                    </div>
+                    
+                    <div style="display: flex; gap: 10px; margin-top: 10px;">
+                        <button type="button" id="btnAddQuestionBtn" class="btn-secondary" style="flex: 1;">+ Add Question</button>
+                        <label for="csvUpload" class="btn-secondary" style="flex: 1; text-align: center; cursor: pointer; border-color: #E8856A; color: #E8856A; margin: 0; padding-top: 12px;">
+                            📁 Upload CSV
+                        </label>
+                        <input type="file" id="csvUpload" accept=".csv" style="display: none;">
+                    </div>
+                    <p style="font-size: 0.75rem; color: rgba(28,61,53,0.5); margin-top: 8px;">*CSV Format: Question, Option A, Option B, Option C, Option D, Correct (A/B/C/D)</p>
+                </div>
+                
+                <button type="submit" class="btn-submit-event">Publish Quiz ✦</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== JOIN QUIZ MODAL ===== -->
+    <div class="event-modal-overlay" id="joinQuizModalOverlay">
+        <div class="event-modal">
+            <button class="modal-close" id="btnCloseJoinModal">&times;</button>
+            <div class="modal-header">
+                <h2>Join Quiz</h2>
+                <p id="joinQuizTitle">Quiz Name</p>
+            </div>
+            
+            <form class="event-form" id="formJoinQuiz">
+                <input type="hidden" id="joinQuizId">
+                <div class="form-group">
+                    <label for="joinName">Your Name</label>
+                    <input type="text" id="joinName" placeholder="Enter your full name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="joinSem">Semester</label>
+                    <select id="joinSem" required>
+                        <option value="1">1st Semester</option>
+                        <option value="2">2nd Semester</option>
+                        <option value="3">3rd Semester</option>
+                        <option value="4">4th Semester</option>
+                    </select>
+                </div>
+                
+                <button type="submit" class="btn-submit-event">Start Quiz 🚀</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- ===== PLAY QUIZ MODAL ===== -->
+    <div class="event-modal-overlay" id="playQuizModalOverlay">
+        <div class="event-modal" style="max-width: 700px;">
+            <button class="modal-close" id="btnClosePlayModal">&times;</button>
+            <div class="modal-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+                <div>
+                    <h2 id="playQuizTitle">Quiz Title</h2>
+                    <p id="playQuizParticipant">Playing as: Name</p>
+                </div>
+                <div id="playQuizProgress" style="font-weight: bold; color: var(--teal);">1 / 10</div>
+            </div>
+            
+            <div id="playQuizContent">
+                <!-- Question and options injected here -->
+            </div>
+
+            <div id="playQuizResult" class="hidden" style="text-align: center; padding: 40px 0;">
+                <h1 style="font-size: 3rem; color: #E8856A; margin-bottom: 10px;" id="resultScore">0/0</h1>
+                <p style="font-size: 1.2rem; color: var(--teal);">Quiz Completed!</p>
+                <button class="btn-submit-event" id="btnFinishQuiz" style="max-width: 200px; margin: 20px auto 0;">Finish</button>
+            </div>
+            
+            <button class="btn-submit-event" id="btnNextQuestion" style="margin-top: 20px;">Next Question</button>
+        </div>
+    </div>
+
+    <script src="events.js"></script>
+</body>
+</html>

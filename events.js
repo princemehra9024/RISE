@@ -1,0 +1,299 @@
+// events.js
+
+document.addEventListener('DOMContentLoaded', () => {
+    // MODALS
+    const orgModal = document.getElementById('eventModalOverlay');
+    const joinModal = document.getElementById('joinQuizModalOverlay');
+    const playModal = document.getElementById('playQuizModalOverlay');
+
+    // BUTTONS & FORMS
+    const btnOpenOrgModal = document.getElementById('btnOpenAddModal');
+    const eventsContainer = document.getElementById('dynamicEventsContainer');
+    const formAddEvent = document.getElementById('formAddEvent');
+    const formJoinQuiz = document.getElementById('formJoinQuiz');
+    
+    // QUIZ STATE
+    let currentQuiz = null;
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    // --- 1. MODAL HELPERS ---
+    const closeAllModals = () => {
+        orgModal.classList.remove('active');
+        joinModal.classList.remove('active');
+        playModal.classList.remove('active');
+        document.body.style.overflow = '';
+    };
+
+    document.querySelectorAll('.modal-close').forEach(btn => {
+        btn.addEventListener('click', closeAllModals);
+    });
+
+    // --- 2. ORGANIZE QUIZ (CREATE) ---
+    const btnAddQuestionBtn = document.getElementById('btnAddQuestionBtn');
+    const questionsContainer = document.getElementById('questionsContainer');
+    let questionCount = 0;
+
+    const addQuestionBlock = () => {
+        questionCount++;
+        const qHtml = `
+            <div class="q-block" style="background: rgba(28,61,53,0.05); padding: 15px; border-radius: 8px; margin-bottom: 15px; border: 1px solid rgba(28,61,53,0.1);">
+                <input type="text" class="q-text" placeholder="Question ${questionCount}" required style="margin-bottom: 10px; font-weight: bold;">
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 10px;">
+                    <input type="text" class="q-optA" placeholder="Option A" required>
+                    <input type="text" class="q-optB" placeholder="Option B" required>
+                    <input type="text" class="q-optC" placeholder="Option C" required>
+                    <input type="text" class="q-optD" placeholder="Option D" required>
+                </div>
+                <select class="q-correct" required>
+                    <option value="" disabled selected>Select Correct Answer...</option>
+                    <option value="A">Option A</option>
+                    <option value="B">Option B</option>
+                    <option value="C">Option C</option>
+                    <option value="D">Option D</option>
+                </select>
+            </div>
+        `;
+        questionsContainer.insertAdjacentHTML('beforeend', qHtml);
+    };
+
+    btnAddQuestionBtn.addEventListener('click', addQuestionBlock);
+
+    const csvUpload = document.getElementById('csvUpload');
+    if (csvUpload) {
+        csvUpload.addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (!file) return;
+            
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const text = event.target.result;
+                const lines = text.split('\n');
+                let addedCount = 0;
+                
+                lines.forEach((line, index) => {
+                    if (!line.trim()) return;
+                    
+                    // Split by comma ignoring commas inside quotes
+                    const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.trim().replace(/^"|"$/g, ''));
+                    
+                    if (cols.length >= 6) {
+                        // Skip header
+                        if (index === 0 && cols[0].toLowerCase().includes('question')) return;
+                        
+                        addQuestionBlock();
+                        const blocks = document.querySelectorAll('.q-block');
+                        const newBlock = blocks[blocks.length - 1];
+                        
+                        newBlock.querySelector('.q-text').value = cols[0];
+                        newBlock.querySelector('.q-optA').value = cols[1];
+                        newBlock.querySelector('.q-optB').value = cols[2];
+                        newBlock.querySelector('.q-optC').value = cols[3];
+                        newBlock.querySelector('.q-optD').value = cols[4];
+                        
+                        const correctOpt = cols[5].toUpperCase().replace(/[^ABCD]/g, '').substring(0, 1);
+                        if (['A', 'B', 'C', 'D'].includes(correctOpt)) {
+                            newBlock.querySelector('.q-correct').value = correctOpt;
+                        }
+                        addedCount++;
+                    }
+                });
+                
+                if (addedCount > 0) {
+                    alert(`Successfully imported ${addedCount} questions from CSV!`);
+                } else {
+                    alert('Could not parse CSV. Ensure it has at least 6 columns.');
+                }
+            };
+            reader.readAsText(file);
+            e.target.value = ''; // Reset input
+        });
+    }
+
+    formAddEvent.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const eventName = document.getElementById('inputEventName').value.trim();
+        const eventDesc = document.getElementById('inputEventDesc').value.trim();
+
+        const qBlocks = document.querySelectorAll('.q-block');
+        if (qBlocks.length === 0) {
+            alert('Please add at least one question!');
+            return;
+        }
+
+        const questions = [];
+        qBlocks.forEach(block => {
+            questions.push({
+                q: block.querySelector('.q-text').value,
+                a: block.querySelector('.q-optA').value,
+                b: block.querySelector('.q-optB').value,
+                c: block.querySelector('.q-optC').value,
+                d: block.querySelector('.q-optD').value,
+                correct: block.querySelector('.q-correct').value
+            });
+        });
+
+        const newQuiz = {
+            id: 'quiz_' + Date.now(),
+            name: eventName,
+            desc: eventDesc,
+            questions: questions,
+            organizer: 'Student'
+        };
+
+        const existingEvents = JSON.parse(localStorage.getItem('rise_quizzes')) || [];
+        existingEvents.unshift(newQuiz);
+        localStorage.setItem('rise_quizzes', JSON.stringify(existingEvents));
+
+        closeAllModals();
+        formAddEvent.reset();
+        questionsContainer.innerHTML = '';
+        questionCount = 0;
+        loadEvents();
+    });
+
+    // --- 3. RENDER GRID ---
+    const loadEvents = () => {
+        const events = JSON.parse(localStorage.getItem('rise_quizzes')) || [];
+        eventsContainer.innerHTML = '';
+
+        // Add Card
+        const addCardHTML = `
+            <div class="event-card add-card" id="btnOpenAddModalDynamic">
+                <div class="add-icon-wrap">
+                    <span class="add-icon">+</span>
+                </div>
+                <div class="add-title">Organize New Quiz</div>
+                <div class="add-desc">Click here to create a quiz and challenge your peers.</div>
+            </div>
+        `;
+        eventsContainer.insertAdjacentHTML('beforeend', addCardHTML);
+        
+        document.getElementById('btnOpenAddModalDynamic').addEventListener('click', () => {
+            orgModal.classList.add('active');
+            document.body.style.overflow = 'hidden';
+            if (questionCount === 0) addQuestionBlock(); // Add first empty question
+        });
+
+        // Custom Quizzes
+        events.forEach(evt => {
+            const cardHTML = `
+                <div class="event-card">
+                    <div class="ec-header">
+                        <span class="ec-badge">Community Quiz</span>
+                        <span class="ec-date">${evt.questions.length} Qs</span>
+                    </div>
+                    <h3 class="ec-title">${evt.name}</h3>
+                    <p class="ec-desc">${evt.desc}</p>
+                    <div class="ec-footer">
+                        <div class="ec-org">
+                            <div class="ec-org-av">S</div>
+                            <span class="ec-org-name">${evt.organizer}</span>
+                        </div>
+                        <button class="ec-action-btn join-btn" data-id="${evt.id}">Join / View</button>
+                    </div>
+                </div>
+            `;
+            eventsContainer.insertAdjacentHTML('beforeend', cardHTML);
+        });
+
+        // Join Buttons
+        document.querySelectorAll('.join-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                const quizId = e.target.getAttribute('data-id');
+                const quizzes = JSON.parse(localStorage.getItem('rise_quizzes')) || [];
+                currentQuiz = quizzes.find(q => q.id === quizId);
+                
+                if (currentQuiz) {
+                    document.getElementById('joinQuizTitle').innerText = currentQuiz.name;
+                    joinModal.classList.add('active');
+                    document.body.style.overflow = 'hidden';
+                }
+            });
+        });
+    };
+
+    // --- 4. JOIN & PLAY QUIZ ---
+    formJoinQuiz.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const joinName = document.getElementById('joinName').value;
+        
+        closeAllModals();
+        
+        // Setup Play Modal
+        document.getElementById('playQuizTitle').innerText = currentQuiz.name;
+        document.getElementById('playQuizParticipant').innerText = `Playing as: ${joinName}`;
+        currentQuestionIndex = 0;
+        score = 0;
+        
+        document.getElementById('playQuizContent').classList.remove('hidden');
+        document.getElementById('btnNextQuestion').classList.remove('hidden');
+        document.getElementById('playQuizResult').classList.add('hidden');
+        
+        renderQuestion();
+        playModal.classList.add('active');
+        document.body.style.overflow = 'hidden';
+    });
+
+    const renderQuestion = () => {
+        if (!currentQuiz) return;
+        
+        document.getElementById('playQuizProgress').innerText = `${currentQuestionIndex + 1} / ${currentQuiz.questions.length}`;
+        const q = currentQuiz.questions[currentQuestionIndex];
+        
+        const content = document.getElementById('playQuizContent');
+        content.innerHTML = `
+            <h3 style="font-size: 1.2rem; color: #1C3D35; margin-bottom: 20px;">${currentQuestionIndex + 1}. ${q.q}</h3>
+            <div style="display: flex; flex-direction: column; gap: 10px;" id="optionsGroup">
+                <label style="padding: 15px; border: 1px solid rgba(28,61,53,0.1); border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <input type="radio" name="quizOpt" value="A"> A) ${q.a}
+                </label>
+                <label style="padding: 15px; border: 1px solid rgba(28,61,53,0.1); border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <input type="radio" name="quizOpt" value="B"> B) ${q.b}
+                </label>
+                <label style="padding: 15px; border: 1px solid rgba(28,61,53,0.1); border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <input type="radio" name="quizOpt" value="C"> C) ${q.c}
+                </label>
+                <label style="padding: 15px; border: 1px solid rgba(28,61,53,0.1); border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px;">
+                    <input type="radio" name="quizOpt" value="D"> D) ${q.d}
+                </label>
+            </div>
+        `;
+        
+        const btnNext = document.getElementById('btnNextQuestion');
+        btnNext.innerText = (currentQuestionIndex === currentQuiz.questions.length - 1) ? 'Finish Quiz' : 'Next Question';
+    };
+
+    document.getElementById('btnNextQuestion').addEventListener('click', () => {
+        const selected = document.querySelector('input[name="quizOpt"]:checked');
+        if (!selected) {
+            alert('Please select an option!');
+            return;
+        }
+
+        const q = currentQuiz.questions[currentQuestionIndex];
+        if (selected.value === q.correct) {
+            score++;
+        }
+
+        currentQuestionIndex++;
+        
+        if (currentQuestionIndex < currentQuiz.questions.length) {
+            renderQuestion();
+        } else {
+            // FINISH
+            document.getElementById('playQuizContent').classList.add('hidden');
+            document.getElementById('btnNextQuestion').classList.add('hidden');
+            document.getElementById('playQuizResult').classList.remove('hidden');
+            document.getElementById('resultScore').innerText = `${score} / ${currentQuiz.questions.length}`;
+        }
+    });
+
+    document.getElementById('btnFinishQuiz').addEventListener('click', () => {
+        closeAllModals();
+        formJoinQuiz.reset();
+    });
+
+    // Initialize
+    loadEvents();
+});

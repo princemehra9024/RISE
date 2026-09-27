@@ -1,0 +1,440 @@
+/* ============================================================
+   TIMETABLE.CSS  —  RISE Class Timetable Page
+   Palette inherited from RISE design tokens:
+     Cream bg    #FAF7F2
+     Deep Teal   #1C3D35
+     Coral       #E8856A
+     Yellow      #F5C842
+     Mint        #A8D5BF
+   ============================================================ */
+
+/* ========================
+   PAGE SECTION
+======================== */
+.tt-section {
+    max-width: 900px;
+    margin: 0 auto;
+    animation: fadeUp 0.6s ease-out both;
+}
+
+/* ========================
+   FILTER BAR
+======================== */
+.tt-filter-bar {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 32px;
+    flex-wrap: wrap;
+}
+
+.tt-filter-label {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--teal);
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+
+.tt-filter-select {
+    padding: 10px 18px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--gray-200);
+    background: var(--white);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--teal);
+    cursor: pointer;
+    transition: all 0.25s ease;
+    outline: none;
+    min-width: 160px;
+}
+
+.tt-filter-select:focus {
+    border-color: var(--coral);
+    box-shadow: 0 0 0 4px rgba(232, 133, 106, 0.15);
+}
+
+.tt-filter-clear {
+    padding: 9px 18px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--gray-200);
+    background: transparent;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--gray-500);
+    cursor: pointer;
+    transition: all 0.25s ease;
+}
+
+.tt-filter-clear:hover {
+    border-color: var(--coral);
+    color: var(--coral);
+    background: var(--coral-lt);
+}
+
+/* ========================
+   UPLOAD ZONE
+======================== */
+.tt-upload-zone {
+    position: relative;
+    border: 3px dashed var(--gray-200);
+    border-radius: var(--radius-xl);
+    padding: 56px 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.35s cubic-bezier(0.16, 1, 0.3, 1);
+    background: linear-gradient(135deg, rgba(255,255,255,0.85), rgba(250,247,242,0.6));
+    backdrop-filter: blur(8px);
+    overflow: hidden;
+    margin-bottom: 36px;
+}
+
+.tt-upload-zone::before {
+    content: '';
+    position: absolute;
+    inset: -2px;
+    border-radius: var(--radius-xl);
+    background: linear-gradient(135deg, var(--coral), var(--yellow), var(--mint));
+    opacity: 0;
+    z-index: -1;
+    transition: opacity 0.4s ease;
+}
+
+.tt-upload-zone:hover,
+.tt-upload-zone.dragover {
+    border-color: transparent;
+    transform: translateY(-3px);
+    box-shadow: var(--shadow-lg);
+}
+
+.tt-upload-zone:hover::before,
+.tt-upload-zone.dragover::before {
+    opacity: 1;
+}
+
+.tt-upload-zone.dragover {
+    background: var(--coral-lt);
+}
+
+.tt-upload-icon {
+    font-size: 56px;
+    margin-bottom: 16px;
+    display: block;
+    animation: floatUpload 3s ease-in-out infinite;
+}
+
+@keyframes floatUpload {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.tt-upload-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 800;
+    color: var(--teal);
+    margin-bottom: 8px;
+}
+
+.tt-upload-sub {
+    font-size: 14px;
+    color: var(--gray-500);
+    margin-bottom: 20px;
+    line-height: 1.5;
+}
+
+.tt-upload-sub strong {
+    color: var(--coral);
+}
+
+.tt-upload-inputs {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.tt-sem-select {
+    padding: 10px 20px;
+    border-radius: var(--radius-md);
+    border: 2px solid var(--gray-200);
+    background: var(--white);
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--teal);
+    cursor: pointer;
+    outline: none;
+    transition: all 0.25s ease;
+}
+
+.tt-sem-select:focus {
+    border-color: var(--coral);
+    box-shadow: 0 0 0 4px rgba(232, 133, 106, 0.15);
+}
+
+.tt-browse-btn {
+    padding: 10px 24px;
+    border-radius: var(--radius-md);
+    border: none;
+    background: var(--teal);
+    color: var(--white);
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 16px rgba(28, 61, 53, 0.2);
+}
+
+.tt-browse-btn:hover {
+    background: var(--teal-mid);
+    transform: translateY(-2px);
+    box-shadow: 0 10px 24px rgba(28, 61, 53, 0.3);
+}
+
+.tt-upload-hint {
+    margin-top: 16px;
+    font-size: 12px;
+    color: var(--gray-500);
+    opacity: 0.7;
+}
+
+.tt-file-input {
+    display: none;
+}
+
+
+
+/* ========================
+   TEXT TIMETABLE GRID
+======================== */
+.tt-grid-container {
+    margin-top: 32px;
+}
+
+.tt-day-group {
+    background: var(--white);
+    border-radius: var(--radius-xl);
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+    animation: fadeUp 0.5s ease-out both;
+}
+
+.tt-day-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 800;
+    color: var(--teal);
+    margin-bottom: 16px;
+    padding-bottom: 12px;
+    border-bottom: 2px solid var(--gray-100);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.tt-day-delete {
+    background: transparent;
+    border: none;
+    color: #DC3545;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    padding: 6px 12px;
+    border-radius: var(--radius-md);
+    transition: all 0.2s;
+}
+
+.tt-day-delete:hover {
+    background: rgba(220, 53, 69, 0.1);
+}
+
+.tt-class-list {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.tt-class-item {
+    display: flex;
+    align-items: center;
+    background: var(--gray-50);
+    padding: 16px 20px;
+    border-radius: var(--radius-lg);
+    border-left: 4px solid var(--coral);
+    transition: transform 0.2s;
+}
+
+.tt-class-item:hover {
+    transform: translateX(4px);
+    background: var(--gray-100);
+}
+
+.tt-class-time {
+    font-weight: 700;
+    color: var(--teal);
+    min-width: 140px;
+    font-size: 14px;
+}
+
+.tt-class-subject {
+    font-weight: 600;
+    color: var(--teal-mid);
+    font-size: 15px;
+}
+
+/* ========================
+   EMPTY STATE
+======================== */
+.tt-empty-state {
+    text-align: center;
+    padding: 60px 20px;
+    animation: fadeUp 0.5s ease-out both;
+}
+
+.tt-empty-icon {
+    font-size: 64px;
+    margin-bottom: 16px;
+    opacity: 0.5;
+}
+
+.tt-empty-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--teal);
+    margin-bottom: 8px;
+}
+
+.tt-empty-sub {
+    font-size: 14px;
+    color: var(--gray-500);
+    max-width: 320px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+
+
+/* ========================
+   UPLOAD PROGRESS OVERLAY
+======================== */
+.tt-upload-progress {
+    position: absolute;
+    inset: 0;
+    background: rgba(255, 255, 255, 0.92);
+    backdrop-filter: blur(6px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border-radius: var(--radius-xl);
+    z-index: 5;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.tt-upload-progress.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
+.tt-upload-spinner {
+    width: 48px;
+    height: 48px;
+    border: 4px solid var(--gray-200);
+    border-top-color: var(--coral);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+    margin-bottom: 14px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.tt-upload-progress-text {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--teal);
+}
+
+/* ========================
+   SUCCESS TOAST
+======================== */
+.tt-toast {
+    position: fixed;
+    bottom: 32px;
+    left: 50%;
+    transform: translateX(-50%) translateY(100px);
+    background: var(--teal);
+    color: var(--white);
+    padding: 14px 28px;
+    border-radius: var(--radius-md);
+    font-size: 14px;
+    font-weight: 700;
+    box-shadow: 0 12px 32px rgba(28, 61, 53, 0.3);
+    z-index: 4000;
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.tt-toast.show {
+    transform: translateX(-50%) translateY(0);
+}
+
+.tt-toast-icon {
+    font-size: 18px;
+}
+
+
+
+/* ========================
+   RESPONSIVE
+======================== */
+@media (max-width: 768px) {
+    .tt-upload-zone {
+        padding: 40px 20px;
+    }
+
+    .tt-upload-icon {
+        font-size: 44px;
+    }
+
+    .tt-upload-title {
+        font-size: 18px;
+    }
+
+    .tt-upload-inputs {
+        flex-direction: column;
+    }
+
+    .tt-sem-select,
+    .tt-browse-btn {
+        width: 100%;
+    }
+
+    .tt-class-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+    }
+
+    .tt-class-time {
+        min-width: 0;
+        font-size: 12px;
+        color: var(--gray-500);
+    }
+
+
+
+    .tt-filter-bar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+}
