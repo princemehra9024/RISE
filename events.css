@@ -297,15 +297,16 @@
 .event-modal-overlay {
     position: fixed;
     inset: 0;
-    background: rgba(28, 61, 53, 0.6);
-    backdrop-filter: blur(8px);
+    background: rgba(10, 31, 22, 0.4);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     display: flex;
     align-items: center;
     justify-content: center;
     z-index: 1000;
     opacity: 0;
     pointer-events: none;
-    transition: opacity 0.3s ease;
+    transition: opacity 0.4s ease;
 }
 
 .event-modal-overlay.active {
@@ -314,15 +315,18 @@
 }
 
 .event-modal {
-    background: #FFFFFF;
-    border-radius: 20px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    border-radius: 28px;
     width: 90%;
-    max-width: 450px;
-    padding: 32px;
-    transform: translateY(20px) scale(0.95);
-    transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
-    box-shadow: 0 25px 50px -12px rgba(28, 61, 53, 0.3);
+    max-width: 480px;
+    padding: 40px;
+    transform: translateY(30px) scale(0.95);
+    transition: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 30px 60px -12px rgba(10, 31, 22, 0.3), 0 0 40px rgba(255, 255, 255, 0.5) inset;
     position: relative;
+    max-height: 90vh;
+    overflow-y: auto;
 }
 
 .event-modal-overlay.active .event-modal {
@@ -331,87 +335,100 @@
 
 .modal-close {
     position: absolute;
-    top: 20px;
-    right: 20px;
-    background: none;
+    top: 24px;
+    right: 24px;
+    background: rgba(28, 61, 53, 0.05);
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
     border: none;
-    color: rgba(28, 61, 53, 0.4);
+    color: #1C3D35;
     font-size: 1.2rem;
     cursor: pointer;
-    transition: color 0.2s;
+    transition: all 0.2s;
 }
 .modal-close:hover {
-    color: #1C3D35;
+    background: rgba(232, 133, 106, 0.15);
+    color: #E8856A;
+    transform: rotate(90deg);
 }
 
 .modal-header {
-    margin-bottom: 24px;
+    margin-bottom: 32px;
 }
 .modal-header h2 {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     color: #1C3D35;
-    margin: 0 0 6px 0;
+    margin: 0 0 8px 0;
     font-family: 'Playfair Display', serif;
+    font-weight: 800;
 }
 .modal-header p {
-    font-size: 0.85rem;
+    font-size: 0.95rem;
     color: rgba(28, 61, 53, 0.6);
     margin: 0;
+    line-height: 1.5;
 }
 
 .event-form .form-group {
-    margin-bottom: 20px;
+    margin-bottom: 24px;
 }
 .event-form label {
     display: block;
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 1px;
-    color: rgba(28, 61, 53, 0.7);
-    margin-bottom: 8px;
-    font-weight: 600;
+    color: #1C3D35;
+    margin-bottom: 10px;
+    font-weight: 800;
 }
 .event-form input,
 .event-form select,
 .event-form textarea {
     width: 100%;
     background: #FAF7F2;
-    border: 1px solid rgba(28, 61, 53, 0.15);
-    border-radius: 8px;
-    padding: 12px 16px;
+    border: 1px solid rgba(28, 61, 53, 0.1);
+    border-radius: 12px;
+    padding: 14px 18px;
     color: #1C3D35;
     font-family: 'Inter', sans-serif;
-    font-size: 0.9rem;
-    transition: border-color 0.2s, box-shadow 0.2s;
+    font-size: 0.95rem;
+    font-weight: 500;
+    transition: all 0.3s;
 }
 .event-form input:focus,
 .event-form select:focus,
 .event-form textarea:focus {
     outline: none;
-    border-color: #1C3D35;
-    box-shadow: 0 0 0 3px rgba(28, 61, 53, 0.1);
+    border-color: #E8856A;
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(232, 133, 106, 0.15);
 }
 .event-form textarea {
     resize: vertical;
-    min-height: 80px;
+    min-height: 100px;
 }
 
 .btn-submit-event {
     width: 100%;
-    background: #1C3D35;
+    background: linear-gradient(135deg, #1C3D35, #2B5749);
     color: #FFFFFF;
     border: none;
-    padding: 14px;
-    border-radius: 8px;
-    font-size: 0.95rem;
-    font-weight: 700;
+    padding: 16px;
+    border-radius: 14px;
+    font-size: 1rem;
+    font-weight: 800;
     cursor: pointer;
-    transition: background 0.2s, transform 0.2s;
+    transition: all 0.3s;
     margin-top: 10px;
+    box-shadow: 0 10px 20px rgba(28, 61, 53, 0.2);
 }
 .btn-submit-event:hover {
-    background: #2D5A4A;
-    transform: translateY(-2px);
+    transform: translateY(-3px);
+    box-shadow: 0 15px 30px rgba(28, 61, 53, 0.3);
 }
 .btn-submit-event:active {
     transform: translateY(0);
@@ -421,15 +438,15 @@
     width: 100%;
     background: transparent;
     color: #1C3D35;
-    border: 2px dashed rgba(28, 61, 53, 0.3);
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 0.9rem;
-    font-weight: 600;
+    border: 2px dashed rgba(28, 61, 53, 0.2);
+    padding: 14px;
+    border-radius: 14px;
+    font-size: 0.95rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: all 0.3s;
 }
 .btn-secondary:hover {
-    background: rgba(28, 61, 53, 0.05);
+    background: rgba(28, 61, 53, 0.04);
     border-color: #1C3D35;
 }
