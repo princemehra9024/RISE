@@ -290,8 +290,10 @@ document.addEventListener('DOMContentLoaded', () => {
         currentQuestionIndex = 0;
         score = 0;
         
+        document.getElementById('btnClosePlayModal').style.display = 'none';
+
         document.getElementById('playQuizContent').classList.remove('hidden');
-        document.getElementById('btnNextQuestion').classList.remove('hidden');
+        document.getElementById('btnNextQuestion').classList.add('hidden'); // hidden initially
         document.getElementById('playQuizResult').classList.add('hidden');
         
         renderQuestion();
@@ -307,39 +309,61 @@ document.addEventListener('DOMContentLoaded', () => {
         
         const content = document.getElementById('playQuizContent');
         content.innerHTML = `
-            <h3 style="font-size: 1.2rem; color: #1C3D35; margin-bottom: 20px;">${currentQuestionIndex + 1}. ${q.q}</h3>
-            <div style="display: flex; flex-direction: column; gap: 10px;" id="optionsGroup">
-                <label style="padding: 15px; border: 1px solid rgba(28,61,53,0.1); border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px;">
-                    <input type="radio" name="quizOpt" value="A"> A) ${q.a}
+            <h3 style="font-size: 1.4rem; color: #1C3D35; margin-bottom: 24px; line-height: 1.4;">${currentQuestionIndex + 1}. ${q.q}</h3>
+            <div style="display: flex; flex-direction: column; gap: 12px;" id="optionsGroup">
+                <label class="quiz-option" data-val="A">
+                    <div class="opt-letter">A</div>
+                    <div class="opt-text">${q.a}</div>
                 </label>
-                <label style="padding: 15px; border: 1px solid rgba(28,61,53,0.1); border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px;">
-                    <input type="radio" name="quizOpt" value="B"> B) ${q.b}
+                <label class="quiz-option" data-val="B">
+                    <div class="opt-letter">B</div>
+                    <div class="opt-text">${q.b}</div>
                 </label>
-                <label style="padding: 15px; border: 1px solid rgba(28,61,53,0.1); border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px;">
-                    <input type="radio" name="quizOpt" value="C"> C) ${q.c}
+                <label class="quiz-option" data-val="C">
+                    <div class="opt-letter">C</div>
+                    <div class="opt-text">${q.c}</div>
                 </label>
-                <label style="padding: 15px; border: 1px solid rgba(28,61,53,0.1); border-radius: 8px; cursor: pointer; display: flex; align-items: center; gap: 10px;">
-                    <input type="radio" name="quizOpt" value="D"> D) ${q.d}
+                <label class="quiz-option" data-val="D">
+                    <div class="opt-letter">D</div>
+                    <div class="opt-text">${q.d}</div>
                 </label>
             </div>
         `;
         
         const btnNext = document.getElementById('btnNextQuestion');
         btnNext.innerText = (currentQuestionIndex === currentQuiz.questions.length - 1) ? 'Finish Quiz' : 'Next Question';
+        btnNext.classList.add('hidden');
+        
+        let answered = false;
+        const options = content.querySelectorAll('.quiz-option');
+        options.forEach(opt => {
+            opt.addEventListener('click', function() {
+                if (answered) return;
+                answered = true;
+                
+                const selectedVal = this.getAttribute('data-val');
+                const correctVal = q.correct;
+                
+                if (selectedVal === correctVal) {
+                    this.classList.add('correct');
+                    score++;
+                } else {
+                    this.classList.add('wrong');
+                    const correctEl = content.querySelector(`.quiz-option[data-val="${correctVal}"]`);
+                    if (correctEl) correctEl.classList.add('correct');
+                }
+                
+                options.forEach(o => {
+                    o.style.cursor = 'not-allowed';
+                    o.style.pointerEvents = 'none';
+                });
+                
+                btnNext.classList.remove('hidden');
+            });
+        });
     };
 
     document.getElementById('btnNextQuestion').addEventListener('click', () => {
-        const selected = document.querySelector('input[name="quizOpt"]:checked');
-        if (!selected) {
-            alert('Please select an option!');
-            return;
-        }
-
-        const q = currentQuiz.questions[currentQuestionIndex];
-        if (selected.value === q.correct) {
-            score++;
-        }
-
         currentQuestionIndex++;
         
         if (currentQuestionIndex < currentQuiz.questions.length) {
