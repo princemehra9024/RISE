@@ -48,7 +48,7 @@
 .event-card {
     background: rgba(255, 255, 255, 0.7);
     border: 1px solid rgba(28, 61, 53, 0.08);
-    border-radius: 16px;
+    border-radius: 20px;
     padding: 24px;
     position: relative;
     overflow: hidden;
@@ -70,10 +70,11 @@
 }
 
 .event-card:hover {
-    transform: translateY(-5px);
+    transform: translateY(-8px) scale(1.02);
     background: rgba(255, 255, 255, 1);
     border-color: rgba(168, 213, 191, 0.5);
-    box-shadow: 0 20px 40px -10px rgba(28, 61, 53, 0.15), 0 0 20px rgba(168, 213, 191, 0.2);
+    box-shadow: 0 25px 50px -12px rgba(28, 61, 53, 0.2), 0 0 20px rgba(168, 213, 191, 0.2);
+    z-index: 10;
 }
 
 .event-card:hover::before {
@@ -90,6 +91,9 @@
     opacity: 1;
     background: linear-gradient(90deg, #E8856A, #F5C842);
 }
+.event-card.default-rise:hover {
+    box-shadow: 0 25px 50px rgba(28, 61, 53, 0.4), 0 0 30px rgba(232, 133, 106, 0.3);
+}
 
 .event-card.default-rise .ec-title {
     color: #fff;
@@ -105,28 +109,17 @@
 
 /* Default Leaderboard Card Specific */
 .event-card.default-leaderboard {
-    background: linear-gradient(145deg, #2b1f0d, #140d04);
-    border-color: transparent;
+    background: linear-gradient(145deg, #FFFAF0, #FFF);
+    border: 1px solid rgba(255, 215, 0, 0.3);
     box-shadow: 0 10px 30px rgba(255, 215, 0, 0.1);
-    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
-}
-.event-card.default-leaderboard:hover {
-    transform: translateY(-5px) scale(1.02);
-    box-shadow: 0 15px 40px rgba(255, 215, 0, 0.2);
 }
 .event-card.default-leaderboard::before {
     opacity: 1;
     background: linear-gradient(90deg, #FFD700, #FFA500);
 }
-.event-card.default-leaderboard .ec-title {
-    color: #fff;
-}
-.event-card.default-leaderboard .ec-desc,
-.event-card.default-leaderboard .ec-org-name {
-    color: rgba(255, 255, 255, 0.7);
-}
-.event-card.default-leaderboard .ec-footer {
-    border-top-color: rgba(255, 255, 255, 0.1);
+.event-card.default-leaderboard:hover {
+    box-shadow: 0 25px 50px rgba(255, 215, 0, 0.2), 0 0 30px rgba(255, 165, 0, 0.15);
+    border-color: rgba(255, 215, 0, 0.6);
 }
 
 .ec-header {
@@ -139,10 +132,10 @@
 .ec-badge {
     background: rgba(168, 213, 191, 0.2);
     color: #1C3D35;
-    padding: 4px 10px;
+    padding: 6px 12px;
     border-radius: 50px;
     font-size: 0.7rem;
-    font-weight: 700;
+    font-weight: 800;
     letter-spacing: 1px;
     text-transform: uppercase;
     border: 1px solid rgba(168, 213, 191, 0.4);
@@ -157,19 +150,19 @@
 .ec-date {
     font-size: 0.75rem;
     color: rgba(28, 61, 53, 0.5);
-    font-weight: 500;
+    font-weight: 600;
 }
 
 .ec-title {
-    font-size: 1.25rem;
+    font-size: 1.35rem;
     color: #1C3D35;
-    font-weight: 700;
-    margin: 0 0 8px 0;
+    font-weight: 800;
+    margin: 0 0 10px 0;
     line-height: 1.3;
 }
 
 .ec-desc {
-    font-size: 0.85rem;
+    font-size: 0.9rem;
     color: rgba(28, 61, 53, 0.65);
     line-height: 1.6;
     margin: 0 0 20px 0;
@@ -187,81 +180,99 @@
 .ec-org {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 10px;
 }
 
 .ec-org-av {
-    width: 24px;
-    height: 24px;
+    width: 28px;
+    height: 28px;
     border-radius: 50%;
     background: linear-gradient(135deg, #1C3D35, #2D5A4A);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 0.6rem;
+    font-size: 0.7rem;
     font-weight: 800;
     color: #A8D5BF;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .ec-org-name {
-    font-size: 0.75rem;
-    color: rgba(28, 61, 53, 0.6);
+    font-size: 0.8rem;
+    color: rgba(28, 61, 53, 0.7);
+    font-weight: 600;
 }
 
 .ec-action-btn {
     background: none;
     border: none;
     color: #1C3D35;
-    font-size: 0.8rem;
-    font-weight: 600;
+    font-size: 0.85rem;
+    font-weight: 700;
     cursor: pointer;
-    transition: color 0.2s;
+    transition: all 0.2s;
+    padding: 6px 14px;
+    border-radius: 20px;
 }
 .ec-action-btn:hover {
+    background: rgba(28, 61, 53, 0.05);
     color: #E8856A;
+}
+.default-leaderboard .ec-action-btn:hover {
+    background: rgba(255, 215, 0, 0.1);
 }
 
 /* ============================================================
    ADD EVENT CARD
    ============================================================ */
 .event-card.add-card {
-    background: transparent;
+    background: rgba(255, 255, 255, 0.4);
     border: 2px dashed rgba(28, 61, 53, 0.2);
     align-items: center;
     justify-content: center;
     cursor: pointer;
     text-align: center;
-    min-height: 220px;
+    min-height: 240px;
     box-shadow: none;
 }
 
 .event-card.add-card:hover {
     border-color: #1C3D35;
-    background: rgba(255, 255, 255, 0.5);
+    background: rgba(255, 255, 255, 0.9);
+    transform: translateY(-5px);
 }
 
 .add-icon-wrap {
-    width: 48px;
-    height: 48px;
+    width: 56px;
+    height: 56px;
     border-radius: 50%;
     background: rgba(28, 61, 53, 0.05);
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 16px;
-    transition: all 0.3s;
+    margin-bottom: 20px;
+    transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(28, 61, 53, 0.2); }
+    70% { box-shadow: 0 0 0 15px rgba(28, 61, 53, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(28, 61, 53, 0); }
 }
 
 .add-card:hover .add-icon-wrap {
     background: #1C3D35;
-    transform: scale(1.1);
+    transform: scale(1.15) rotate(90deg);
+    animation: none;
 }
 
 .add-icon {
-    font-size: 1.5rem;
+    font-size: 1.8rem;
     color: #1C3D35;
     font-weight: 300;
     line-height: 1;
+    transition: color 0.3s;
 }
 
 .add-card:hover .add-icon {
@@ -270,13 +281,13 @@
 
 .add-title {
     color: #1C3D35;
-    font-weight: 600;
-    font-size: 1.1rem;
-    margin-bottom: 4px;
+    font-weight: 700;
+    font-size: 1.2rem;
+    margin-bottom: 6px;
 }
 
 .add-desc {
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     color: rgba(28, 61, 53, 0.6);
 }
 

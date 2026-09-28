@@ -4,6 +4,16 @@ import { collection, query, orderBy, getDocs, limit } from 'https://www.gstatic.
 document.addEventListener('DOMContentLoaded', async () => {
     const podiumContainer = document.getElementById('podiumContainer');
     const leaderboardList = document.getElementById('leaderboardList');
+    const tabs = document.querySelectorAll('.lb-tab');
+
+    // Tab interactions (UI only for now)
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            tabs.forEach(t => t.classList.remove('active'));
+            tab.classList.add('active');
+            // Here you could refetch data based on time periods
+        });
+    });
 
     try {
         const q = query(collection(db, "users"), orderBy("quizPoints", "desc"), limit(50));
@@ -12,7 +22,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         let users = [];
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-            // Only include users who have actually played quizzes
             if (data.quizPoints && data.quizPoints > 0) {
                 users.push({
                     id: doc.id,
@@ -23,7 +32,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             }
         });
 
-        // If not enough users, add some mock data for demonstration
+        // Mock data if empty
         if (users.length < 3) {
             const mockUsers = [
                 { name: "Priyanshu", points: 1500, played: 15 },
@@ -45,12 +54,22 @@ document.addEventListener('DOMContentLoaded', async () => {
         leaderboardList.innerHTML = `<div style="text-align:center; padding: 20px; color: red;">Failed to load leaderboard.</div>`;
     }
 
+    function getAvatarColor(rank) {
+        const colors = [
+            'linear-gradient(135deg, #FFD700, #FDB931)',
+            'linear-gradient(135deg, #E0E0E0, #9E9E9E)',
+            'linear-gradient(135deg, #E29B5A, #CD7F32)',
+            'linear-gradient(135deg, #D4A5FF, #9B4DFF)',
+            'linear-gradient(135deg, #FF9A9E, #FECFEF)',
+            'linear-gradient(135deg, #84FAB0, #8FD3F4)'
+        ];
+        return colors[(rank - 1) % colors.length];
+    }
+
     function renderLeaderboard(users) {
         podiumContainer.innerHTML = '';
         leaderboardList.innerHTML = '';
 
-        // Render Top 3 (Podium)
-        // Order for flex is usually 2, 1, 3 so 1st place is in the middle
         const podiumOrder = [
             { rank: 2, user: users[1] },
             { rank: 1, user: users[0] },
@@ -60,35 +79,39 @@ document.addEventListener('DOMContentLoaded', async () => {
         podiumOrder.forEach(item => {
             if (!item.user) return;
             const initials = item.user.name.charAt(0).toUpperCase();
-            const crown = item.rank === 1 ? `<div class="crown">👑</div>` : '';
             
             const html = `
                 <div class="podium-item rank-${item.rank}">
-                    ${crown}
-                    <div class="podium-avatar">${initials}</div>
+                    <div class="podium-avatar-wrapper">
+                        <div class="podium-avatar">${initials}</div>
+                        <div class="diamond-badge">
+                            <span>${item.rank}</span>
+                        </div>
+                    </div>
                     <div class="podium-name">${item.user.name}</div>
                     <div class="podium-points">${item.user.points} pts</div>
-                    <div class="podium-block">${item.rank}</div>
                 </div>
             `;
             podiumContainer.insertAdjacentHTML('beforeend', html);
         });
 
-        // Render List (Rank 4+)
+        // List
         for (let i = 3; i < users.length; i++) {
             const user = users[i];
             const initials = user.name.charAt(0).toUpperCase();
             const rank = i + 1;
+            const bg = getAvatarColor(rank);
             
             const html = `
-                <div class="list-item">
-                    <div class="col-rank">#${rank}</div>
+                <div class="list-item" style="animation-delay: ${i * 0.1}s">
+                    <div class="col-rank">${rank}</div>
                     <div class="col-scholar">
-                        <div class="list-avatar">${initials}</div>
-                        <span>${user.name}</span>
+                        <div class="list-avatar" style="background: ${bg}">${initials}</div>
+                        <div class="scholar-details">
+                            <span class="scholar-name">${user.name}</span>
+                        </div>
                     </div>
-                    <div class="col-quizzes">${user.played} quizzes</div>
-                    <div class="col-points">${user.points} pts</div>
+                    <div class="col-points">${user.points}</div>
                 </div>
             `;
             leaderboardList.insertAdjacentHTML('beforeend', html);
