@@ -68,30 +68,54 @@ document.addEventListener('DOMContentLoaded', () => {
             const reader = new FileReader();
             reader.onload = (event) => {
                 const text = event.target.result;
-                const lines = text.split('\n');
+                const lines = text.split(/\r?\n/);
                 let addedCount = 0;
+                
+                const parseCSVLine = (str) => {
+                    let ret = [], keep = false, curr = '';
+                    for (let i = 0; i < str.length; i++) {
+                        let c = str[i];
+                        if (c === '"') {
+                            keep = !keep;
+                        } else if (c === ',' && !keep) {
+                            ret.push(curr.trim());
+                            curr = '';
+                        } else {
+                            curr += c;
+                        }
+                    }
+                    ret.push(curr.trim());
+                    return ret.map(c => c.replace(/^"|"$/g, '').trim());
+                };
                 
                 lines.forEach((line, index) => {
                     if (!line.trim()) return;
                     
-                    // Split by comma ignoring commas inside quotes
-                    const cols = line.split(/,(?=(?:(?:[^"]*"){2})*[^"]*$)/).map(c => c.trim().replace(/^"|"$/g, ''));
+                    let cols = parseCSVLine(line);
                     
                     if (cols.length >= 6) {
+                        // Forgiving parsing: if > 6 columns, assume all extra commas were in the question
+                        let questionText = cols.slice(0, cols.length - 5).join(', ');
+                        let optA = cols[cols.length - 5];
+                        let optB = cols[cols.length - 4];
+                        let optC = cols[cols.length - 3];
+                        let optD = cols[cols.length - 2];
+                        let correctRaw = cols[cols.length - 1];
+                        
                         // Skip header
-                        if (index === 0 && cols[0].toLowerCase().includes('question')) return;
+                        if (index === 0 && (questionText.toLowerCase().includes('question') || correctRaw.toLowerCase().includes('correct'))) return;
                         
                         addQuestionBlock();
                         const blocks = document.querySelectorAll('.q-block');
                         const newBlock = blocks[blocks.length - 1];
                         
-                        newBlock.querySelector('.q-text').value = cols[0];
-                        newBlock.querySelector('.q-optA').value = cols[1];
-                        newBlock.querySelector('.q-optB').value = cols[2];
-                        newBlock.querySelector('.q-optC').value = cols[3];
-                        newBlock.querySelector('.q-optD').value = cols[4];
+                        newBlock.querySelector('.q-text').value = questionText;
+                        newBlock.querySelector('.q-optA').value = optA;
+                        newBlock.querySelector('.q-optB').value = optB;
+                        newBlock.querySelector('.q-optC').value = optC;
+                        newBlock.querySelector('.q-optD').value = optD;
                         
-                        const correctOpt = cols[5].toUpperCase().replace(/[^ABCD]/g, '').substring(0, 1);
+                        const correctOpt = correctRaw.toUpperCase().replace(/[^ABCD]/g, '').substring(0, 1);
                         if (['A', 'B', 'C', 'D'].includes(correctOpt)) {
                             newBlock.querySelector('.q-correct').value = correctOpt;
                         }
@@ -102,7 +126,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (addedCount > 0) {
                     alert(`Successfully imported ${addedCount} questions from CSV!`);
                 } else {
-                    alert('Could not parse CSV. Ensure it has at least 6 columns.');
+                    alert('Could not parse CSV. Ensure it has at least 6 columns (Question, Option A, Option B, Option C, Option D, Correct Option).');
                 }
             };
             reader.readAsText(file);
