@@ -1,5 +1,8 @@
 // events.js
 
+import { db } from './firebase-config.js';
+import { collection, addDoc, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+
 document.addEventListener('DOMContentLoaded', () => {
     // MODALS
     const orgModal = document.getElementById('eventModalOverlay');
@@ -16,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentQuiz = null;
     let currentQuestionIndex = 0;
     let score = 0;
+    let allQuizzes = [];
 
     // --- 1. MODAL HELPERS ---
     const closeAllModals = () => {
@@ -151,10 +155,11 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    formAddEvent.addEventListener('submit', (e) => {
+    formAddEvent.addEventListener('submit', async (e) => {
         e.preventDefault();
         const eventName = document.getElementById('inputEventName').value.trim();
         const eventDesc = document.getElementById('inputEventDesc').value.trim();
+        const orgName = document.getElementById('inputOrgName').value.trim();
 
         const qBlocks = document.querySelectorAll('.q-block');
         if (qBlocks.length === 0) {
@@ -175,27 +180,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const newQuiz = {
-            id: 'quiz_' + Date.now(),
             name: eventName,
             desc: eventDesc,
             questions: questions,
-            organizer: 'Student'
+            organizer: orgName,
+            createdAt: new Date().getTime()
         };
 
-        const existingEvents = JSON.parse(localStorage.getItem('rise_quizzes')) || [];
-        existingEvents.unshift(newQuiz);
-        localStorage.setItem('rise_quizzes', JSON.stringify(existingEvents));
-
-        closeAllModals();
-        formAddEvent.reset();
-        questionsContainer.innerHTML = '';
-        questionCount = 0;
-        loadEvents();
+        try {
+            await addDoc(collection(db, 'quizzes'), newQuiz);
+            closeAllModals();
+            formAddEvent.reset();
+            questionsContainer.innerHTML = '';
+            questionCount = 0;
+        } catch (error) {
+            console.error("Error adding document: ", error);
+            alert("Failed to publish quiz.");
+        }
     });
 
     // --- 3. RENDER GRID ---
-    const loadEvents = () => {
-        const events = JSON.parse(localStorage.getItem('rise_quizzes')) || [];
+    const renderQuizzes = (events) => {
         eventsContainer.innerHTML = '';
 
         // Add Card
@@ -218,6 +223,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // Custom Quizzes
         events.forEach(evt => {
+            let orgInitials = evt.organizer ? evt.organizer.charAt(0).toUpperCase() : 'S';
+            let orgName = evt.organizer || 'Student';
+            
             const cardHTML = `
                 <div class="event-card">
                     <div class="ec-header">
@@ -228,8 +236,8 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p class="ec-desc">${evt.desc}</p>
                     <div class="ec-footer">
                         <div class="ec-org">
-                            <div class="ec-org-av">S</div>
-                            <span class="ec-org-name">${evt.organizer}</span>
+                            <div class="ec-org-av">${orgInitials}</div>
+                            <span class="ec-org-name">${orgName}</span>
                         </div>
                         <button class="ec-action-btn join-btn" data-id="${evt.id}">Join / View</button>
                     </div>
@@ -242,8 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.querySelectorAll('.join-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
                 const quizId = e.target.getAttribute('data-id');
-                const quizzes = JSON.parse(localStorage.getItem('rise_quizzes')) || [];
-                currentQuiz = quizzes.find(q => q.id === quizId);
+                currentQuiz = allQuizzes.find(q => q.id === quizId);
                 
                 if (currentQuiz) {
                     document.getElementById('joinQuizTitle').innerText = currentQuiz.name;
@@ -253,6 +260,16 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
     };
+
+    // Initialize with Firebase realtime listener
+    const q = query(collection(db, "quizzes"), orderBy("createdAt", "desc"));
+    onSnapshot(q, (snapshot) => {
+        allQuizzes = [];
+        snapshot.forEach((doc) => {
+            allQuizzes.push({ id: doc.id, ...doc.data() });
+        });
+        renderQuizzes(allQuizzes);
+    });
 
     // --- 4. JOIN & PLAY QUIZ ---
     formJoinQuiz.addEventListener('submit', (e) => {
@@ -335,6 +352,4 @@ document.addEventListener('DOMContentLoaded', () => {
         formJoinQuiz.reset();
     });
 
-    // Initialize
-    loadEvents();
 });
