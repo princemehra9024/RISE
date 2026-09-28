@@ -105,9 +105,26 @@ document.addEventListener('DOMContentLoaded', () => {
                         // Skip header
                         if (index === 0 && (questionText.toLowerCase().includes('question') || correctRaw.toLowerCase().includes('correct'))) return;
                         
-                        addQuestionBlock();
-                        const blocks = document.querySelectorAll('.q-block');
-                        const newBlock = blocks[blocks.length - 1];
+                        let blocks = document.querySelectorAll('.q-block');
+                        let newBlock = blocks[blocks.length - 1];
+                        
+                        // Check if the last block is empty, if not, add a new one
+                        if (newBlock) {
+                            let isEmpty = !newBlock.querySelector('.q-text').value && 
+                                          !newBlock.querySelector('.q-optA').value && 
+                                          !newBlock.querySelector('.q-optB').value && 
+                                          !newBlock.querySelector('.q-optC').value && 
+                                          !newBlock.querySelector('.q-optD').value;
+                            if (!isEmpty) {
+                                addQuestionBlock();
+                                blocks = document.querySelectorAll('.q-block');
+                                newBlock = blocks[blocks.length - 1];
+                            }
+                        } else {
+                            addQuestionBlock();
+                            blocks = document.querySelectorAll('.q-block');
+                            newBlock = blocks[blocks.length - 1];
+                        }
                         
                         newBlock.querySelector('.q-text').value = questionText;
                         newBlock.querySelector('.q-optA').value = optA;
