@@ -103,6 +103,32 @@
     border-top-color: rgba(255, 255, 255, 0.1);
 }
 
+/* Default Leaderboard Card Specific */
+.event-card.default-leaderboard {
+    background: linear-gradient(145deg, #2b1f0d, #140d04);
+    border-color: transparent;
+    box-shadow: 0 10px 30px rgba(255, 215, 0, 0.1);
+    transition: all 0.4s cubic-bezier(0.165, 0.84, 0.44, 1);
+}
+.event-card.default-leaderboard:hover {
+    transform: translateY(-5px) scale(1.02);
+    box-shadow: 0 15px 40px rgba(255, 215, 0, 0.2);
+}
+.event-card.default-leaderboard::before {
+    opacity: 1;
+    background: linear-gradient(90deg, #FFD700, #FFA500);
+}
+.event-card.default-leaderboard .ec-title {
+    color: #fff;
+}
+.event-card.default-leaderboard .ec-desc,
+.event-card.default-leaderboard .ec-org-name {
+    color: rgba(255, 255, 255, 0.7);
+}
+.event-card.default-leaderboard .ec-footer {
+    border-top-color: rgba(255, 255, 255, 0.1);
+}
+
 .ec-header {
     display: flex;
     justify-content: space-between;
