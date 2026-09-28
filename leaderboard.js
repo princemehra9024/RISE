@@ -16,36 +16,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
 
     try {
-        const q = query(collection(db, "users"), orderBy("quizPoints", "desc"), limit(50));
+        const q = query(collection(db, "users"));
         const querySnapshot = await getDocs(q);
         
         let users = [];
         querySnapshot.forEach((doc) => {
             const data = doc.data();
-            if (data.quizPoints && data.quizPoints > 0) {
-                users.push({
-                    id: doc.id,
-                    name: data.profile?.fullName || 'Anonymous Scholar',
-                    points: data.quizPoints || 0,
-                    played: data.quizzesPlayed || 0
-                });
-            }
+            users.push({
+                id: doc.id,
+                name: data.profile?.fullName || data.fullName || data.name || 'Anonymous Scholar',
+                points: data.quizPoints || 0,
+                played: data.quizzesPlayed || 0
+            });
         });
 
-        // Mock data if empty
-        if (users.length < 3) {
-            const mockUsers = [
-                { name: "Priyanshu", points: 1500, played: 15 },
-                { name: "Prince Mehra", points: 1250, played: 12 },
-                { name: "Alex Johnson", points: 900, played: 10 },
-                { name: "Sarah Smith", points: 850, played: 9 },
-                { name: "Mike Davis", points: 720, played: 8 }
-            ];
-            mockUsers.forEach(m => {
-                if (!users.find(u => u.name === m.name)) users.push(m);
-            });
-            users.sort((a, b) => b.points - a.points);
-        }
+        // Sort by points descending
+        users.sort((a, b) => b.points - a.points);
+        
+        // Take top 50
+        users = users.slice(0, 50);
 
         renderLeaderboard(users);
 

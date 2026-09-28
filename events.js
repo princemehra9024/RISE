@@ -358,33 +358,41 @@ document.addEventListener('DOMContentLoaded', () => {
                     o.style.pointerEvents = 'none';
                 });
                 
-                btnNext.classList.remove('hidden');
+                // Auto-advance after 1.5 seconds
+                setTimeout(() => {
+                    currentQuestionIndex++;
+                    
+                    if (currentQuestionIndex < currentQuiz.questions.length) {
+                        renderQuestion();
+                    } else {
+                        // FINISH
+                        document.getElementById('playQuizContent').classList.add('hidden');
+                        document.getElementById('btnNextQuestion').classList.add('hidden');
+                        document.getElementById('playQuizResult').classList.remove('hidden');
+                        document.getElementById('resultScore').innerText = `${score} / ${currentQuiz.questions.length}`;
+
+                        // Award points
+                        if (currentUser) {
+                            const userRef = doc(db, 'users', currentUser.uid);
+                            setDoc(userRef, {
+                                quizPoints: increment(score * 10), // 10 points per correct answer
+                                quizzesPlayed: increment(1)
+                            }, { merge: true }).catch(err => console.error("Error updating points: ", err));
+                        }
+                        
+                        // Prevent replay
+                        const joinBtn = document.querySelector(`.join-btn[data-id="${currentQuiz.id}"]`);
+                        if (joinBtn) {
+                            joinBtn.innerText = 'Completed';
+                            joinBtn.style.opacity = '0.5';
+                            joinBtn.style.cursor = 'not-allowed';
+                            joinBtn.style.pointerEvents = 'none';
+                        }
+                    }
+                }, 1500);
             });
         });
     };
-
-    document.getElementById('btnNextQuestion').addEventListener('click', () => {
-        currentQuestionIndex++;
-        
-        if (currentQuestionIndex < currentQuiz.questions.length) {
-            renderQuestion();
-        } else {
-            // FINISH
-            document.getElementById('playQuizContent').classList.add('hidden');
-            document.getElementById('btnNextQuestion').classList.add('hidden');
-            document.getElementById('playQuizResult').classList.remove('hidden');
-            document.getElementById('resultScore').innerText = `${score} / ${currentQuiz.questions.length}`;
-
-            // Award points
-            if (currentUser) {
-                const userRef = doc(db, 'users', currentUser.uid);
-                setDoc(userRef, {
-                    quizPoints: increment(score * 10), // 10 points per correct answer
-                    quizzesPlayed: increment(1)
-                }, { merge: true }).catch(err => console.error("Error updating points: ", err));
-            }
-        }
-    });
 
     document.getElementById('btnFinishQuiz').addEventListener('click', () => {
         closeAllModals();
