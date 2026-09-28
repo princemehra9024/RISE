@@ -2,7 +2,7 @@
 
 // ========== CONFIG ==========
 const GEMINI_API_KEY = "AIzaSyCfET5hfJfJYMEWsJoQZ7uWpb_t245dylc";
-const GEMINI_MODEL  = "gemini-1.5-flash";
+const GEMINI_MODEL  = "gemini-2.5-flash";
 const GEMINI_URL    = `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:streamGenerateContent?alt=sse&key=${GEMINI_API_KEY}`;
 
 const SYSTEM_PROMPT = `You are Astra — a brilliant, friendly, and encouraging intelligent study companion for university students.
