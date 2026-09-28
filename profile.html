@@ -140,6 +140,28 @@
                 </div>
             </div>
 
+            <!-- SECTION: Trophy Wing (Quiz & Events) -->
+            <div class="pf-section">
+                <h3>🏆 Event Achievements</h3>
+                <div class="trophy-wing-card" style="background: linear-gradient(135deg, #1C3D35, #2B5749); border-radius: 16px; padding: 25px; color: white; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 15px 30px rgba(28,61,53,0.15); border: 2px solid rgba(232,133,106,0.3); position: relative; overflow: hidden;">
+                    <!-- Ambient Glow -->
+                    <div style="position: absolute; right: -50px; top: -50px; width: 200px; height: 200px; background: radial-gradient(circle, rgba(245,200,66,0.2) 0%, rgba(245,200,66,0) 70%); border-radius: 50%;"></div>
+                    
+                    <div style="display: flex; align-items: center; gap: 20px; z-index: 1;">
+                        <div style="font-size: 4rem; filter: drop-shadow(0 5px 15px rgba(0,0,0,0.3));">🏅</div>
+                        <div>
+                            <h4 style="margin: 0; font-size: 1.5rem; font-weight: 800; letter-spacing: 1px; color: #F5C842;">Top Scholar Wing</h4>
+                            <p style="margin: 5px 0 0; opacity: 0.8; font-size: 0.95rem;">Participated in <strong id="pfQuizzesPlayed" style="color: white;">0</strong> quizzes</p>
+                        </div>
+                    </div>
+                    
+                    <div style="text-align: right; z-index: 1;">
+                        <div style="font-size: 0.9rem; text-transform: uppercase; letter-spacing: 2px; color: rgba(255,255,255,0.7); font-weight: 700; margin-bottom: 5px;">Total Points</div>
+                        <div id="pfQuizPoints" style="font-size: 3rem; font-weight: 800; color: #E8856A; line-height: 1; text-shadow: 0 2px 5px rgba(0,0,0,0.3);">0</div>
+                    </div>
+                </div>
+            </div>
+
             <!-- SECTION E: Contribution Stars -->
             <div class="pf-section" id="pfContribSection" style="display:none;">
                 <div class="pf-section-header" style="margin-bottom:20px;">

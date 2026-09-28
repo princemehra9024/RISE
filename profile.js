@@ -119,6 +119,14 @@ onAuthStateChanged(auth, async (user) => {
         document.getElementById("pfCollege").textContent = profile.college || "--";
         document.getElementById("pfGoal").textContent = profile.goal || "--";
 
+        // -- Event Achievements --
+        const quizPts = userData.quizPoints || 0;
+        const quizzesPlayed = userData.quizzesPlayed || 0;
+        const elQuizPoints = document.getElementById("pfQuizPoints");
+        const elQuizzesPlayed = document.getElementById("pfQuizzesPlayed");
+        if (elQuizPoints) elQuizPoints.textContent = quizPts;
+        if (elQuizzesPlayed) elQuizzesPlayed.textContent = quizzesPlayed;
+
         // -- Contribution Stars --
         const contribPts   = userData.contributionPoints || 0;
         const totalUploads = userData.totalUploads || 0;

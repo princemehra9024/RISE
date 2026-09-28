@@ -1,7 +1,8 @@
 // events.js
 
-import { db } from './firebase-config.js';
-import { collection, addDoc, onSnapshot, query, orderBy } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { db, auth } from './firebase-config.js';
+import { collection, addDoc, onSnapshot, query, orderBy, doc, setDoc, increment } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     // MODALS
@@ -20,6 +21,11 @@ document.addEventListener('DOMContentLoaded', () => {
     let currentQuestionIndex = 0;
     let score = 0;
     let allQuizzes = [];
+    let currentUser = null;
+
+    onAuthStateChanged(auth, (user) => {
+        currentUser = user;
+    });
 
     // --- 1. MODAL HELPERS ---
     const closeAllModals = () => {
@@ -344,6 +350,15 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('btnNextQuestion').classList.add('hidden');
             document.getElementById('playQuizResult').classList.remove('hidden');
             document.getElementById('resultScore').innerText = `${score} / ${currentQuiz.questions.length}`;
+
+            // Award points
+            if (currentUser) {
+                const userRef = doc(db, 'users', currentUser.uid);
+                setDoc(userRef, {
+                    quizPoints: increment(score * 10), // 10 points per correct answer
+                    quizzesPlayed: increment(1)
+                }, { merge: true }).catch(err => console.error("Error updating points: ", err));
+            }
         }
     });
 
