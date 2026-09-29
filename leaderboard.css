@@ -161,6 +161,13 @@
     font-weight: 600;
 }
 
+.podium-played {
+    font-size: 0.78rem;
+    color: #aaa;
+    font-weight: 500;
+    margin-top: 2px;
+}
+
 /* ----- List Style ----- */
 .leaderboard-list-container {
     max-width: 600px;
@@ -168,7 +175,15 @@
 }
 
 .list-header {
-    display: none; /* Hide header for cleaner app-like look */
+    display: flex;
+    align-items: center;
+    padding: 10px 25px;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    font-weight: 700;
+    color: rgba(28, 61, 53, 0.4);
+    margin-bottom: 5px;
 }
 
 .leaderboard-list {
@@ -237,8 +252,9 @@
 }
 
 .scholar-quizzes {
-    font-size: 0.85rem;
-    color: #888;
+    font-size: 0.78rem;
+    color: #999;
+    margin-top: 2px;
 }
 
 .col-points { 

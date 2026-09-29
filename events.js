@@ -1,7 +1,7 @@
 // events.js
 
 import { db, auth } from './firebase-config.js';
-import { collection, addDoc, onSnapshot, query, orderBy, doc, setDoc, increment } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { collection, addDoc, onSnapshot, query, orderBy, doc, setDoc, getDoc, getDocs, increment } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -22,6 +22,7 @@ document.addEventListener('DOMContentLoaded', () => {
     let score = 0;
     let allQuizzes = [];
     let currentUser = null;
+    let joinName = '';
 
     onAuthStateChanged(auth, (user) => {
         currentUser = user;
@@ -161,11 +162,33 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // --- SEMESTER TOGGLE SETUP ---
+    const semesterToggle = document.getElementById('semesterToggle');
+    const semesterSelect = document.getElementById('inputQuizSemester');
+    
+    if (semesterToggle) {
+        semesterToggle.querySelectorAll('.sem-toggle-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                semesterToggle.querySelectorAll('.sem-toggle-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                
+                if (btn.getAttribute('data-mode') === 'specific') {
+                    semesterSelect.style.display = 'block';
+                    semesterSelect.value = '1';
+                } else {
+                    semesterSelect.style.display = 'none';
+                    semesterSelect.value = 'all';
+                }
+            });
+        });
+    }
+
     formAddEvent.addEventListener('submit', async (e) => {
         e.preventDefault();
         const eventName = document.getElementById('inputEventName').value.trim();
         const eventDesc = document.getElementById('inputEventDesc').value.trim();
         const orgName = document.getElementById('inputOrgName').value.trim();
+        const quizSemester = document.getElementById('inputQuizSemester').value;
 
         const qBlocks = document.querySelectorAll('.q-block');
         if (qBlocks.length === 0) {
@@ -190,6 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
             desc: eventDesc,
             questions: questions,
             organizer: orgName,
+            semester: quizSemester,
             createdAt: new Date().getTime()
         };
 
@@ -199,6 +223,13 @@ document.addEventListener('DOMContentLoaded', () => {
             formAddEvent.reset();
             questionsContainer.innerHTML = '';
             questionCount = 0;
+            // Reset semester toggle
+            if (semesterToggle) {
+                semesterToggle.querySelectorAll('.sem-toggle-btn').forEach(b => b.classList.remove('active'));
+                semesterToggle.querySelector('[data-mode="all"]').classList.add('active');
+                semesterSelect.style.display = 'none';
+                semesterSelect.value = 'all';
+            }
         } catch (error) {
             console.error("Error adding document: ", error);
             alert("Failed to publish quiz.");
@@ -232,11 +263,23 @@ document.addEventListener('DOMContentLoaded', () => {
             let orgInitials = evt.organizer ? evt.organizer.charAt(0).toUpperCase() : 'S';
             let orgName = evt.organizer || 'Student';
             
+            // Count participants
+            const participantCount = evt.participantCount || 0;
+            
+            // Semester badge
+            const semVal = evt.semester || 'all';
+            const semBadge = semVal !== 'all' 
+                ? `<span class="ec-sem-badge">Sem ${semVal}</span>` 
+                : `<span class="ec-sem-badge ec-sem-all">All Sem</span>`;
+            
             const cardHTML = `
                 <div class="event-card">
                     <div class="ec-header">
                         <span class="ec-badge">Community Quiz</span>
-                        <span class="ec-date">${evt.questions.length} Qs</span>
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                            ${semBadge}
+                            <span class="ec-date">${evt.questions.length} Qs</span>
+                        </div>
                     </div>
                     <h3 class="ec-title">${evt.name}</h3>
                     <p class="ec-desc">${evt.desc}</p>
@@ -245,7 +288,10 @@ document.addEventListener('DOMContentLoaded', () => {
                             <div class="ec-org-av">${orgInitials}</div>
                             <span class="ec-org-name">${orgName}</span>
                         </div>
-                        <button class="ec-action-btn join-btn" data-id="${evt.id}">Join / View</button>
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            ${participantCount > 0 ? `<span class="participant-count-badge">${participantCount} played</span>` : ''}
+                            <button class="ec-action-btn join-btn" data-id="${evt.id}">Join / View</button>
+                        </div>
                     </div>
                 </div>
             `;
@@ -280,7 +326,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- 4. JOIN & PLAY QUIZ ---
     formJoinQuiz.addEventListener('submit', (e) => {
         e.preventDefault();
-        const joinName = document.getElementById('joinName').value;
+        joinName = document.getElementById('joinName').value.trim();
         
         closeAllModals();
         
@@ -365,34 +411,226 @@ document.addEventListener('DOMContentLoaded', () => {
                     if (currentQuestionIndex < currentQuiz.questions.length) {
                         renderQuestion();
                     } else {
-                        // FINISH
-                        document.getElementById('playQuizContent').classList.add('hidden');
-                        document.getElementById('btnNextQuestion').classList.add('hidden');
-                        document.getElementById('playQuizResult').classList.remove('hidden');
-                        document.getElementById('resultScore').innerText = `${score} / ${currentQuiz.questions.length}`;
-
-                        // Award points
-                        if (currentUser) {
-                            const userRef = doc(db, 'users', currentUser.uid);
-                            setDoc(userRef, {
-                                quizPoints: increment(score * 10), // 10 points per correct answer
-                                quizzesPlayed: increment(1)
-                            }, { merge: true }).catch(err => console.error("Error updating points: ", err));
-                        }
-                        
-                        // Prevent replay
-                        const joinBtn = document.querySelector(`.join-btn[data-id="${currentQuiz.id}"]`);
-                        if (joinBtn) {
-                            joinBtn.innerText = 'Completed';
-                            joinBtn.style.opacity = '0.5';
-                            joinBtn.style.cursor = 'not-allowed';
-                            joinBtn.style.pointerEvents = 'none';
-                        }
+                        // FINISH - Save result and show scoreboard
+                        finishQuiz();
                     }
                 }, 1500);
             });
         });
     };
+
+    // --- 5. FINISH QUIZ & SHOW SCOREBOARD ---
+    async function finishQuiz() {
+        // Hide quiz content
+        document.getElementById('playQuizContent').classList.add('hidden');
+        document.getElementById('btnNextQuestion').classList.add('hidden');
+        document.getElementById('playQuizResult').classList.remove('hidden');
+        
+        const totalQuestions = currentQuiz.questions.length;
+        const pointsEarned = score * 10;
+        
+        // Save participant result to Firestore subcollection
+        try {
+            const participantData = {
+                name: joinName,
+                score: score,
+                totalQuestions: totalQuestions,
+                points: pointsEarned,
+                completedAt: new Date().getTime(),
+                userId: currentUser ? currentUser.uid : null
+            };
+            
+            await addDoc(collection(db, 'quizzes', currentQuiz.id, 'participants'), participantData);
+            
+            // Update participant count on quiz doc
+            const quizRef = doc(db, 'quizzes', currentQuiz.id);
+            await setDoc(quizRef, {
+                participantCount: increment(1)
+            }, { merge: true });
+            
+            // Award points to user profile
+            if (currentUser) {
+                const userRef = doc(db, 'users', currentUser.uid);
+                await setDoc(userRef, {
+                    quizPoints: increment(pointsEarned),
+                    quizzesPlayed: increment(1)
+                }, { merge: true });
+            }
+        } catch (err) {
+            console.error("Error saving quiz result: ", err);
+        }
+        
+        // Fetch all participants for this quiz and show animated scoreboard
+        try {
+            const participantsSnap = await getDocs(collection(db, 'quizzes', currentQuiz.id, 'participants'));
+            let participants = [];
+            participantsSnap.forEach(docSnap => {
+                participants.push(docSnap.data());
+            });
+            
+            // Sort by score descending (highest first), then by completedAt ascending (earlier = better)
+            participants.sort((a, b) => {
+                if (b.score !== a.score) return b.score - a.score;
+                return (a.completedAt || 0) - (b.completedAt || 0);
+            });
+            
+            renderScoreboard(participants, totalQuestions);
+        } catch (err) {
+            console.error("Error fetching participants: ", err);
+            // Fallback: show just the user's score
+            renderScoreboard([{
+                name: joinName,
+                score: score,
+                totalQuestions: totalQuestions,
+                points: score * 10
+            }], totalQuestions);
+        }
+        
+        // Prevent replay
+        const joinBtn = document.querySelector(`.join-btn[data-id="${currentQuiz.id}"]`);
+        if (joinBtn) {
+            joinBtn.innerText = 'Completed';
+            joinBtn.style.opacity = '0.5';
+            joinBtn.style.cursor = 'not-allowed';
+            joinBtn.style.pointerEvents = 'none';
+        }
+    }
+
+    // --- 6. ANIMATED SCOREBOARD RENDERER ---
+    function renderScoreboard(participants, totalQuestions) {
+        const resultDiv = document.getElementById('playQuizResult');
+        
+        // Find if user is in list
+        const userIndex = participants.findIndex(p => p.name === joinName);
+        const userRank = userIndex >= 0 ? userIndex + 1 : participants.length;
+        const userScore = score;
+        const percentage = Math.round((userScore / totalQuestions) * 100);
+        
+        // Determine emoji/message based on percentage
+        let resultEmoji, resultMsg, resultColor;
+        if (percentage >= 90) {
+            resultEmoji = '🏆'; resultMsg = 'Outstanding!'; resultColor = '#FFD700';
+        } else if (percentage >= 70) {
+            resultEmoji = '🌟'; resultMsg = 'Great Job!'; resultColor = '#4CAF50';
+        } else if (percentage >= 50) {
+            resultEmoji = '👍'; resultMsg = 'Good Effort!'; resultColor = '#FF9800';
+        } else {
+            resultEmoji = '💪'; resultMsg = 'Keep Practicing!'; resultColor = '#E8856A';
+        }
+        
+        // Build scoreboard HTML
+        let scoreboardRows = '';
+        participants.forEach((p, idx) => {
+            const rank = idx + 1;
+            const isCurrentUser = (p.name === joinName && idx === userIndex);
+            const initial = p.name.charAt(0).toUpperCase();
+            const pScore = p.score || 0;
+            const pTotal = p.totalQuestions || totalQuestions;
+            const pPercentage = Math.round((pScore / pTotal) * 100);
+            
+            // Rank medal
+            let rankDisplay;
+            if (rank === 1) rankDisplay = '<span class="sb-medal sb-gold">🥇</span>';
+            else if (rank === 2) rankDisplay = '<span class="sb-medal sb-silver">🥈</span>';
+            else if (rank === 3) rankDisplay = '<span class="sb-medal sb-bronze">🥉</span>';
+            else rankDisplay = `<span class="sb-rank-num">${rank}</span>`;
+            
+            // Avatar gradient colors per rank
+            const avatarColors = [
+                'linear-gradient(135deg, #FFD700, #FDB931)',
+                'linear-gradient(135deg, #C0C0C0, #9E9E9E)',
+                'linear-gradient(135deg, #CD7F32, #E29B5A)',
+                'linear-gradient(135deg, #667eea, #764ba2)',
+                'linear-gradient(135deg, #f093fb, #f5576c)',
+                'linear-gradient(135deg, #4facfe, #00f2fe)',
+                'linear-gradient(135deg, #43e97b, #38f9d7)',
+                'linear-gradient(135deg, #fa709a, #fee140)'
+            ];
+            const avatarBg = avatarColors[idx % avatarColors.length];
+            
+            scoreboardRows += `
+                <div class="sb-row ${isCurrentUser ? 'sb-row-you' : ''}" style="animation-delay: ${idx * 0.15}s;">
+                    <div class="sb-row-rank">${rankDisplay}</div>
+                    <div class="sb-row-avatar" style="background: ${avatarBg};">${initial}</div>
+                    <div class="sb-row-info">
+                        <span class="sb-row-name">${p.name}${isCurrentUser ? ' <span class="sb-you-badge">YOU</span>' : ''}</span>
+                    </div>
+                    <div class="sb-row-score">
+                        <span class="sb-score-value" data-target="${pScore}">${pScore}</span>
+                        <span class="sb-score-total">/ ${pTotal}</span>
+                    </div>
+                    <div class="sb-row-bar-wrap">
+                        <div class="sb-row-bar" style="--bar-width: ${pPercentage}%; animation-delay: ${idx * 0.15 + 0.3}s;"></div>
+                    </div>
+                </div>
+            `;
+        });
+        
+        resultDiv.innerHTML = `
+            <div class="quiz-result-screen">
+                <!-- Result Header with Animation -->
+                <div class="result-header">
+                    <div class="result-emoji-wrap">
+                        <span class="result-emoji">${resultEmoji}</span>
+                    </div>
+                    <h2 class="result-msg" style="color: ${resultColor};">${resultMsg}</h2>
+                    <div class="result-score-circle" style="--score-color: ${resultColor};">
+                        <svg viewBox="0 0 100 100" class="result-ring">
+                            <circle cx="50" cy="50" r="44" class="ring-bg" />
+                            <circle cx="50" cy="50" r="44" class="ring-fill" style="--percentage: ${percentage};" />
+                        </svg>
+                        <div class="result-score-text">
+                            <span class="score-num" id="animatedScore">0</span>
+                            <span class="score-denom">/ ${totalQuestions}</span>
+                        </div>
+                    </div>
+                    <p class="result-rank-text">You ranked <strong>#${userRank}</strong> out of <strong>${participants.length}</strong> participant${participants.length > 1 ? 's' : ''}</p>
+                </div>
+
+                <!-- Scoreboard -->
+                <div class="scoreboard-section">
+                    <div class="scoreboard-header">
+                        <span class="scoreboard-icon">📋</span>
+                        <h3>Scoreboard</h3>
+                        <span class="scoreboard-count">${participants.length} participant${participants.length > 1 ? 's' : ''}</span>
+                    </div>
+                    <div class="scoreboard-list">
+                        ${scoreboardRows}
+                    </div>
+                </div>
+
+                <button class="btn-submit-event btn-finish-quiz" id="btnFinishQuizNew" style="max-width: 280px; margin: 30px auto 0;">
+                    Back to Events ✦
+                </button>
+            </div>
+        `;
+        
+        // Animate score counting up
+        animateScoreCount('animatedScore', userScore, 1200);
+        
+        // Finish button
+        document.getElementById('btnFinishQuizNew').addEventListener('click', () => {
+            closeAllModals();
+            formJoinQuiz.reset();
+        });
+    }
+    
+    // --- Score Count Animation ---
+    function animateScoreCount(elementId, target, duration) {
+        const el = document.getElementById(elementId);
+        if (!el) return;
+        const start = performance.now();
+        
+        function update(now) {
+            const elapsed = now - start;
+            const progress = Math.min(elapsed / duration, 1);
+            // Ease out cubic
+            const eased = 1 - Math.pow(1 - progress, 3);
+            el.textContent = Math.round(eased * target);
+            if (progress < 1) requestAnimationFrame(update);
+        }
+        requestAnimationFrame(update);
+    }
 
     document.getElementById('btnFinishQuiz').addEventListener('click', () => {
         closeAllModals();
