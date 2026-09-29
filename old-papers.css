@@ -1112,4 +1112,124 @@
     .op-select-wrapper { max-width: 100%; }
     .op-upload-cta { padding: 30px 24px; }
     .op-upload-cta-text h3 { font-size: 22px; }
+
+    /* Topbar: stack on small screens */
+    .op-topbar {
+        flex-direction: column;
+        gap: 12px;
+        align-items: flex-start;
+    }
+    .op-topbar-right {
+        width: 100%;
+        justify-content: space-between;
+    }
+    .op-upload-nav-btn {
+        font-size: 12px;
+        padding: 7px 14px;
+    }
+    .op-badge {
+        font-size: 10px;
+        padding: 4px 10px;
+    }
+    .op-back-link {
+        font-size: 12px;
+        padding: 6px 10px;
+    }
+
+    /* Hero */
+    .op-hero-banner {
+        padding: 24px 20px;
+    }
+    .op-hero-title {
+        font-size: 24px;
+    }
+    .op-hero-subtitle {
+        font-size: 13px;
+    }
+    .op-hero-stats {
+        gap: 10px;
+        width: 100%;
+    }
+    .op-stat-pill {
+        flex: 1;
+        min-width: 80px;
+        padding: 10px 12px;
+    }
+    .op-stat-number {
+        font-size: 18px;
+    }
+
+    /* Detail view */
+    .op-detail-header {
+        flex-direction: column;
+        gap: 12px;
+        padding: 20px;
+    }
+    .op-detail-title {
+        font-size: 22px;
+    }
+
+    /* Subject tabs */
+    .op-subject-tabs {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        gap: 6px;
+        padding: 4px;
+        -webkit-overflow-scrolling: touch;
+    }
+    .op-tab {
+        padding: 8px 16px;
+        font-size: 13px;
+        white-space: nowrap;
+        flex-shrink: 0;
+    }
+
+    /* Papers grid */
+    .op-papers-grid {
+        grid-template-columns: 1fr;
+        gap: 14px;
+    }
+    .op-paper-card {
+        padding: 18px;
+    }
+    .op-paper-name {
+        font-size: 14px;
+    }
+    .op-paper-actions {
+        flex-direction: column;
+    }
+
+    /* CTA */
+    .op-upload-cta {
+        flex-direction: column;
+        text-align: center;
+        align-items: center;
+    }
+    .op-upload-btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    /* Section header */
+    .op-section-title {
+        font-size: 22px;
+    }
+
+    /* Papers section title */
+    .op-papers-section-title {
+        font-size: 18px;
+        flex-wrap: wrap;
+    }
+}
+
+@media (max-width: 360px) {
+    .op-topbar { padding: 12px 12px; }
+    .op-hero-banner { padding: 20px 16px; }
+    .op-hero-title { font-size: 20px; }
+    .op-sem-card { padding: 20px 16px; }
+    .op-detail-header { padding: 16px; }
+    .op-detail-title { font-size: 18px; }
+    .op-paper-card { padding: 14px; }
+    .op-upload-cta { padding: 24px 16px; }
+    .op-upload-cta-text h3 { font-size: 18px; }
 }

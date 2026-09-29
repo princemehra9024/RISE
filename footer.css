@@ -540,7 +540,7 @@
         padding: 16px 20px;
     }
     .rf-bottom-left { justify-content: center; }
-    .rf-bottom-right { justify-content: center; }
+    .rf-bottom-right { justify-content: center; width: 100%; }
     .rf-acronym-strip { justify-content: center; }
     .rf-acronym-item {
         border-right: none;
@@ -548,4 +548,25 @@
         padding: 8px 20px;
     }
     .rf-acronym-item:last-child { border-bottom: none; }
+    
+    /* EP Card: prevent horizontal overflow on mobile */
+    .ep-card {
+        width: 100%;
+        max-width: 100%;
+        height: auto;
+        min-height: 14rem;
+    }
+    .ep-logo-mark {
+        font-size: 2rem;
+    }
+    .ep-content h3 {
+        font-size: 0.9rem;
+    }
+}
+
+/* When mobile bottom nav is present, give footer space */
+@media (max-width: 768px) {
+    .dash-footer {
+        margin-bottom: 70px;
+    }
 }

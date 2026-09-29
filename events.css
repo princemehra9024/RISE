@@ -926,3 +926,149 @@
     transform: translateY(-3px);
     box-shadow: 0 12px 35px rgba(28, 61, 53, 0.35);
 }
+
+/* ============================================================
+   RESPONSIVE — EVENTS PAGE
+   ============================================================ */
+@media (max-width: 768px) {
+    .events-main {
+        padding: 20px 16px;
+        padding-bottom: 90px;
+    }
+
+    .events-title {
+        font-size: 1.8rem;
+    }
+
+    .events-subtitle {
+        font-size: 0.9rem;
+    }
+
+    .events-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+
+    .event-card {
+        padding: 20px;
+    }
+
+    .ec-title {
+        font-size: 1.15rem;
+    }
+
+    .event-modal {
+        width: 95%;
+        max-width: 100%;
+        padding: 24px 20px;
+        border-radius: 16px;
+    }
+
+    .quiz-option {
+        padding: 14px 16px;
+        font-size: 0.95rem;
+    }
+
+    .result-msg {
+        font-size: 1.4rem;
+    }
+
+    .sb-row {
+        padding: 10px 14px;
+        gap: 10px;
+    }
+
+    .sb-row-bar-wrap {
+        display: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .events-main {
+        padding: 16px 12px;
+        padding-bottom: 85px;
+    }
+
+    .events-title {
+        font-size: 1.5rem;
+    }
+
+    .events-grid {
+        gap: 12px;
+    }
+
+    .event-card {
+        padding: 16px;
+        border-radius: 14px;
+    }
+
+    .ec-badge {
+        font-size: 0.6rem;
+        padding: 4px 8px;
+    }
+
+    .ec-title {
+        font-size: 1.05rem;
+    }
+
+    .ec-desc {
+        font-size: 0.82rem;
+    }
+
+    .event-modal {
+        padding: 20px 16px;
+    }
+
+    .modal-header h2 {
+        font-size: 1.2rem;
+    }
+
+    .semester-toggle {
+        flex-wrap: wrap;
+    }
+
+    .sem-toggle-btn {
+        font-size: 0.78rem;
+        padding: 8px 12px;
+    }
+
+    .quiz-option {
+        padding: 12px 14px;
+        font-size: 0.88rem;
+        gap: 10px;
+    }
+
+    .quiz-option .opt-letter {
+        width: 28px;
+        height: 28px;
+        font-size: 0.8rem;
+    }
+
+    .result-score-circle {
+        width: 100px;
+        height: 100px;
+    }
+
+    .score-num {
+        font-size: 1.8rem;
+    }
+
+    .scoreboard-header h3 {
+        font-size: 1.1rem;
+    }
+}
+
+@media (max-width: 360px) {
+    .events-main {
+        padding: 12px 8px;
+        padding-bottom: 80px;
+    }
+
+    .events-title {
+        font-size: 1.3rem;
+    }
+
+    .event-card {
+        padding: 14px;
+    }
+}
