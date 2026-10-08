@@ -4,6 +4,13 @@ const path = require('path');
 const newSidebar = `
             <nav class="sidebar-nav">
                 <!-- Profile Section -->
+                <a href="index.html" class="sb-nav-item" id="navHome">
+                    <span class="sb-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>
+                    </span>
+                    <span>Home</span>
+                </a>
+
                 <a href="profile.html" class="sb-nav-item" id="navProfile">
                     <span class="sb-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
@@ -12,7 +19,7 @@ const newSidebar = `
                 </a>
 
                 <div class="nav-section-title">STUDY</div>
-                <a href="study.html" class="sb-nav-item" id="navDashboard">
+                <a href="study.html" class="sb-nav-item">
                     <span class="sb-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
                     </span>
@@ -25,19 +32,14 @@ const newSidebar = `
                     </span>
                     <span>Old Papers</span>
                 </a>
-                <a href="#" class="sb-nav-item">
-                    <span class="sb-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
-                    </span>
-                    <span>Notes</span>
-                </a>
+
                 <a href="ai-study.html" class="sb-nav-item ai-assistant-link">
                     <span class="sb-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
                     </span>
                     <span>AI Assistant</span>
-                    <span class="nav-soon-badge">Soon</span>
                 </a>
+
                 <a href="timetable.html" class="sb-nav-item">
                     <span class="sb-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
@@ -47,12 +49,25 @@ const newSidebar = `
 
                 <div class="nav-section-title">COMMUNITY</div>
 
+                <a href="index.html#create-post" class="sb-nav-item">
+                    <span class="sb-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                    </span>
+                    <span>Create Post</span>
+                </a>
+
                 <a href="leaderboard.html" class="sb-nav-item">
                     <span class="sb-icon">
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
                     </span>
                     <span>Leaderboard</span>
-                    <span class="nav-soon-badge">Soon</span>
+                </a>
+
+                <a href="events.html" class="sb-nav-item">
+                    <span class="sb-icon">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                    </span>
+                    <span>Events</span>
                 </a>
 
                 <a href="work.html" class="sb-nav-item">
@@ -60,19 +75,8 @@ const newSidebar = `
                         <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
                     </span>
                     <span>Projects</span>
-                    <span class="nav-soon-badge">Soon</span>
                 </a>
-
-
-                <div class="nav-section-title">ME</div>
-                <a href="#" class="sb-nav-item">
-                    <span class="sb-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
-                    </span>
-                    <span>Badges</span>
-                </a>
-            </nav>
-`;
+            </nav>`;
 
 const dir = 'd:\\ALL-WEB-SITE\\priyanshu';
 
@@ -82,23 +86,20 @@ fs.readdirSync(dir).forEach(file => {
         
         // Remove the existing sidebar-nav
         const navRegex = /<nav class="sidebar-nav">[\s\S]*?<\/nav>/;
-        const userRegex = /<div class="sidebar-user">[\s\S]*?<\/div>\s*<\/aside>/;
         
         let updated = content.replace(navRegex, newSidebar.trim());
         
-        // Let's NOT remove sidebar user for now, but in the request, the user wants structure exactly same. Let me just remove sidebar-user since it's not in the design and profile is at the top.
-        updated = updated.replace(userRegex, '</aside>');
-        
         // fix active state based on file
-        // a simple way: we will reset active class dynamically or just leave it off and let JS handle it, but wait, usually active class is statically added.
-        // Let's dynamically add active class to the current page.
-        if (file === 'study.html') {
-            updated = updated.replace('<span>Study</span>', '<span>Study</span>').replace('id="navDashboard"', 'id="navDashboard" class="sb-nav-item active"');
-            updated = updated.replace('class="sb-nav-item" id="navDashboard"', 'class="sb-nav-item active" id="navDashboard"');
+        if (file === 'index.html') {
+             updated = updated.replace('href="index.html" class="sb-nav-item"', 'href="index.html" class="sb-nav-item active"');
+        } else if (file === 'study.html') {
+             updated = updated.replace('href="study.html" class="sb-nav-item"', 'href="study.html" class="sb-nav-item active"');
+        } else if (file === 'events.html') {
+             updated = updated.replace('href="events.html" class="sb-nav-item"', 'href="events.html" class="sb-nav-item active"');
         } else if (file === 'old-papers.html' || file === 'upload-paper.html') {
              updated = updated.replace('href="old-papers.html" class="sb-nav-item"', 'href="old-papers.html" class="sb-nav-item active"');
         } else if (file === 'profile.html') {
-             updated = updated.replace('href="profile.html" class="sb-nav-item" id="navProfile"', 'href="profile.html" class="sb-nav-item active" id="navProfile"');
+             updated = updated.replace('href="profile.html" class="sb-nav-item"', 'href="profile.html" class="sb-nav-item active"');
         } else if (file === 'timetable.html') {
              updated = updated.replace('href="timetable.html" class="sb-nav-item"', 'href="timetable.html" class="sb-nav-item active"');
         } else if (file === 'leaderboard.html') {

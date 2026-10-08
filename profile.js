@@ -70,7 +70,7 @@ onAuthStateChanged(auth, async (user) => {
 
         if (!docSnap.exists() || !docSnap.data().profile) {
             profileLoading.textContent = "Profile not set up yet. Redirecting...";
-            setTimeout(() => { window.location.href = "index.html"; }, 1500);
+            setTimeout(() => { window.location.href = "study.html"; }, 1500);
             return;
         }
 
@@ -343,13 +343,13 @@ onAuthStateChanged(auth, async (user) => {
 
         // -- Edit Profile Button --
         document.getElementById("pfEditBtn").addEventListener("click", () => {
-            window.location.href = "index.html?edit=1";
+            window.location.href = "study.html?edit=1";
         });
 
         // -- Sign Out Button --
         document.getElementById("pfSignOutBtn").addEventListener("click", async () => {
             await firebaseSignOut(auth);
-            window.location.href = "index.html";
+            window.location.href = "study.html";
         });
 
         // -- Semester Complete Button --

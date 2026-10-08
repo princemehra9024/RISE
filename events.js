@@ -219,10 +219,53 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             await addDoc(collection(db, 'quizzes'), newQuiz);
+            
+            // --- AUTOMATIC HOME PAGE POST ---
+            let badgeImageBase64 = null;
+            const badgePreviewImg = document.querySelector('.badge-preview-img');
+            if (badgePreviewImg) {
+                badgeImageBase64 = badgePreviewImg.src;
+            }
+
+            const newPost = {
+                id: Date.now().toString(),
+                author: orgName,
+                time: "Just now",
+                content: `🚀 I just published a new quiz: **${eventName}**!<br><br>${eventDesc}<br><br><a href="events.html" style="color:var(--primary-color); font-weight:600; text-decoration:none;">Join the quiz now ✦</a>`,
+                likes: 0,
+                comments: 0,
+                isLiked: false,
+                isFollowing: false,
+                initials: orgName.charAt(0).toUpperCase(),
+                color: "#E8856A",
+                category: "Latest",
+                image: badgeImageBase64 // Use badge image as the post image
+            };
+            
+            let customPosts = JSON.parse(localStorage.getItem('customFeedPosts') || '[]');
+            customPosts.unshift(newPost);
+            localStorage.setItem('customFeedPosts', JSON.stringify(customPosts));
+            // ---------------------------------
+
             closeAllModals();
             formAddEvent.reset();
             questionsContainer.innerHTML = '';
             questionCount = 0;
+            
+            // Reset badge upload UI if it exists
+            const badgeUploadBox = document.getElementById('badgeUploadBox');
+            const badgeUploadContent = document.getElementById('badgeUploadContent');
+            if (badgeUploadBox && badgeUploadContent) {
+                badgeUploadContent.innerHTML = `
+                    <span class="upload-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    </span>
+                    <span class="upload-text">Upload Custom Badge</span>
+                    <span class="upload-subtext">Click to browse (JPG, PNG)</span>
+                `;
+                badgeUploadBox.classList.remove('has-image');
+            }
+
             // Reset semester toggle
             if (semesterToggle) {
                 semesterToggle.querySelectorAll('.sem-toggle-btn').forEach(b => b.classList.remove('active'));
@@ -636,5 +679,33 @@ document.addEventListener('DOMContentLoaded', () => {
         closeAllModals();
         formJoinQuiz.reset();
     });
+
+    // --- Badge Upload Logic ---
+    const inputBadgeImage = document.getElementById('inputBadgeImage');
+    const badgeUploadBox = document.getElementById('badgeUploadBox');
+    const badgeUploadContent = document.getElementById('badgeUploadContent');
+
+    if (inputBadgeImage && badgeUploadBox) {
+        inputBadgeImage.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    badgeUploadContent.innerHTML = `<img src="${evt.target.result}" class="badge-preview-img" alt="Badge Preview">`;
+                    badgeUploadBox.classList.add('has-image');
+                }
+                reader.readAsDataURL(file);
+            } else {
+                badgeUploadContent.innerHTML = `
+                    <span class="upload-icon">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                    </span>
+                    <span class="upload-text">Upload Custom Badge</span>
+                    <span class="upload-subtext">Click to browse (JPG, PNG)</span>
+                `;
+                badgeUploadBox.classList.remove('has-image');
+            }
+        });
+    }
 
 });

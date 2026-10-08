@@ -24,7 +24,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 <div style="text-align: center; padding: 30px; color: rgba(28,61,53,0.6);">
                     <div style="font-size: 2.5rem; margin-bottom: 12px;">🔒</div>
                     <p style="font-weight: 600; margin-bottom: 6px;">Please log in to view the leaderboard</p>
-                    <a href="index.html" style="color: #E8856A; font-weight: 700; text-decoration: none;">Go to Dashboard →</a>
+                    <a href="study.html" style="color: #E8856A; font-weight: 700; text-decoration: none;">Go to Dashboard →</a>
                 </div>
             `;
             return;

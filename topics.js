@@ -59,7 +59,7 @@ onAuthStateChanged(auth, async (user) => {
 
         if (!studentProfile) {
             // No profile: go back to dashboard to set up
-            window.location.href = "index.html";
+            window.location.href = "study.html";
             return;
         }
 
@@ -87,7 +87,7 @@ onAuthStateChanged(auth, async (user) => {
         loadingScreen.classList.add("hidden");
         topicsApp.classList.remove("hidden");
     } else {
-        window.location.href = "index.html";
+        window.location.href = "study.html";
     }
 });
 
