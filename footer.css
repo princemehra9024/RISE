@@ -331,6 +331,18 @@
     font-style: normal;
 }
 
+.rf-credits-grid {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.rf-credits-grid .rf-credit-item {
+    margin-bottom: 0;
+    flex: 1;
+    min-width: 140px;
+}
+
 /* Credit cards */
 .rf-credit-item {
     display: flex;
