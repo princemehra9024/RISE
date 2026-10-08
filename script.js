@@ -1,6 +1,6 @@
 import { getSyllabus, syllabus as defaultSyllabus } from "./syllabus.js";
 import { auth, db, provider } from "./firebase-config.js";
-import { signInWithPopup, signOut as firebaseSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { signInWithRedirect, signOut as firebaseSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // ---------- Auth & User State ----------
@@ -95,7 +95,7 @@ firebaseLoginBtn.addEventListener("click", async () => {
     firebaseLoginBtn.disabled = true;
     firebaseLoginBtn.innerHTML = `<span style="opacity:0.7">Signing in...</span>`;
     try {
-        await signInWithPopup(auth, provider);
+        await signInWithRedirect(auth, provider);
     } catch (error) {
         console.error("Login Failed:", error);
         firebaseLoginBtn.disabled = false;
