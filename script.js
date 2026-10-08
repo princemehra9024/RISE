@@ -5,6 +5,11 @@ import { doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.co
 
 // ---------- Auth & User State ----------
 
+// Firebase Auth requires localhost, 127.0.0.1 is not authorized by default.
+if (window.location.hostname === '127.0.0.1') {
+    window.location.hostname = 'localhost';
+}
+
 let currentUser = null;
 let progressData = {};
 let studentProfile = null;

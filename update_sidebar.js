@@ -1,37 +1,7 @@
-<!DOCTYPE html>
-<html lang="en">
+const fs = require('fs');
+const path = require('path');
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>RISE — Leaderboard</title>
-    <meta name="description" content="View the top ranking scholars on the RISE platform.">
-
-    <!-- Fonts -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;0,800;1,700&family=Inter:wght@400;500;600;700;800&family=Dancing+Script:wght@700&display=swap" rel="stylesheet">
-
-    <!-- Shared CSS -->
-    <link rel="stylesheet" href="base.css">
-    <link rel="stylesheet" href="index.css"> <!-- For sidebar and general layout -->
-    <link rel="stylesheet" href="footer.css">
-    
-    <!-- Specific CSS -->
-    <link rel="stylesheet" href="leaderboard.css">
-</head>
-
-<body>
-
-    <div class="dash-wrap">
-
-        <!-- ===== SIDEBAR ===== -->
-        <aside class="sidebar">
-            <div class="sidebar-brand">
-                <span class="sb-rise">RISE</span>
-                <span class="sb-star">✦</span>
-            </div>
-
+const newSidebar = `
             <nav class="sidebar-nav">
                 <!-- Profile Section -->
                 <a href="profile.html" class="sb-nav-item" id="navProfile">
@@ -68,7 +38,7 @@
                 </a>
                 <a href="ai-study.html" class="sb-nav-item ai-assistant-link">
                     <span class="sb-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l2.4 7.6 7.6 2.4-7.6 2.4-2.4 7.6-2.4-7.6-7.6-2.4 7.6-2.4 2.4-7.6z"></path></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"></path></svg>
                     </span>
                     <span>AI Assistant</span>
                     <span class="nav-soon-badge">Soon</span>
@@ -88,9 +58,9 @@
                     <span>Q&A</span>
                     <span class="nav-soon-badge">Soon</span>
                 </a>
-                <a href="leaderboard.html" class="sb-nav-item active">
+                <a href="leaderboard.html" class="sb-nav-item">
                     <span class="sb-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="7"></circle><polyline points="8.21 13.89 7 23 12 20 17 23 15.79 13.88"></polyline></svg>
                     </span>
                     <span>Leaderboard</span>
                     <span class="nav-soon-badge">Soon</span>
@@ -120,80 +90,49 @@
                 <div class="nav-section-title">ME</div>
                 <a href="#" class="sb-nav-item">
                     <span class="sb-icon">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9H4.5a2.5 2.5 0 0 1 0-5H6"></path><path d="M18 9h1.5a2.5 2.5 0 0 0 0-5H18"></path><path d="M4 22h16"></path><path d="M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22"></path><path d="M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22"></path><path d="M18 2H6v7a6 6 0 0 0 12 0V2z"></path></svg>
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"></path></svg>
                     </span>
                     <span>Badges</span>
                 </a>
             </nav>
+`;
 
-            </aside>
+const dir = 'd:\\ALL-WEB-SITE\\priyanshu';
 
-        <!-- ===== MOBILE BOTTOM NAV ===== -->
-        <nav class="mobile-bottom-nav">
-            <a href="index.html">
-                <span class="mob-icon">🏠</span>
-                <span>Home</span>
-            </a>
-            <a href="old-papers.html">
-                <span class="mob-icon">📄</span>
-                <span>Papers</span>
-            </a>
-            <a href="work.html">
-                <span class="mob-icon">⚡</span>
-                <span>Work</span>
-            </a>
-            <a href="events.html">
-                <span class="mob-icon">🎉</span>
-                <span>Events</span>
-            </a>
-            <a href="profile.html">
-                <span class="mob-icon">👤</span>
-                <span>Profile</span>
-            </a>
-        </nav>
+fs.readdirSync(dir).forEach(file => {
+    if (file.endsWith('.html')) {
+        let content = fs.readFileSync(path.join(dir, file), 'utf8');
+        
+        // Remove the existing sidebar-nav
+        const navRegex = /<nav class="sidebar-nav">[\s\S]*?<\/nav>/;
+        const userRegex = /<div class="sidebar-user">[\s\S]*?<\/div>\s*<\/aside>/;
+        
+        let updated = content.replace(navRegex, newSidebar.trim());
+        
+        // Let's NOT remove sidebar user for now, but in the request, the user wants structure exactly same. Let me just remove sidebar-user since it's not in the design and profile is at the top.
+        updated = updated.replace(userRegex, '</aside>');
+        
+        // fix active state based on file
+        // a simple way: we will reset active class dynamically or just leave it off and let JS handle it, but wait, usually active class is statically added.
+        // Let's dynamically add active class to the current page.
+        if (file === 'index.html') {
+            updated = updated.replace('<span>Attendance</span>', '<span>Attendance</span>').replace('id="navDashboard"', 'id="navDashboard" class="sb-nav-item active"');
+            updated = updated.replace('class="sb-nav-item" id="navDashboard"', 'class="sb-nav-item active" id="navDashboard"');
+        } else if (file === 'old-papers.html' || file === 'upload-paper.html') {
+             updated = updated.replace('href="old-papers.html" class="sb-nav-item"', 'href="old-papers.html" class="sb-nav-item active"');
+        } else if (file === 'profile.html') {
+             updated = updated.replace('href="profile.html" class="sb-nav-item" id="navProfile"', 'href="profile.html" class="sb-nav-item active" id="navProfile"');
+        } else if (file === 'timetable.html') {
+             updated = updated.replace('href="timetable.html" class="sb-nav-item"', 'href="timetable.html" class="sb-nav-item active"');
+        } else if (file === 'leaderboard.html') {
+             updated = updated.replace('href="leaderboard.html" class="sb-nav-item"', 'href="leaderboard.html" class="sb-nav-item active"');
+        } else if (file === 'work.html') {
+             updated = updated.replace('href="work.html" class="sb-nav-item"', 'href="work.html" class="sb-nav-item active"');
+        } else if (file === 'ai-study.html') {
+             updated = updated.replace('href="ai-study.html" class="sb-nav-item ai-assistant-link"', 'href="ai-study.html" class="sb-nav-item ai-assistant-link active"');
+        }
 
-        <!-- ===== MAIN CONTENT ===== -->
-        <main class="dash-main leaderboard-main">
-
-            <!-- Decorative floating shapes -->
-            <div class="deco-star deco-1">✦</div>
-            <div class="deco-blob deco-blob-1"></div>
-            <div class="deco-blob deco-blob-2"></div>
-
-            <!-- ===== HERO ===== -->
-            <header class="events-hero">
-                <h1 class="events-title">Global <span class="hero-star">Leaderboard</span></h1>
-                <p class="events-subtitle">The most dedicated scholars on RISE. Participate in events and quizzes to climb the ranks!</p>
-            </header>
-
-            <!-- ===== TABS ===== -->
-            <div class="leaderboard-tabs">
-                <button class="lb-tab active">Weekly</button>
-                <button class="lb-tab">Monthly</button>
-                <button class="lb-tab">All Time</button>
-            </div>
-
-            <!-- ===== PODIUM ===== -->
-            <div class="podium-container" id="podiumContainer">
-                <!-- Podium generated by JS -->
-            </div>
-
-            <!-- ===== LIST ===== -->
-            <div class="leaderboard-list-container">
-                <div class="list-header">
-                    <div class="col-rank">Rank</div>
-                    <div class="col-scholar">Scholar</div>
-                    <div class="col-points">Points</div>
-                </div>
-                <div class="leaderboard-list" id="leaderboardList">
-                    <!-- List generated by JS -->
-                    <div style="text-align: center; padding: 20px; color: rgba(28,61,53,0.5);">Loading leaderboard...</div>
-                </div>
-            </div>
-            
-        </main>
-    </div>
-
-    <script type="module" src="leaderboard.js?v=3"></script>
-</body>
-</html>
+        fs.writeFileSync(path.join(dir, file), updated);
+        console.log(`Updated ${file}`);
+    }
+});
