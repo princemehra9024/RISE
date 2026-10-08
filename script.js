@@ -1,6 +1,6 @@
 import { getSyllabus, syllabus as defaultSyllabus } from "./syllabus.js";
 import { auth, db, provider } from "./firebase-config.js";
-import { signInWithRedirect, signOut as firebaseSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { signInWithPopup, signOut as firebaseSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { doc, getDoc, setDoc, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // ---------- Auth & User State ----------
@@ -95,7 +95,7 @@ firebaseLoginBtn.addEventListener("click", async () => {
     firebaseLoginBtn.disabled = true;
     firebaseLoginBtn.innerHTML = `<span style="opacity:0.7">Signing in...</span>`;
     try {
-        await signInWithRedirect(auth, provider);
+        await signInWithPopup(auth, provider);
     } catch (error) {
         console.error("Login Failed:", error);
         firebaseLoginBtn.disabled = false;
@@ -121,17 +121,19 @@ firebaseLoginBtn.addEventListener("click", async () => {
     }
 });
 
-signOutBtn.addEventListener("click", async () => {
-    await firebaseSignOut(auth);
-});
+if (signOutBtn) {
+    signOutBtn.addEventListener("click", async () => {
+        await firebaseSignOut(auth);
+    });
+}
 
 onAuthStateChanged(auth, async (user) => {
     if (user) {
         currentUser = user;
 
         // Update Google Profile UI
-        profileName.textContent = currentUser.displayName || currentUser.email;
-        profileImage.src = currentUser.photoURL || "";
+        if (profileName) profileName.textContent = currentUser.displayName || currentUser.email;
+        if (profileImage) profileImage.src = currentUser.photoURL || "";
 
         // Hide Login
         loginScreen.classList.add("hidden");
