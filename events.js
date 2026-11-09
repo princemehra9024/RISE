@@ -1,7 +1,7 @@
 // events.js
 
 import { db, auth } from './firebase-config.js';
-import { collection, addDoc, onSnapshot, query, orderBy, doc, setDoc, getDoc, getDocs, increment } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { collection, addDoc, onSnapshot, query, orderBy, doc, setDoc, getDoc, getDocs, increment, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -208,12 +208,20 @@ document.addEventListener('DOMContentLoaded', () => {
             });
         });
 
+        // Extract custom badge image if uploaded
+        let badgeImageBase64 = null;
+        const badgePreviewImg = document.querySelector('.badge-preview-img');
+        if (badgePreviewImg) {
+            badgeImageBase64 = badgePreviewImg.src;
+        }
+
         const newQuiz = {
             name: eventName,
             desc: eventDesc,
             questions: questions,
             organizer: orgName,
             semester: quizSemester,
+            badgeImage: badgeImageBase64 || null,
             createdAt: new Date().getTime()
         };
 
@@ -221,11 +229,6 @@ document.addEventListener('DOMContentLoaded', () => {
             await addDoc(collection(db, 'quizzes'), newQuiz);
             
             // --- AUTOMATIC HOME PAGE POST ---
-            let badgeImageBase64 = null;
-            const badgePreviewImg = document.querySelector('.badge-preview-img');
-            if (badgePreviewImg) {
-                badgeImageBase64 = badgePreviewImg.src;
-            }
 
             const newPost = {
                 id: Date.now().toString(),
@@ -324,6 +327,12 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="ec-date">${evt.questions.length} Qs</span>
                         </div>
                     </div>
+                    ${evt.badgeImage ? `
+                        <div class="ec-badge-preview-banner">
+                            <img src="${evt.badgeImage}" class="ec-card-badge-img" alt="Badge Reward">
+                            <span class="ec-badge-reward-pill">🎖️ Custom Badge Reward</span>
+                        </div>
+                    ` : ''}
                     <h3 class="ec-title">${evt.name}</h3>
                     <p class="ec-desc">${evt.desc}</p>
                     <div class="ec-footer">
@@ -609,6 +618,17 @@ document.addEventListener('DOMContentLoaded', () => {
             `;
         });
         
+        // Determine Badge Reward
+        const badgeImg = currentQuiz.badgeImage || (percentage >= 90 ? 'badge1.jpg' : percentage >= 70 ? 'badge2.jpg' : 'badge3.jpg');
+        const badgeName = `${currentQuiz.name} Badge`;
+        
+        // Check if already claimed locally
+        let earnedBadges = [];
+        try {
+            earnedBadges = JSON.parse(localStorage.getItem('myEarnedBadges') || '[]');
+        } catch(e) { earnedBadges = []; }
+        const isAlreadyClaimed = earnedBadges.some(b => b.quizId === currentQuiz.id);
+
         resultDiv.innerHTML = `
             <div class="quiz-result-screen">
                 <!-- Result Header with Animation -->
@@ -628,6 +648,21 @@ document.addEventListener('DOMContentLoaded', () => {
                         </div>
                     </div>
                     <p class="result-rank-text">You ranked <strong>#${userRank}</strong> out of <strong>${participants.length}</strong> participant${participants.length > 1 ? 's' : ''}</p>
+                </div>
+
+                <!-- Badge Reward & Claim Card -->
+                <div class="result-badge-reward-card">
+                    <div class="rb-badge-glow-wrap">
+                        <img src="${badgeImg}" alt="Reward Badge" class="rb-badge-img">
+                    </div>
+                    <div class="rb-badge-details">
+                        <span class="rb-badge-eyebrow">🎖️ QUIZ REWARD BADGE UNLOCKED!</span>
+                        <h4 class="rb-badge-title">${badgeName}</h4>
+                        <p class="rb-badge-sub">Score: ${userScore}/${totalQuestions} (${percentage}%) · Unlocked for your profile</p>
+                    </div>
+                    <button type="button" class="btn-claim-badge ${isAlreadyClaimed ? 'claimed' : ''}" id="btnClaimQuizBadge">
+                        <span>${isAlreadyClaimed ? '✓ Claimed' : 'Claim Badge ✦'}</span>
+                    </button>
                 </div>
 
                 <!-- Scoreboard -->
@@ -656,6 +691,99 @@ document.addEventListener('DOMContentLoaded', () => {
             closeAllModals();
             formJoinQuiz.reset();
         });
+
+        // --- BADGE CLAIM HANDLERS ---
+        const badgeClaimData = {
+            id: 'badge_' + currentQuiz.id,
+            quizId: currentQuiz.id,
+            name: badgeName,
+            quizName: currentQuiz.name,
+            image: badgeImg,
+            score: userScore,
+            totalQuestions: totalQuestions,
+            percentage: percentage,
+            earnedAt: new Date().toISOString()
+        };
+
+        const executeClaimBadge = async (btnElement) => {
+            // 1. Save to localStorage
+            let badges = [];
+            try {
+                badges = JSON.parse(localStorage.getItem('myEarnedBadges') || '[]');
+            } catch(e) { badges = []; }
+
+            if (!badges.some(b => b.quizId === currentQuiz.id)) {
+                badges.unshift(badgeClaimData);
+                localStorage.setItem('myEarnedBadges', JSON.stringify(badges));
+            }
+
+            // 2. Save to Firestore under user profile
+            if (currentUser) {
+                try {
+                    const userRef = doc(db, 'users', currentUser.uid);
+                    await setDoc(userRef, {
+                        badges: arrayUnion(badgeClaimData)
+                    }, { merge: true });
+                } catch(err) {
+                    console.warn("Could not sync badge to Firestore user profile", err);
+                }
+            }
+
+            // 3. Update UI
+            if (btnElement) {
+                btnElement.classList.add('claimed');
+                btnElement.innerHTML = '<span>✓ Claimed to Profile!</span>';
+            }
+            const popupClaimBtn = document.getElementById('btnPopupClaimBadge');
+            if (popupClaimBtn) {
+                popupClaimBtn.classList.add('claimed');
+                popupClaimBtn.innerHTML = '<span>✓ Claimed to Profile!</span>';
+            }
+
+            // 4. Confetti effect (simple visual pop)
+            const confettiColors = ['#F5C842', '#E8856A', '#10B981', '#4facfe'];
+            for(let i=0; i<30; i++) {
+                const conf = document.createElement('div');
+                conf.style.cssText = `position:fixed; z-index:99999; width:8px; height:8px; border-radius:50%; background:${confettiColors[Math.floor(Math.random()*confettiColors.length)]}; left:${Math.random()*100}vw; top:20vh; transition:all 1.2s ease-out; opacity:1; pointer-events:none;`;
+                document.body.appendChild(conf);
+                setTimeout(() => {
+                    conf.style.transform = `translateY(${Math.random()*60+40}vh) translateX(${(Math.random()-0.5)*200}px)`;
+                    conf.style.opacity = '0';
+                }, 20);
+                setTimeout(() => conf.remove(), 1300);
+            }
+        };
+
+        const claimBtn = document.getElementById('btnClaimQuizBadge');
+        if (claimBtn) {
+            claimBtn.addEventListener('click', () => executeClaimBadge(claimBtn));
+        }
+
+        // --- POPUP BADGE CELEBRATION MODAL ---
+        const badgePopupModal = document.getElementById('badgeClaimModalOverlay');
+        const popupBadgeImg = document.getElementById('popupBadgeImg');
+        const popupBadgeName = document.getElementById('popupBadgeName');
+        const popupBadgeMeta = document.getElementById('popupBadgeMeta');
+        const btnPopupClaim = document.getElementById('btnPopupClaimBadge');
+        const btnCloseBadgeModal = document.getElementById('btnCloseBadgeModal');
+
+        if (badgePopupModal && popupBadgeImg && !isAlreadyClaimed) {
+            popupBadgeImg.src = badgeImg;
+            if (popupBadgeName) popupBadgeName.textContent = badgeName;
+            if (popupBadgeMeta) popupBadgeMeta.textContent = `Awarded for score: ${userScore}/${totalQuestions} (${percentage}%)`;
+
+            // Auto-trigger celebration popup after 900ms
+            setTimeout(() => {
+                badgePopupModal.classList.add('active');
+            }, 900);
+
+            if (btnPopupClaim) {
+                btnPopupClaim.onclick = () => executeClaimBadge(btnPopupClaim);
+            }
+            if (btnCloseBadgeModal) {
+                btnCloseBadgeModal.onclick = () => badgePopupModal.classList.remove('active');
+            }
+        }
     }
     
     // --- Score Count Animation ---

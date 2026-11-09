@@ -822,3 +822,112 @@
     .up-modal { padding: 32px 24px; }
     .up-modal h2 { font-size: 22px; }
 }
+
+
+/* ============================================================
+   EARNED BADGES SECTION
+   ============================================================ */
+.pf-badges-count {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--coral);
+    background: var(--coral-lt);
+    padding: 4px 12px;
+    border-radius: 20px;
+}
+
+.pf-badges-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+    gap: 16px;
+    margin-top: 16px;
+}
+
+.pf-badge-card {
+    background: var(--white);
+    border: 1px solid rgba(28, 61, 53, 0.08);
+    border-radius: 18px;
+    padding: 20px 16px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 4px 14px rgba(28, 61, 53, 0.04);
+}
+
+.pf-badge-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 10px 25px rgba(232, 133, 106, 0.15);
+    border-color: rgba(232, 133, 106, 0.3);
+}
+
+.pf-badge-glow {
+    width: 84px;
+    height: 84px;
+    border-radius: 50%;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 12px;
+}
+
+.pf-badge-glow::before {
+    content: '';
+    position: absolute;
+    inset: -3px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #F5C842, #E8856A);
+    opacity: 0.8;
+    z-index: 0;
+}
+
+.pf-badge-img {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    object-fit: cover;
+    position: relative;
+    z-index: 1;
+    background: white;
+    border: 3px solid white;
+}
+
+.pf-badge-name {
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: var(--teal);
+    margin-bottom: 4px;
+    line-height: 1.3;
+}
+
+.pf-badge-quiz {
+    font-size: 0.76rem;
+    color: var(--gray-500);
+    margin-bottom: 10px;
+}
+
+.pf-badge-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: #10B981;
+    background: rgba(16, 185, 129, 0.1);
+    padding: 3px 10px;
+    border-radius: 20px;
+}
+
+.pf-badges-empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 36px 20px;
+    background: var(--white);
+    border: 1px dashed rgba(28, 61, 53, 0.15);
+    border-radius: 16px;
+    color: var(--gray-500);
+}

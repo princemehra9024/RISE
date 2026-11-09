@@ -131,6 +131,7 @@ onAuthStateChanged(auth, async (user) => {
         const contribPts   = userData.contributionPoints || 0;
         const totalUploads = userData.totalUploads || 0;
         renderContribStars(contribPts, totalUploads);
+        renderEarnedBadges(userData);
 
         // -- Calculate Progress Analytics --
         let total = 0, completed = 0;
@@ -463,4 +464,56 @@ function renderContribStars(pts, uploads) {
     } else {
         milestoneEl.style.display = "none";
     }
+}
+
+
+// --- RENDER EARNED BADGES ---
+function renderEarnedBadges(userData) {
+    const grid = document.getElementById("pfBadgesGrid");
+    const countEl = document.getElementById("pfBadgesCount");
+    if (!grid) return;
+
+    const firestoreBadges = Array.isArray(userData.badges) ? userData.badges : [];
+    let localBadges = [];
+    try {
+        localBadges = JSON.parse(localStorage.getItem('myEarnedBadges') || '[]');
+    } catch(e) {
+        localBadges = [];
+    }
+
+    const badgeMap = new Map();
+    firestoreBadges.forEach(b => badgeMap.set(b.id || b.quizId || b.name, b));
+    localBadges.forEach(b => {
+        const key = b.id || b.quizId || b.name;
+        if (!badgeMap.has(key)) badgeMap.set(key, b);
+    });
+
+    const badges = Array.from(badgeMap.values());
+    if (countEl) countEl.textContent = `${badges.length} Badge${badges.length === 1 ? '' : 's'}`;
+
+    if (badges.length === 0) {
+        grid.innerHTML = `
+            <div class="pf-badges-empty">
+                <div style="font-size:2rem; margin-bottom:8px;">🎖️</div>
+                <div style="font-weight:700; color:var(--teal); margin-bottom:4px;">No badges earned yet</div>
+                <div style="font-size:0.85rem;">Join events and complete quizzes to unlock and claim your badges!</div>
+                <a href="events.html" style="display:inline-block; margin-top:12px; background:var(--coral); color:white; padding:8px 18px; border-radius:20px; font-weight:700; text-decoration:none; font-size:0.82rem;">Explore Events ↗</a>
+            </div>
+        `;
+        return;
+    }
+
+    grid.innerHTML = badges.map(b => {
+        const dateStr = b.earnedAt ? new Date(b.earnedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently';
+        return `
+            <div class="pf-badge-card">
+                <div class="pf-badge-glow">
+                    <img src="${b.image || 'badge1.jpg'}" alt="${b.name}" class="pf-badge-img">
+                </div>
+                <div class="pf-badge-name">${b.name || 'Achievement Badge'}</div>
+                <div class="pf-badge-quiz">${b.quizName ? `Event: ${b.quizName}` : (b.score !== undefined ? `Score: ${b.score}/${b.totalQuestions || b.score}` : '')}</div>
+                <div class="pf-badge-status-pill">✓ Unlocked · ${dateStr}</div>
+            </div>
+        `;
+    }).join('');
 }

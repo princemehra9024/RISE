@@ -483,5 +483,33 @@
     </div>
 
     <script type="module" src="events.js?v=3"></script>
+
+    <!-- ===== BADGE CLAIM POPUP MODAL ===== -->
+    <div class="event-modal-overlay badge-celebration-overlay" id="badgeClaimModalOverlay">
+        <div class="event-modal badge-celebration-modal">
+            <button class="modal-close" id="btnCloseBadgeModal">&times;</button>
+            <div class="badge-modal-sparkles">✨ ✦ ✨</div>
+            <h2 class="badge-modal-congrats">🎉 Badge Unlocked!</h2>
+            <p class="badge-modal-subtitle">You earned an achievement badge for your performance!</p>
+            
+            <div class="badge-showcase-wrap">
+                <div class="badge-showcase-glow"></div>
+                <img id="popupBadgeImg" src="badge1.jpg" alt="Unlocked Badge" class="badge-showcase-img">
+            </div>
+
+            <h3 class="badge-showcase-name" id="popupBadgeName">Quiz Master Badge</h3>
+            <p class="badge-showcase-meta" id="popupBadgeMeta">Awarded for completing the challenge!</p>
+
+            <div class="badge-modal-actions">
+                <button type="button" class="btn-claim-action" id="btnPopupClaimBadge">
+                    <span id="btnPopupClaimText">Claim Badge to Profile ✦</span>
+                </button>
+                <a href="profile.html" class="badge-view-profile-link">
+                    View on My Profile ↗
+                </a>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

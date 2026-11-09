@@ -869,8 +869,24 @@ function renderBadges() {
     const container = document.getElementById('badgesCarousel');
     if (!container) return;
 
+    // Load any earned badges from quizzes/events and prepend them!
+    let earnedBadges = [];
+    try {
+        earnedBadges = JSON.parse(localStorage.getItem('myEarnedBadges') || '[]');
+    } catch(e) { earnedBadges = []; }
+
+    const dynamicBadges = earnedBadges.map(b => ({
+        name: b.name || 'Event Achiever',
+        img: b.image || 'badge1.jpg',
+        hint: b.quizName ? `Unlocked in ${b.quizName}` : 'Unlocked Achievement',
+        locked: false
+    }));
+
+    // Merge without duplicates
+    const allBadgesList = [...dynamicBadges, ...userBadges];
+
     container.innerHTML = '';
-    userBadges.forEach(badge => {
+    allBadgesList.forEach(badge => {
         const lockedClass = badge.locked ? 'locked' : '';
         const itemHTML = `
             <div class="badge-item ${lockedClass}" title="${badge.hint}">
