@@ -931,3 +931,52 @@
     border-radius: 16px;
     color: var(--gray-500);
 }
+
+
+/* ============================================================
+   HEADER BADGES ROW
+   ============================================================ */
+.pf-header-badges-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 10px;
+    flex-wrap: wrap;
+}
+
+.pf-header-badge-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(245, 200, 66, 0.15);
+    border: 1px solid rgba(245, 200, 66, 0.4);
+    padding: 3px 10px 3px 4px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: var(--teal);
+    transition: all 0.2s;
+    cursor: pointer;
+}
+
+.pf-header-badge-chip:hover {
+    background: rgba(245, 200, 66, 0.28);
+    transform: translateY(-1px);
+}
+
+.pf-header-badge-img {
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1.5px solid #F5C842;
+}
+
+.pf-header-badge-count {
+    font-size: 0.72rem;
+    font-weight: 700;
+    color: var(--coral);
+    background: var(--coral-lt);
+    padding: 3px 8px;
+    border-radius: 12px;
+}

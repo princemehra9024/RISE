@@ -1,7 +1,7 @@
 import { getSyllabus, getAvailableBackSubjects, syllabus as defaultSyllabus } from "./syllabus.js";
 import { auth, db } from "./firebase-config.js";
 import { signOut as firebaseSignOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { doc, getDoc, collection, getDocs, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { doc, getDoc, collection, getDocs, updateDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 // ---------- Elements ----------
 
@@ -131,7 +131,7 @@ onAuthStateChanged(auth, async (user) => {
         const contribPts   = userData.contributionPoints || 0;
         const totalUploads = userData.totalUploads || 0;
         renderContribStars(contribPts, totalUploads);
-        renderEarnedBadges(userData);
+        renderEarnedBadges(user, userData);
 
         // -- Calculate Progress Analytics --
         let total = 0, completed = 0;
@@ -467,13 +467,14 @@ function renderContribStars(pts, uploads) {
 }
 
 
-// --- RENDER EARNED BADGES ---
-function renderEarnedBadges(userData) {
+// --- RENDER EARNED BADGES (WITH RETROACTIVE QUIZ DETECTION) ---
+async function renderEarnedBadges(user, userData) {
     const grid = document.getElementById("pfBadgesGrid");
     const countEl = document.getElementById("pfBadgesCount");
+    const headerRow = document.getElementById("pfHeaderBadgesRow");
     if (!grid) return;
 
-    const firestoreBadges = Array.isArray(userData.badges) ? userData.badges : [];
+    const firestoreBadges = Array.isArray(userData.badges) ? [...userData.badges] : [];
     let localBadges = [];
     try {
         localBadges = JSON.parse(localStorage.getItem('myEarnedBadges') || '[]');
@@ -488,22 +489,127 @@ function renderEarnedBadges(userData) {
         if (!badgeMap.has(key)) badgeMap.set(key, b);
     });
 
-    const badges = Array.from(badgeMap.values());
-    if (countEl) countEl.textContent = `${badges.length} Badge${badges.length === 1 ? '' : 's'}`;
+    // Check completed quizzes in Firestore retroactively
+    const studentName = (userData.profile?.studentName || user?.displayName || '').trim().toLowerCase();
+    const userUid = user?.uid;
 
-    if (badges.length === 0) {
+    try {
+        const quizzesSnap = await getDocs(collection(db, 'quizzes'));
+        for (const qDoc of quizzesSnap.docs) {
+            const quizData = qDoc.data();
+            const quizId = qDoc.id;
+
+            if (badgeMap.has('badge_' + quizId) || badgeMap.has(quizId)) continue;
+
+            try {
+                const partSnap = await getDocs(collection(db, 'quizzes', quizId, 'participants'));
+                let foundPart = null;
+                partSnap.forEach(pDoc => {
+                    const p = pDoc.data();
+                    if (p.uid === userUid || (studentName && p.name && p.name.trim().toLowerCase() === studentName)) {
+                        foundPart = p;
+                    }
+                });
+
+                if (foundPart) {
+                    const retroBadge = {
+                        id: 'badge_' + quizId,
+                        quizId: quizId,
+                        name: (quizData.name || 'Quiz') + ' Badge',
+                        quizName: quizData.name || 'Quiz Challenge',
+                        image: quizData.badgeImage || 'badge1.jpg',
+                        score: foundPart.score,
+                        totalQuestions: foundPart.totalQuestions || (quizData.questions ? quizData.questions.length : 1),
+                        percentage: Math.round(((foundPart.score || 0) / (foundPart.totalQuestions || 1)) * 100),
+                        earnedAt: new Date(foundPart.completedAt || Date.now()).toISOString()
+                    };
+                    badgeMap.set(retroBadge.id, retroBadge);
+                }
+            } catch (errP) {
+                // Ignore subcollection access failure
+            }
+        }
+    } catch (errQ) {
+        console.warn("Could not check quizzes for retroactive badges:", errQ);
+    }
+
+    // If student has quiz points or played quizzes, award Quiz Explorer Badge
+    if (badgeMap.size === 0 && ((userData.quizzesPlayed || 0) > 0 || (userData.quizPoints || 0) > 0)) {
+        const explorerBadge = {
+            id: 'badge_quiz_explorer',
+            name: 'Quiz Explorer Badge',
+            quizName: 'Quiz Challenge',
+            image: 'badge1.jpg',
+            score: userData.quizPoints || 10,
+            earnedAt: new Date().toISOString()
+        };
+        badgeMap.set(explorerBadge.id, explorerBadge);
+    }
+
+    // If student has completed curriculum topics, award Active Scholar Badge
+    let completedTopics = 0;
+    const progressData = userData.progress || {};
+    Object.keys(progressData).forEach(k => { if (progressData[k]) completedTopics++; });
+    if (completedTopics >= 3 && !badgeMap.has('badge_scholar')) {
+        badgeMap.set('badge_scholar', {
+            id: 'badge_scholar',
+            name: 'Active Scholar Badge',
+            quizName: 'Curriculum Progress',
+            image: 'badge2.jpg',
+            earnedAt: new Date().toISOString()
+        });
+    }
+
+    const allBadges = Array.from(badgeMap.values());
+
+    // Update localStorage cache
+    localStorage.setItem('myEarnedBadges', JSON.stringify(allBadges));
+
+    // Save to Firestore if new badges were discovered
+    if (user && allBadges.length > firestoreBadges.length) {
+        try {
+            await setDoc(doc(db, 'users', user.uid), { badges: allBadges }, { merge: true });
+        } catch (e) {
+            console.warn("Could not save merged badges to Firestore", e);
+        }
+    }
+
+    // Render Badge Count
+    if (countEl) countEl.textContent = `${allBadges.length} Badge${allBadges.length === 1 ? '' : 's'}`;
+
+    // Render in Header Badges Row (Section A)
+    if (headerRow) {
+        if (allBadges.length > 0) {
+            headerRow.innerHTML = `
+                <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap;">
+                    ${allBadges.slice(0, 4).map(b => `
+                        <div class="pf-header-badge-chip" onclick="document.getElementById('pfBadgesSection').scrollIntoView({behavior:'smooth'})" title="${b.name}">
+                            <img src="${b.image || 'badge1.jpg'}" alt="${b.name}" class="pf-header-badge-img">
+                            <span>${b.name.replace(' Badge', '')}</span>
+                        </div>
+                    `).join('')}
+                    ${allBadges.length > 4 ? `<span class="pf-header-badge-count">+${allBadges.length - 4} more</span>` : ''}
+                </div>
+            `;
+        } else {
+            headerRow.innerHTML = '';
+        }
+    }
+
+    // Render Main Badges Grid
+    if (allBadges.length === 0) {
         grid.innerHTML = `
             <div class="pf-badges-empty">
                 <div style="font-size:2rem; margin-bottom:8px;">🎖️</div>
                 <div style="font-weight:700; color:var(--teal); margin-bottom:4px;">No badges earned yet</div>
-                <div style="font-size:0.85rem;">Join events and complete quizzes to unlock and claim your badges!</div>
-                <a href="events.html" style="display:inline-block; margin-top:12px; background:var(--coral); color:white; padding:8px 18px; border-radius:20px; font-weight:700; text-decoration:none; font-size:0.82rem;">Explore Events ↗</a>
+                <div style="font-size:0.85rem;">Complete quizzes and community events to unlock and claim your badges!</div>
+                <a href="events.html" style="display:inline-block; margin-top:12px; background:var(--coral); color:white; padding:8px 18px; border-radius:20px; font-weight:700; text-decoration:none; font-size:0.82rem;">Play Events & Unlock Badges ↗</a>
             </div>
         `;
         return;
     }
 
-    grid.innerHTML = badges.map(b => {
+    grid.innerHTML = allBadges.map(b => {
         const dateStr = b.earnedAt ? new Date(b.earnedAt).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently';
         return `
             <div class="pf-badge-card">
@@ -511,7 +617,7 @@ function renderEarnedBadges(userData) {
                     <img src="${b.image || 'badge1.jpg'}" alt="${b.name}" class="pf-badge-img">
                 </div>
                 <div class="pf-badge-name">${b.name || 'Achievement Badge'}</div>
-                <div class="pf-badge-quiz">${b.quizName ? `Event: ${b.quizName}` : (b.score !== undefined ? `Score: ${b.score}/${b.totalQuestions || b.score}` : '')}</div>
+                <div class="pf-badge-quiz">${b.quizName ? `Event: ${b.quizName}` : (b.score !== undefined ? `Score: ${b.score}` : '')}</div>
                 <div class="pf-badge-status-pill">✓ Unlocked · ${dateStr}</div>
             </div>
         `;
