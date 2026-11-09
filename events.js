@@ -1,7 +1,7 @@
 // events.js
 
 import { db, auth } from './firebase-config.js';
-import { collection, addDoc, onSnapshot, query, orderBy, doc, setDoc, getDoc, getDocs, increment, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
+import { collection, addDoc, onSnapshot, query, orderBy, doc, setDoc, updateDoc, getDoc, getDocs, increment, arrayUnion } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js';
 import { onAuthStateChanged } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -23,6 +23,44 @@ document.addEventListener('DOMContentLoaded', () => {
     let allQuizzes = [];
     let currentUser = null;
     let joinName = '';
+    let currentOrganizeBadgeBase64 = null;
+    let targetQuizForBadgeUpload = null;
+
+    // Helper: compress badge image via Canvas to max 400x400 PNG/JPEG (~30KB)
+    function compressBadgeFile(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                const img = new Image();
+                img.onload = () => {
+                    const canvas = document.createElement('canvas');
+                    const size = Math.min(img.width, img.height, 400);
+                    canvas.width = size;
+                    canvas.height = size;
+                    const ctx = canvas.getContext('2d');
+                    const sx = (img.width - size) / 2;
+                    const sy = (img.height - size) / 2;
+                    ctx.drawImage(img, sx > 0 ? sx : 0, sy > 0 ? sy : 0, Math.min(img.width, img.height), Math.min(img.width, img.height), 0, 0, size, size);
+                    resolve(canvas.toDataURL('image/png', 0.9));
+                };
+                img.onerror = reject;
+                img.src = e.target.result;
+            };
+            reader.onerror = reject;
+            reader.readAsDataURL(file);
+        });
+    }
+
+    // Global function to upload real badge for any existing quiz
+    window.promptUploadBadgeForQuiz = (quizId, event) => {
+        if (event) event.stopPropagation();
+        targetQuizForBadgeUpload = quizId;
+        const uploader = document.getElementById('dynamicBadgeUploaderInput');
+        if (uploader) {
+            uploader.value = '';
+            uploader.click();
+        }
+    };
 
     onAuthStateChanged(auth, (user) => {
         currentUser = user;
@@ -221,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
             questions: questions,
             organizer: orgName,
             semester: quizSemester,
-            badgeImage: badgeImageBase64 || null,
+            badgeImage: currentOrganizeBadgeBase64 || badgeImageBase64 || null,
             createdAt: new Date().getTime()
         };
 
@@ -330,9 +368,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     ${evt.badgeImage ? `
                         <div class="ec-badge-preview-banner">
                             <img src="${evt.badgeImage}" class="ec-card-badge-img" alt="Badge Reward">
-                            <span class="ec-badge-reward-pill">🎖️ Custom Badge Reward</span>
+                            <span class="ec-badge-reward-pill">🎖️ Real Event Badge</span>
                         </div>
-                    ` : ''}
+                    ` : `
+                        <div class="ec-badge-preview-banner ec-badge-add-banner" onclick="promptUploadBadgeForQuiz('${evt.id}', event)" title="Click to upload the real badge image for this quiz">
+                            <span style="font-size: 1rem;">📷</span>
+                            <span class="ec-badge-reward-pill" style="color: var(--coral);">+ Upload Real Badge</span>
+                        </div>
+                    `}
                     <h3 class="ec-title">${evt.name}</h3>
                     <p class="ec-desc">${evt.desc}</p>
                     <div class="ec-footer">
@@ -764,6 +807,10 @@ document.addEventListener('DOMContentLoaded', () => {
         const popupBadgeImg = document.getElementById('popupBadgeImg');
         const popupBadgeName = document.getElementById('popupBadgeName');
         const popupBadgeMeta = document.getElementById('popupBadgeMeta');
+        const btnChangeBadge = document.getElementById('btnChangePopupBadge');
+        if (btnChangeBadge) {
+            btnChangeBadge.onclick = () => window.promptUploadBadgeForQuiz(currentQuiz.id);
+        }
         const btnPopupClaim = document.getElementById('btnPopupClaimBadge');
         const btnCloseBadgeModal = document.getElementById('btnCloseBadgeModal');
 
@@ -814,16 +861,22 @@ document.addEventListener('DOMContentLoaded', () => {
     const badgeUploadContent = document.getElementById('badgeUploadContent');
 
     if (inputBadgeImage && badgeUploadBox) {
-        inputBadgeImage.addEventListener('change', function(e) {
+        inputBadgeImage.addEventListener('change', async function(e) {
             const file = e.target.files[0];
             if (file) {
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    badgeUploadContent.innerHTML = `<img src="${evt.target.result}" class="badge-preview-img" alt="Badge Preview">`;
+                try {
+                    const compressed = await compressBadgeFile(file);
+                    currentOrganizeBadgeBase64 = compressed;
+                    badgeUploadContent.innerHTML = `
+                        <img src="${compressed}" class="badge-preview-img" alt="Badge Preview">
+                        <div style="font-size:0.75rem; color:#10B981; font-weight:700; margin-top:4px;">✓ Custom Badge Attached</div>
+                    `;
                     badgeUploadBox.classList.add('has-image');
+                } catch(err) {
+                    console.error("Badge upload error", err);
                 }
-                reader.readAsDataURL(file);
             } else {
+                currentOrganizeBadgeBase64 = null;
                 badgeUploadContent.innerHTML = `
                     <span class="upload-icon">
                         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
@@ -832,6 +885,73 @@ document.addEventListener('DOMContentLoaded', () => {
                     <span class="upload-subtext">Click to browse (JPG, PNG)</span>
                 `;
                 badgeUploadBox.classList.remove('has-image');
+            }
+        });
+    }
+
+    // Dynamic uploader for changing/updating real badge for any existing quiz
+    const dynamicUploader = document.getElementById('dynamicBadgeUploaderInput');
+    if (dynamicUploader) {
+        dynamicUploader.addEventListener('change', async function(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            try {
+                const compressed = await compressBadgeFile(file);
+                const quizId = targetQuizForBadgeUpload || currentQuiz?.id;
+
+                if (quizId) {
+                    // Update in Firestore
+                    try {
+                        const qRef = doc(db, 'quizzes', quizId);
+                        await updateDoc(qRef, { badgeImage: compressed });
+                        console.log("Updated quiz badgeImage in Firestore!");
+                    } catch(errDb) {
+                        console.warn("Could not update Firestore quiz doc:", errDb);
+                    }
+
+                    // Update in local memory
+                    const qObj = allQuizzes.find(q => q.id === quizId);
+                    if (qObj) qObj.badgeImage = compressed;
+                    if (currentQuiz && currentQuiz.id === quizId) {
+                        currentQuiz.badgeImage = compressed;
+                    }
+
+                    // Update Popup Image
+                    const popupImg = document.getElementById('popupBadgeImg');
+                    if (popupImg) popupImg.src = compressed;
+
+                    // Update Result Card Image
+                    const rbImg = document.querySelector('.rb-badge-img');
+                    if (rbImg) rbImg.src = compressed;
+
+                    // Update localStorage earnedBadges if claimed
+                    let badges = [];
+                    try { badges = JSON.parse(localStorage.getItem('myEarnedBadges') || '[]'); } catch(e) {}
+                    const existingBadge = badges.find(b => b.quizId === quizId);
+                    if (existingBadge) {
+                        existingBadge.image = compressed;
+                        localStorage.setItem('myEarnedBadges', JSON.stringify(badges));
+                    }
+
+                    // Update Firestore user badges
+                    if (currentUser) {
+                        try {
+                            const uRef = doc(db, 'users', currentUser.uid);
+                            const uSnap = await getDoc(uRef);
+                            if (uSnap.exists()) {
+                                let uBadges = uSnap.data().badges || [];
+                                uBadges = uBadges.map(b => b.quizId === quizId ? { ...b, image: compressed } : b);
+                                await updateDoc(uRef, { badges: uBadges });
+                            }
+                        } catch(e) {}
+                    }
+
+                    renderQuizzes(allQuizzes);
+                    alert("✓ Real badge image successfully updated for this quiz!");
+                }
+            } catch(err) {
+                console.error("Error processing dynamic badge upload:", err);
             }
         });
     }

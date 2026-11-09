@@ -1392,3 +1392,39 @@
 .badge-view-profile-link:hover {
     color: #E8856A;
 }
+
+
+/* Button to change/upload real badge on popup */
+.btn-change-badge-link {
+    background: rgba(245, 200, 66, 0.15);
+    border: 1px dashed rgba(245, 200, 66, 0.6);
+    color: #1C3D35;
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin: 4px auto 14px;
+    transition: all 0.2s ease;
+}
+
+.btn-change-badge-link:hover {
+    background: rgba(245, 200, 66, 0.3);
+    border-style: solid;
+    transform: scale(1.03);
+}
+
+.ec-badge-add-banner {
+    cursor: pointer;
+    transition: all 0.2s;
+    background: rgba(232, 133, 106, 0.1) !important;
+    border: 1px dashed rgba(232, 133, 106, 0.4) !important;
+}
+
+.ec-badge-add-banner:hover {
+    background: rgba(232, 133, 106, 0.2) !important;
+    transform: translateY(-1px);
+}

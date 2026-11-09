@@ -619,7 +619,53 @@ async function renderEarnedBadges(user, userData) {
                 <div class="pf-badge-name">${b.name || 'Achievement Badge'}</div>
                 <div class="pf-badge-quiz">${b.quizName ? `Event: ${b.quizName}` : (b.score !== undefined ? `Score: ${b.score}` : '')}</div>
                 <div class="pf-badge-status-pill">✓ Unlocked · ${dateStr}</div>
+                <button type="button" class="pf-badge-change-img-btn" onclick="promptUpdateProfileBadge('${b.id || b.quizId}')" title="Change/Upload real badge image">📷 Change Real Badge</button>
             </div>
         `;
     }).join('');
 }
+
+
+window.promptUpdateProfileBadge = (quizIdOrBadgeId) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    input.onchange = async (e) => {
+        const file = e.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = async (evt) => {
+            const img = new Image();
+            img.onload = async () => {
+                const canvas = document.createElement('canvas');
+                const size = Math.min(img.width, img.height, 400);
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, size, size);
+                const compressed = canvas.toDataURL('image/png', 0.9);
+
+                // Update localStorage
+                let badges = [];
+                try { badges = JSON.parse(localStorage.getItem('myEarnedBadges') || '[]'); } catch(err) {}
+                badges = badges.map(b => (b.id === quizIdOrBadgeId || b.quizId === quizIdOrBadgeId) ? { ...b, image: compressed } : b);
+                localStorage.setItem('myEarnedBadges', JSON.stringify(badges));
+
+                // Update Firestore
+                if (auth.currentUser) {
+                    try {
+                        const uRef = doc(db, 'users', auth.currentUser.uid);
+                        await updateDoc(uRef, { badges: badges });
+                    } catch(errDb) { console.warn(errDb); }
+                }
+
+                alert("✓ Badge image updated successfully!");
+                window.location.reload();
+            };
+            img.src = evt.target.result;
+        };
+        reader.readAsDataURL(file);
+    };
+    input.click();
+};

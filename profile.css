@@ -980,3 +980,23 @@
     padding: 3px 8px;
     border-radius: 12px;
 }
+
+
+.pf-badge-change-img-btn {
+    background: transparent;
+    border: 1px dashed rgba(28, 61, 53, 0.2);
+    color: var(--teal);
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 3px 8px;
+    border-radius: 12px;
+    margin-top: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.pf-badge-change-img-btn:hover {
+    background: rgba(245, 200, 66, 0.2);
+    border-color: #F5C842;
+    color: var(--coral);
+}
