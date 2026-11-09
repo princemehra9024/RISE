@@ -15,6 +15,13 @@ import {
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 // --- State ---
+let currentMainTab = 'feed'; // 'feed' | 'chat'
+let studentSemester = localStorage.getItem('studentSemester') || '1';
+let studentBranch = localStorage.getItem('studentBranch') || 'IMCA';
+let studentName = 'Student';
+let semesterChatMessages = [];
+let chatAttachedImageBase64 = null;
+let chatUnsubscribe = null;
 let currentUser = null;
 let activeTab = 'all';
 let selectedCategory = 'General';
@@ -622,6 +629,223 @@ function setupFirestoreListener() {
     }
 }
 
+
+// ============================================================
+// SEMESTER GROUP CHAT SYSTEM (Same-Semester Access Only)
+// ============================================================
+function updateSemesterChatUI() {
+    const tabSemBadge = document.getElementById('chatTabSemBadge');
+    const roomTitle = document.getElementById('chatRoomTitle');
+    const roomSub = document.getElementById('chatRoomSub');
+    const headerBadge = document.getElementById('chatHeaderSemBadge');
+    const inputField = document.getElementById('chatInputText');
+
+    if (tabSemBadge) tabSemBadge.textContent = `Sem ${studentSemester}`;
+    if (roomTitle) roomTitle.textContent = `Semester ${studentSemester} Group Chat`;
+    if (roomSub) roomSub.textContent = `🔒 Exclusive to verified ${studentBranch} · Sem ${studentSemester} students`;
+    if (headerBadge) headerBadge.textContent = `✦ Sem ${studentSemester} Room`;
+    if (inputField) inputField.placeholder = `Message Semester ${studentSemester} classmates...`;
+}
+
+async function resolveStudentSemester(user) {
+    if (user) {
+        studentName = user.displayName || 'Student';
+        try {
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            if (userDoc.exists() && userDoc.data().profile) {
+                const prof = userDoc.data().profile;
+                if (prof.semester) studentSemester = prof.semester.toString();
+                if (prof.branch) studentBranch = prof.branch;
+                if (prof.studentName) studentName = prof.studentName;
+                localStorage.setItem('studentSemester', studentSemester);
+                localStorage.setItem('studentBranch', studentBranch);
+            }
+        } catch (e) {
+            console.warn("Could not fetch user profile for semester chat:", e);
+        }
+    } else {
+        // Check DOM badges if available
+        const semBadge = document.getElementById('profileSemBadge');
+        if (semBadge && semBadge.textContent.includes('Sem')) {
+            const match = semBadge.textContent.match(/Sem\s*(\d+)/i);
+            if (match) studentSemester = match[1];
+        }
+    }
+
+    updateSemesterChatUI();
+    setupChatListener();
+}
+
+function loadLocalChatMessages() {
+    try {
+        const cached = localStorage.getItem(`chat_cache_sem_${studentSemester}`);
+        if (cached) {
+            semesterChatMessages = JSON.parse(cached);
+        }
+    } catch (e) {
+        semesterChatMessages = [];
+    }
+}
+
+function saveLocalChatMessages() {
+    try {
+        localStorage.setItem(`chat_cache_sem_${studentSemester}`, JSON.stringify(semesterChatMessages));
+    } catch (e) {
+        console.warn("Could not cache chat messages", e);
+    }
+}
+
+function renderChatMessages() {
+    const container = document.getElementById('chatMessagesContainer');
+    if (!container) return;
+
+    if (!semesterChatMessages || semesterChatMessages.length === 0) {
+        container.innerHTML = `
+            <div class="chat-empty-state">
+                <div class="chat-empty-icon">💬</div>
+                <div class="chat-empty-title">Welcome to Semester ${studentSemester} Group Chat!</div>
+                <div class="chat-empty-desc">This chat room is exclusively for students in Semester ${studentSemester}. Share study updates, ask questions, or say hi to your classmates!</div>
+            </div>
+        `;
+        return;
+    }
+
+    const currentUid = currentUser?.uid;
+
+    container.innerHTML = semesterChatMessages.map(msg => {
+        const isMine = currentUid ? (msg.senderId === currentUid) : false;
+        const initials = msg.senderInitials || (msg.senderName ? msg.senderName.substring(0, 2).toUpperCase() : 'ST');
+        const avatarContent = msg.senderPhoto
+            ? `<img src="${msg.senderPhoto}" alt="${msg.senderName}">`
+            : initials;
+
+        const timeStr = msg.createdAt ? new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : '';
+
+        const imageBlock = msg.image ? `
+            <img src="${msg.image}" alt="Chat Image" class="chat-msg-img" onclick="openDirectImageModal('${msg.image}')">
+        ` : '';
+
+        return `
+            <div class="chat-message-row ${isMine ? 'mine' : ''}">
+                <div class="chat-msg-avatar" style="background: ${msg.senderColor || 'var(--teal)'}" title="${msg.senderName}">
+                    ${avatarContent}
+                </div>
+                <div class="chat-msg-content">
+                    ${!isMine ? `<span class="chat-msg-sender">${msg.senderName}</span>` : ''}
+                    <div class="chat-msg-bubble">
+                        ${linkify(msg.text || '')}
+                        ${imageBlock}
+                    </div>
+                    <span class="chat-msg-time">${timeStr}</span>
+                </div>
+            </div>
+        `;
+    }).join('');
+
+    // Auto-scroll to bottom
+    container.scrollTop = container.scrollHeight;
+}
+
+function setupChatListener() {
+    if (chatUnsubscribe) {
+        chatUnsubscribe();
+        chatUnsubscribe = null;
+    }
+
+    loadLocalChatMessages();
+    renderChatMessages();
+
+    try {
+        const chatRoomCol = collection(db, "semester_chats", `sem_${studentSemester}`, "messages");
+        const q = query(chatRoomCol, orderBy("createdAt", "asc"), limit(120));
+
+        chatUnsubscribe = onSnapshot(q, (snapshot) => {
+            const loaded = [];
+            snapshot.forEach(docSnap => {
+                loaded.push({
+                    id: docSnap.id,
+                    ...docSnap.data()
+                });
+            });
+            if (loaded.length > 0) {
+                semesterChatMessages = loaded;
+                saveLocalChatMessages();
+                renderChatMessages();
+            }
+        }, (error) => {
+            console.warn("Semester chat listener note (local fallback active):", error.message);
+            renderChatMessages();
+        });
+    } catch (e) {
+        console.warn("Could not start semester chat listener:", e);
+        renderChatMessages();
+    }
+}
+
+async function sendChatMessage() {
+    const input = document.getElementById('chatInputText');
+    const sendBtn = document.getElementById('chatSendBtn');
+    if (!input) return;
+
+    const text = input.value.trim();
+    if (!text && !chatAttachedImageBase64) return;
+
+    const myName = currentUser?.displayName || studentName || 'Student';
+    const myInitials = myName.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase() || 'ST';
+
+    const newMsg = {
+        senderId: currentUser?.uid || 'guest_' + Date.now(),
+        senderName: myName,
+        senderPhoto: currentUser?.photoURL || '',
+        senderInitials: myInitials,
+        senderColor: getRandomGradient(),
+        text: text,
+        image: chatAttachedImageBase64 || null,
+        semester: studentSemester,
+        branch: studentBranch,
+        createdAt: new Date().toISOString()
+    };
+
+    // 1. Optimistic local update
+    semesterChatMessages.push(newMsg);
+    saveLocalChatMessages();
+    renderChatMessages();
+
+    // 2. Clear input & attached photo immediately
+    input.value = '';
+    clearChatAttachedImage();
+
+    // 3. Write to Firestore
+    try {
+        const chatCol = collection(db, "semester_chats", `sem_${studentSemester}`, "messages");
+        await addDoc(chatCol, {
+            ...newMsg,
+            serverTimestamp: serverTimestamp()
+        });
+    } catch (err) {
+        console.warn("Chat message written to local cache, Firestore write failed:", err);
+    }
+}
+
+function clearChatAttachedImage() {
+    chatAttachedImageBase64 = null;
+    const previewBar = document.getElementById('chatImagePreviewBar');
+    const previewThumb = document.getElementById('chatImagePreviewThumb');
+    const fileInput = document.getElementById('chatFileInput');
+    if (previewBar) previewBar.classList.add('hidden');
+    if (previewThumb) previewThumb.src = '';
+    if (fileInput) fileInput.value = '';
+}
+
+window.openDirectImageModal = (imgSrc) => {
+    const modal = document.getElementById('imageLightboxModal');
+    const modalImg = document.getElementById('imageLightboxImg');
+    if (modal && modalImg) {
+        modalImg.src = imgSrc;
+        modal.classList.remove('hidden');
+    }
+};
+
 // --- Leaderboard & Badges ---
 function renderLeaderboard() {
     const container = document.getElementById('miniLeaderboardContainer');
@@ -687,6 +911,78 @@ window.closeQuizModal = () => {
 
 // --- Initialization ---
 document.addEventListener('DOMContentLoaded', () => {
+    // --- 0. Two-Part Switcher (Community Feed vs Semester Chat) ---
+    const tabFeed = document.getElementById('tabCommunityFeed');
+    const tabChat = document.getElementById('tabGroupChat');
+    const feedView = document.getElementById('feedView');
+    const chatView = document.getElementById('chatView');
+
+    function switchView(target) {
+        currentMainTab = target;
+        if (target === 'feed') {
+            if (tabFeed) tabFeed.classList.add('active');
+            if (tabChat) tabChat.classList.remove('active');
+            if (feedView) feedView.classList.remove('hidden');
+            if (chatView) chatView.classList.add('hidden');
+        } else {
+            if (tabChat) tabChat.classList.add('active');
+            if (tabFeed) tabFeed.classList.remove('active');
+            if (chatView) chatView.classList.remove('hidden');
+            if (feedView) feedView.classList.add('hidden');
+            // Auto scroll chat to bottom when switching to it
+            setTimeout(() => {
+                const container = document.getElementById('chatMessagesContainer');
+                if (container) container.scrollTop = container.scrollHeight;
+            }, 50);
+        }
+    }
+
+    if (tabFeed) tabFeed.addEventListener('click', () => switchView('feed'));
+    if (tabChat) tabChat.addEventListener('click', () => switchView('chat'));
+
+    // Chat image attach button
+    const chatAttachBtn = document.getElementById('chatAttachBtn');
+    const chatFileInput = document.getElementById('chatFileInput');
+    const chatRemoveImgBtn = document.getElementById('chatRemoveImageBtn');
+    if (chatAttachBtn && chatFileInput) {
+        chatAttachBtn.addEventListener('click', () => chatFileInput.click());
+        chatFileInput.addEventListener('change', async (e) => {
+            const file = e.target.files && e.target.files[0];
+            if (!file) return;
+            try {
+                const compressed = await compressImage(file, 800, 0.8);
+                chatAttachedImageBase64 = compressed;
+                const previewBar = document.getElementById('chatImagePreviewBar');
+                const previewThumb = document.getElementById('chatImagePreviewThumb');
+                if (previewBar && previewThumb) {
+                    previewThumb.src = compressed;
+                    previewBar.classList.remove('hidden');
+                }
+            } catch (err) {
+                console.error("Chat image compression error", err);
+            }
+        });
+    }
+
+    if (chatRemoveImgBtn) {
+        chatRemoveImgBtn.addEventListener('click', clearChatAttachedImage);
+    }
+
+    // Chat Send button & Enter key
+    const chatSendBtn = document.getElementById('chatSendBtn');
+    const chatInput = document.getElementById('chatInputText');
+    if (chatSendBtn) {
+        chatSendBtn.addEventListener('click', sendChatMessage);
+    }
+    if (chatInput) {
+        chatInput.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                sendChatMessage();
+            }
+        });
+    }
+
     loadLocalPosts();
     renderPosts();
     renderLeaderboard();
@@ -694,7 +990,9 @@ document.addEventListener('DOMContentLoaded', () => {
     setupFirestoreListener();
 
     // 1. Auth State Observer
-    onAuthStateChanged(auth, (user) => {
+    onAuthStateChanged(auth, async (user) => {
+        currentUser = user;
+        await resolveStudentSemester(user);
         currentUser = user;
         const nameEl = document.getElementById('postCreatorName');
         const avatarEl = document.getElementById('postCreatorAvatar');

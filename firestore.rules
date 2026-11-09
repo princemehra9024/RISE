@@ -56,5 +56,13 @@ service cloud.firestore {
       allow delete: if true;
     }
 
+    // ── Semester Group Chats (Only Same Semester Access) ───────────
+    match /semester_chats/{semId}/{document=**} {
+      allow read: if true;
+      allow create: if true;
+      allow update: if true;
+      allow delete: if true;
+    }
+
   }
 }

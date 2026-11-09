@@ -272,79 +272,170 @@
             <div class="home-grid">
                 <!-- Main Feed -->
                 <div class="feed-section">
-                    <div class="feed-header">
-                        <div class="feed-title">
+                    <!-- Main Section Two-Part Tabs -->
+                    <div class="community-main-tabs">
+                        <button type="button" class="community-main-tab active" id="tabCommunityFeed" data-target="feedView">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <rect x="3" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="3" width="7" height="7"></rect>
+                                <rect x="14" y="14" width="7" height="7"></rect>
+                                <rect x="3" y="14" width="7" height="7"></rect>
+                            </svg>
                             <span>Community Feed</span>
-                            <span class="feed-count-badge" id="feedCountBadge">✦ Live</span>
-                        </div>
-                        <div class="feed-tabs" id="feedTabs">
-                            <button class="feed-tab active" data-tab="all">Latest</button>
-                            <button class="feed-tab" data-tab="popular">Popular</button>
-                            <button class="feed-tab" data-tab="Notes">Notes</button>
-                            <button class="feed-tab" data-tab="Question">Questions</button>
-                        </div>
+                        </button>
+                        <button type="button" class="community-main-tab" id="tabGroupChat" data-target="chatView">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                            </svg>
+                            <span id="chatTabLabel">Semester Chat</span>
+                            <span class="chat-tab-badge" id="chatTabSemBadge">Sem 1</span>
+                        </button>
                     </div>
 
-                    <!-- Minimalist Create Post Card -->
-                    <div class="create-post-card" id="create-post">
-                        <div class="create-post-header">
-                            <div class="create-post-author">
-                                <div class="create-post-avatar" id="postCreatorAvatar">✦</div>
-                                <div class="create-post-author-details">
-                                    <span class="create-post-author-name" id="postCreatorName">Student</span>
-                                    <span class="create-post-subtext">Share with IMCA peers</span>
+                    <!-- 1. Community Feed View -->
+                    <div id="feedView" class="community-view-pane">
+                        <div class="feed-header">
+                            <div class="feed-title">
+                                <span>Community Feed</span>
+                                <span class="feed-count-badge" id="feedCountBadge">✦ Live</span>
+                            </div>
+                            <div class="feed-tabs" id="feedTabs">
+                                <button class="feed-tab active" data-tab="all">Latest</button>
+                                <button class="feed-tab" data-tab="popular">Popular</button>
+                                <button class="feed-tab" data-tab="Notes">Notes</button>
+                                <button class="feed-tab" data-tab="Question">Questions</button>
+                            </div>
+                        </div>
+
+                        <!-- Minimalist Create Post Card -->
+                        <div class="create-post-card" id="create-post">
+                            <div class="create-post-header">
+                                <div class="create-post-author">
+                                    <div class="create-post-avatar" id="postCreatorAvatar">✦</div>
+                                    <div class="create-post-author-details">
+                                        <span class="create-post-author-name" id="postCreatorName">Student</span>
+                                        <span class="create-post-subtext">Share with IMCA peers</span>
+                                    </div>
+                                </div>
+                                <div class="category-pills" id="categoryPills">
+                                    <button type="button" class="category-pill active" data-category="General">#General</button>
+                                    <button type="button" class="category-pill" data-category="Notes">#Notes</button>
+                                    <button type="button" class="category-pill" data-category="Question">#Question</button>
+                                    <button type="button" class="category-pill" data-category="Resource">#Resource</button>
                                 </div>
                             </div>
-                            <div class="category-pills" id="categoryPills">
-                                <button type="button" class="category-pill active" data-category="General">#General</button>
-                                <button type="button" class="category-pill" data-category="Notes">#Notes</button>
-                                <button type="button" class="category-pill" data-category="Question">#Question</button>
-                                <button type="button" class="category-pill" data-category="Resource">#Resource</button>
+
+                            <div class="create-post-body">
+                                <textarea id="postContentInput" class="create-post-input" placeholder="What are you studying today? Share insights, notes, or questions..." rows="2"></textarea>
                             </div>
-                        </div>
 
-                        <div class="create-post-body">
-                            <textarea id="postContentInput" class="create-post-input" placeholder="What are you studying today? Share insights, notes, or questions..." rows="2"></textarea>
-                        </div>
-
-                        <!-- Image Attachment Preview -->
-                        <div id="imagePreviewContainer" class="image-preview-container hidden">
-                            <div class="image-preview-wrapper">
-                                <img id="imagePreviewImg" src="" alt="Selected image">
-                                <button type="button" id="removeImageBtn" class="remove-image-btn" title="Remove image">
-                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
-                                </button>
-                                <span class="image-preview-pill">Image attached</span>
+                            <!-- Image Attachment Preview -->
+                            <div id="imagePreviewContainer" class="image-preview-container hidden">
+                                <div class="image-preview-wrapper">
+                                    <img id="imagePreviewImg" src="" alt="Selected image">
+                                    <button type="button" id="removeImageBtn" class="remove-image-btn" title="Remove image">
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                    </button>
+                                    <span class="image-preview-pill">Image attached</span>
+                                </div>
                             </div>
-                        </div>
 
-                        <!-- Action Bar -->
-                        <div class="create-post-actions">
-                            <div class="create-post-tools">
-                                <input type="file" id="postImageFileInput" accept="image/png, image/jpeg, image/jpg, image/webp" style="display:none;">
-                                <button type="button" class="post-tool-btn" id="postAttachPhotoBtn" title="Attach an image">
-                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                        <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
-                                        <circle cx="8.5" cy="8.5" r="1.5"></circle>
-                                        <polyline points="21 15 16 10 5 21"></polyline>
+                            <!-- Action Bar -->
+                            <div class="create-post-actions">
+                                <div class="create-post-tools">
+                                    <input type="file" id="postImageFileInput" accept="image/png, image/jpeg, image/jpg, image/webp" style="display:none;">
+                                    <button type="button" class="post-tool-btn" id="postAttachPhotoBtn" title="Attach an image">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                            <polyline points="21 15 16 10 5 21"></polyline>
+                                        </svg>
+                                        <span id="postImageLabel">Photo</span>
+                                    </button>
+                                    <span class="post-char-count" id="postCharCount">0/1000</span>
+                                </div>
+
+                                <button type="button" class="create-post-btn" id="submitPostBtn">
+                                    <span>Publish</span>
+                                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <line x1="22" y1="2" x2="11" y2="13"></line>
+                                        <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
                                     </svg>
-                                    <span id="postImageLabel">Photo</span>
                                 </button>
-                                <span class="post-char-count" id="postCharCount">0/1000</span>
                             </div>
+                        </div>
 
-                            <button type="button" class="create-post-btn" id="submitPostBtn">
-                                <span>Publish</span>
-                                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                    <line x1="22" y1="2" x2="11" y2="13"></line>
-                                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
-                                </svg>
-                            </button>
+                        <div id="postsContainer">
+                            <!-- Posts rendered dynamically -->
                         </div>
                     </div>
 
-                    <div id="postsContainer">
-                        <!-- Posts rendered dynamically -->
+                    <!-- 2. Semester Group Chat View (Exclusive to same semester students) -->
+                    <div id="chatView" class="community-view-pane hidden">
+                        <div class="chat-card">
+                            <div class="chat-header">
+                                <div class="chat-header-info">
+                                    <div class="chat-room-icon">
+                                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                            <circle cx="9" cy="7" r="4"></circle>
+                                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                                        </svg>
+                                    </div>
+                                    <div>
+                                        <div class="chat-header-title">
+                                            <span id="chatRoomTitle">Semester 1 Group Chat</span>
+                                            <span class="chat-live-dot" title="Live connection"></span>
+                                        </div>
+                                        <div class="chat-header-sub" id="chatRoomSub">
+                                            🔒 Exclusive to verified Semester 1 students
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="chat-header-actions">
+                                    <span class="chat-header-badge" id="chatHeaderSemBadge">
+                                        ✦ Sem 1 Room
+                                    </span>
+                                </div>
+                            </div>
+
+                            <!-- Chat Messages Thread -->
+                            <div class="chat-messages" id="chatMessagesContainer">
+                                <!-- Messages injected dynamically -->
+                            </div>
+
+                            <!-- Chat Image Preview Bar (when image attached) -->
+                            <div id="chatImagePreviewBar" class="chat-image-preview-bar hidden">
+                                <img id="chatImagePreviewThumb" class="chat-image-preview-thumb" src="" alt="Attached photo">
+                                <span style="font-size: 0.75rem; color: var(--teal); font-weight: 500;">Photo ready to send</span>
+                                <button type="button" id="chatRemoveImageBtn" class="remove-image-btn" style="position:static; width:22px; height:22px;" title="Remove image">
+                                    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                </button>
+                            </div>
+
+                            <!-- Chat Input Bar -->
+                            <div class="chat-input-bar">
+                                <input type="file" id="chatFileInput" accept="image/png, image/jpeg, image/jpg, image/webp" style="display:none;">
+                                <div class="chat-input-controls">
+                                    <button type="button" class="chat-tool-btn" id="chatAttachBtn" title="Send a photo or diagram">
+                                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                            <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                            <polyline points="21 15 16 10 5 21"></polyline>
+                                        </svg>
+                                    </button>
+                                    <input type="text" id="chatInputText" class="chat-input-field" placeholder="Message your semester classmates..." autocomplete="off">
+                                    <button type="button" id="chatSendBtn" class="chat-send-btn">
+                                        <span>Send</span>
+                                        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                            <line x1="22" y1="2" x2="11" y2="13"></line>
+                                            <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                                        </svg>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
 
